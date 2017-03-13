@@ -5,31 +5,35 @@
 
 // import libraries
 import m from 'mithril'
-import M from 'main.utils'
-import C from 'User/user.utils'
+import X from 'xioup.main.utils'
+// import btn from 'polythene/button/button'
 import map from 'ramda/src/map'
 
 // import model
-import User from 'User/UserModel'
+import M from 'User/UserModel'
+
+const showUserHref = X.showItemHref( 'users' )
+const editUserHref = X.editItemHref( 'users' )
 
 // components
-const userRow =
-  a =>
-    <div class="user-list-item">
-      <span>{ C.firstAndLastName( a ) }</span>
-      &nbsp;&nbsp;
-      <a class="button" href={ C.viewUserHref( a ) } oncreate={ M.routeLink }>View</a>
-      &nbsp;&nbsp;
-      <a class="button" href={ C.editUserHref( a ) } oncreate={ M.routeLink }>Edit</a>
-    </div>
+const UserRow = a =>
+  <div class="user-list-item">
+    <span>{ M.firstAndLastName( a ) }</span>
+    &nbsp;&nbsp;
+    <a class="button" href={ showUserHref( a ) } oncreate={ m.route.link }>View</a>
+    &nbsp;&nbsp;
+    <a class="button" href={ editUserHref( a ) } oncreate={ m.route.link }>Edit</a>
+    &nbsp;&nbsp;
+    <btn label="IT FINALLY WORKS!" raised={ true }/>
+  </div>
 
-module.exports =
-  { oninit: M.getLoadList( User )
+const UserList =
+  { oninit: M.loadItemList
   , view: () =>
       <div class="user-list">
-        { map( userRow
-             , M.getList( User )()
-             )
-        }
+        <btn label="IT FINALLY WORKS!" raised={ true }/>
+        { map( UserRow, M.itemList() ) }
       </div>
   }
+
+module.exports = UserList

@@ -4,17 +4,20 @@
 
 // import libraries
 import m from 'mithril'
-import M from 'main.utils'
+import M from  'xioup.main.utils'
 
-module.exports = {
-  view: vn =>
-    <main class="layout">
-      <nav class="menu">
-        <a class="navbar" href="/" oncreate={ M.routeLink }>Home</a>
-        &nbsp;&nbsp;
-        <a class="navbar" href="/users" oncreate={ M.routeLink }>Users</a>
-      </nav>
-      <section>{ M.getChildren( vn ) }</section>
-      <div>Footer</div>
-    </main>
-}
+const Layout =
+  { view: vn =>
+      m( 'main.layout'
+       , [ m( 'nav.menu'
+            , [ m( `a[href="/"]`, { oncreate: M.routeLink }, 'Home' )
+              , m( `a[href="/users"]`, { oncreate: M.routeLink }, 'Users' )
+              ]
+            )
+         , m( 'section', M.getChildren( vn ) )
+         , m( 'div.footer', 'Footer' )
+         ]
+       )
+  }
+
+module.exports = Layout

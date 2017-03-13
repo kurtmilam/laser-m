@@ -6,16 +6,14 @@
 // import libraries
 import m from 'mithril'
 import * as L from 'partial.lenses'
-import M from 'main.utils'
-import C from 'User/user.utils'
-import trim from 'ramda/src/trim'
-import compose from 'ramda/src/compose'
+import X from 'xioup.main.utils'
 
 // import model
-import User from 'User/UserModel'
+import M from 'User/UserModel'
 
-module.exports =
-  { oninit: vnode => User.load( vnode.attrs.id )
+const UserEdit =
+  { oninit: vn => M.loadItem( vn.attrs.id )
+  , onremove: M.emptyItem
   , view: () =>
     <div>
       <label class="label">
@@ -24,8 +22,8 @@ module.exports =
           class="input"
           type="text"
           placeholder="First Name"
-          oninput={ M.withValue( a => User.curr( C.setFirstName( a, User.curr() ) ) ) }
-          value={ C.getFirstName( User.curr() ) }
+          oninput={ X.withValueAttr( a => M.item( M.setFirstName( a, M.item() ) ) ) }
+          value={ M.getFirstName( M.item() ) }
         />
       </label>
       <label class="label">
@@ -34,19 +32,21 @@ module.exports =
           class="input"
           type="text"
           placeholder="Last Name"
-          //oninput={ M.withValue( a => compose( User.curr
+          //oninput={ X.withValueAttr( a => compose( M.item
           //                                   , L.set( 'lastName', a )
-          //                                   )( User.curr() )
+          //                                   )( M.item() )
           //                     )
           //        }
-          oninput={ M.withValue( a => User.curr( C.setLastName( a, User.curr() ) ) ) }
-          // oninput={ M.withValue( compose( User.curr, L.set( 'lastName' ) ) )( User.curr() ) }
-          // oninput={ M.withValue( compose( User.curr, L.set( 'lastName' ) ) )( User.curr() ) }
-          value={ C.getLastName( User.curr() ) }
+          oninput={ X.withValueAttr( a => M.item( M.setLastName( a, M.item() ) ) ) }
+          // oninput={ X.withValueAttr( compose( M.item, L.set( 'lastName' ) ) )( M.item() ) }
+          // oninput={ X.withValueAttr( compose( M.item, L.set( 'lastName' ) ) )( M.item() ) }
+          value={ M.getLastName( M.item() ) }
         />
       </label>
-      <button class="button" onclick={ User.save }>Save</button>
+      <button class="button" onclick={ M.validateAndSaveItem }>Save</button>
       &nbsp;
-      <a class="button" href="/users/"  oncreate={ M.routeLink }>Cancel</a>
+      <a class="button" href="/users/"  oncreate={ m.route.link }>Cancel</a>
     </div>
   }
+
+module.exports = UserEdit

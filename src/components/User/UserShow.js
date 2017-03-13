@@ -5,19 +5,19 @@
 
 // import libraries
 import m from 'mithril'
-import M from 'main.utils'
-import C from 'User/user.utils'
+import X from  'xioup.main.utils'
 import compose from 'ramda/src/compose'
 
 // import model
-import User from 'User/UserModel'
+import M from 'User/UserModel'
 
-// mithril
-
-module.exports =
-  { oninit: vnode => User.load( compose( M.getId, M.getAttrs )( vnode ) )
+const UserShow =
+  { oninit: vnode => M.loadItem( compose( X.log, X.getId, X.getAttrs )( vnode ) )
+  , onremove: M.emptyItem
   , view: () =>
     <div>
-      { C.firstAndLastName( User.curr() ) }
+      { M.firstAndLastName( M.item() ) }
     </div>
   }
+
+module.exports = UserShow
