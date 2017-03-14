@@ -5,8 +5,7 @@
 
 // import libraries
 import m from 'mithril'
-import M from 'xioup.main.utils'
-import prop from 'ramda/src/prop'
+import X from 'xioup.main.utils'
 
 // import views
 import Layout from 'Layout/Layout'
@@ -23,9 +22,9 @@ import UserEdit from 'User/UserEdit'
 
 m.route( document.body
        , ''
-       , { '': { render: vn => m( Layout, m( Home, M.getAttrs( vn ) ) ) }
-         , '/users': { render: vn => m( Layout, m( UserList, M.getAttrs( vn ) ) ) }
-         , '/users/:id': { render: vn => m( Layout, m( UserShow, M.getAttrs( vn ) ) ) }
-         , '/users/:id/edit': { render: vn => m( Layout, m( UserEdit, M.getAttrs( vn ) ) ) }
+       , { '': { render: vn => m( Layout, m( Home, X.getAttrs( vn ) ) ) }
+         , '/users': { render: vn => m( Layout, m( UserList, X.getAttrs( vn ) ) ) }
+         , '/users/:id': { render: vn => m( Layout, m( UserShow, X.getAttrs( vn ) ) ) }
+         , '/users/:id/edit': { render: vn => m( Layout, m( UserEdit, X.getAttrs( vn ) ) ) }
          }
        )

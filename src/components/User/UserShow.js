@@ -5,6 +5,7 @@
 
 // import libraries
 import m from 'mithril'
+import * as L from 'partial.lenses'
 import X from  'xioup.main.utils'
 import compose from 'ramda/src/compose'
 
@@ -12,8 +13,8 @@ import compose from 'ramda/src/compose'
 import M from 'User/UserModel'
 
 const UserShow =
-  { oninit: vnode => M.loadItem( compose( X.log, X.getId, X.getAttrs )( vnode ) )
-  , onremove: M.emptyItem
+  { oninit: vn => M.loadItem( vn.attrs.id )
+  , onremove: M.emptyObjectStream( M.item )
   , view: () =>
     <div>
       { M.firstAndLastName( M.item() ) }

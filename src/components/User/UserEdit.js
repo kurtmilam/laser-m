@@ -7,13 +7,14 @@
 import m from 'mithril'
 import * as L from 'partial.lenses'
 import X from 'xioup.main.utils'
+import R from 'ramda'
 
 // import model
 import M from 'User/UserModel'
 
 const UserEdit =
   { oninit: vn => M.loadItem( vn.attrs.id )
-  , onremove: M.emptyItem
+  , onremove: M.emptyObjectStream( M.item )
   , view: () =>
     <div>
       <label class="label">
@@ -22,8 +23,8 @@ const UserEdit =
           class="input"
           type="text"
           placeholder="First Name"
-          oninput={ X.withValueAttr( a => M.item( M.setFirstName( a, M.item() ) ) ) }
-          value={ M.getFirstName( M.item() ) }
+          oninput={ X.setStreamPropToAttr( [ 'firstName' ], M.item, 'value' ) }
+          value={ X.getStreamProp( [ 'firstName' ], M.item ) }
         />
       </label>
       <label class="label">
@@ -32,15 +33,8 @@ const UserEdit =
           class="input"
           type="text"
           placeholder="Last Name"
-          //oninput={ X.withValueAttr( a => compose( M.item
-          //                                   , L.set( 'lastName', a )
-          //                                   )( M.item() )
-          //                     )
-          //        }
-          oninput={ X.withValueAttr( a => M.item( M.setLastName( a, M.item() ) ) ) }
-          // oninput={ X.withValueAttr( compose( M.item, L.set( 'lastName' ) ) )( M.item() ) }
-          // oninput={ X.withValueAttr( compose( M.item, L.set( 'lastName' ) ) )( M.item() ) }
-          value={ M.getLastName( M.item() ) }
+          oninput={ X.setStreamPropToAttr( [ 'lastName' ], M.item, 'value' ) }
+          value={ X.getStreamProp( [ 'lastName' ], M.item ) }
         />
       </label>
       <button class="button" onclick={ M.validateAndSaveItem }>Save</button>

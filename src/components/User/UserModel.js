@@ -4,14 +4,14 @@
 // src/components/User/UserModel.js
 
 // import libraries
-import { request } from 'mithril'
+import m from 'mithril'
 import Stream from 'mithril/stream'
 import * as L from 'partial.lenses'
-import M from 'xioup.main.utils'
+import * as X from 'xioup.main.utils'
 import compose from 'ramda/src/compose'
 import trim from 'ramda/src/trim'
 
-const apiEndpoint = `${ M.apiUrlRoot }/users`
+const apiEndpoint = `${ X.apiUrlRoot }/users`
 const apiItem = `${ apiEndpoint }/:id`
 
 // streams
@@ -20,26 +20,26 @@ const item = Stream( {} )
 
 // api methods
 const loadItemList = () =>
-  request( { method: "GET"
+  m.request( { method: "GET"
              , url: apiEndpoint
              , withCredentials: true
              }
            )
-  .then( compose( itemList, M.getData ) )
+  .then( compose( itemList, L.get( 'data' ) ) )
 
 const loadItem = id =>
-  request( { method: "GET"
+  m.request( { method: "GET"
              , url: apiItem
              , data: { id }
              , withCredentials: true
              }
            )
-  .then( compose( item ) )
+  .then( item )
 
-const emptyItem = () => item( {} )
+const emptyObjectStream = stream => () => stream( {} )
 
 const saveItem = a =>
-  request( { method: "PUT"
+  m.request( { method: "PUT"
              , url: apiItem
              , data: a
              , withCredentials: true
@@ -50,39 +50,20 @@ const saveItem = a =>
 const validateAndSaveItem = () =>
   compose( saveItem
          , item
-         , modifyFirstName( trim )
-         , modifyLastName( trim )
+         , L.modify( 'firstName', trim )
+         , L.modify( 'lastName', trim )
          )( item() )
 
-// getters and setters
-const getFirstName = L.get( 'firstName' )
-const modifyFirstName = L.modify( 'firstName' )
-const removeFirstName = L.remove( 'firstName' )
-const setFirstName = L.set( 'firstName' )
-
-const getLastName = L.get( 'lastName' )
-const modifyLastName = L.modify( 'lastName' )
-const removeLastName = L.remove( 'lastName' )
-const setLastName = L.set( 'lastName' )
-
 //computed properties
-const firstAndLastName = a => `${ getFirstName( a ) } ${ getLastName( a ) }`
+const firstAndLastName = a => `${ L.get( 'firstName', a ) } ${ L.get( 'lastName', a ) }`
 
 module.exports =
   { itemList
   , item
   , loadItemList
   , loadItem
-  , emptyItem
+  , emptyObjectStream
   , saveItem
-  , getFirstName
-  , modifyFirstName
-  , removeFirstName
-  , setFirstName
-  , getLastName
-  , modifyLastName
-  , removeLastName
-  , setLastName
   , firstAndLastName
   , validateAndSaveItem
   }

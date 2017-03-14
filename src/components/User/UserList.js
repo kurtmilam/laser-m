@@ -5,9 +5,9 @@
 
 // import libraries
 import m from 'mithril'
-import X from 'xioup.main.utils'
+import R from 'ramda'
 // import btn from 'polythene/button/button'
-import map from 'ramda/src/map'
+import * as X from 'xioup.main.utils'
 
 // import model
 import M from 'User/UserModel'
@@ -16,7 +16,7 @@ const showUserHref = X.showItemHref( 'users' )
 const editUserHref = X.editItemHref( 'users' )
 
 // components
-const UserRow = a =>
+const UserListItem = a =>
   <div class="user-list-item">
     <span>{ M.firstAndLastName( a ) }</span>
     &nbsp;&nbsp;
@@ -32,7 +32,7 @@ const UserList =
   , view: () =>
       <div class="user-list">
         <btn label="IT FINALLY WORKS!" raised={ true }/>
-        { map( UserRow, M.itemList() ) }
+        { R.map( UserListItem, M.itemList() ) }
       </div>
   }
 

@@ -9,53 +9,64 @@ import * as L from 'partial.lenses'
 import append from 'ramda/src/append'
 import compose from 'ramda/src/compose'
 import concat from 'ramda/src/concat'
-import curry from 'ramda/src/curry'
-import toLower from 'ramda/src/toLower'
-import join from 'ramda/src/join'
-import tap from 'ramda/src/tap'
+import R from 'ramda'
 
 // config
 const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
 
 // generic
-const spacer = join( ' ' )
-const log = tap( console.log )
+const spacer = R.join( ' ' )
+const log = R.tap( console.log )
 
 // route and link functions
-const _getRouteLink = L.get( [ 'route', 'link' ] )
-const routeLink = _getRouteLink( m )
-const showItemHref = a => b => `/${ toLower( a ) }/${ getId( b ) }`
-const editItemHref = a => b => `/${ toLower( a ) }/${ getId( b ) }/edit/`
+const showItemHref = a => b => `/${ R.toLower( a ) }/${ b.id }`
+const editItemHref = a => b => `/${ R.toLower( a ) }/${ b.id }/edit/`
 
 // vnode functions
-const getChildren = L.get( 'children' )
 const getAttrs = L.get( 'attrs' )
 // Following is a copy of withAttr that returns so it can be composed
 // See here for the original: https://github.com/lhorie/mithril.js/blob/next/util/withAttr.js
-const withAttr = curry( ( attrName, callback ) => e =>
-  callback( attrName in e.currentTarget ? e.currentTarget[attrName] : e.currentTarget.getAttribute( attrName ) )
-)
+const withAttr =
+  R.curry( ( attrName, callback, e ) =>
+             callback( attrName in e.currentTarget
+                         ? e.currentTarget[attrName]
+                         : e.currentTarget.getAttribute( attrName )
+                     )
+         )
 const withValueAttr = withAttr( 'value' )
 
-// data functions
-const getData = L.get( 'data' )
-const getId = L.get( 'id' )
+// node functions
+const getAttr =
+  R.curry( ( attrName, e ) =>
+             attrName in e.currentTarget
+               ? e.currentTarget[ attrName ]
+               : e.currentTarget.getAttribute( attrName )
+         )
 
-const getList = L.get( 'list' )
-const getloadItemList = L.get( 'loadItemList' )
+// stream functions
+const updateStreamProp =
+  R.curry( ( lens, stream ) =>
+             R.compose( stream,  R.flip( lens )( stream() ) )
+         )
+const setStreamPropToAttr =
+  R.curry( ( prop, stream, attr ) =>
+             R.compose( updateStreamProp( L.set( prop ), stream ), getAttr( attr ) )
+         )
+const getStreamProp =
+  R.curry( ( prop, stream ) =>
+             L.get( prop, stream() )
+         )
 
 module.exports =
   { apiUrlRoot
   , spacer
   , log
-  , routeLink
-  , getChildren
   , getAttrs
   , withValueAttr
-  , getData
-  , getId
   , showItemHref
   , editItemHref
-  , getList
-  , getloadItemList
+  , getAttr
+  , updateStreamProp
+  , setStreamPropToAttr
+  , getStreamProp
   }

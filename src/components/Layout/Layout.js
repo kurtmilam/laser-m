@@ -4,17 +4,18 @@
 
 // import libraries
 import m from 'mithril'
+import * as L from 'partial.lenses'
 import M from  'xioup.main.utils'
 
 const Layout =
   { view: vn =>
       m( 'main.layout'
        , [ m( 'nav.menu'
-            , [ m( `a[href="/"]`, { oncreate: M.routeLink }, 'Home' )
-              , m( `a[href="/users"]`, { oncreate: M.routeLink }, 'Users' )
+            , [ m( `a[href="/"]`, { oncreate: m.route.link }, 'Home' )
+              , m( `a[href="/users"]`, { oncreate: m.route.link }, 'Users' )
               ]
             )
-         , m( 'section', M.getChildren( vn ) )
+         , m( 'section', L.get( 'children', vn ) )
          , m( 'div.footer', 'Footer' )
          ]
        )
