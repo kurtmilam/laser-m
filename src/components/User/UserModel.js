@@ -6,10 +6,9 @@
 // import libraries
 import m from 'mithril'
 import Stream from 'mithril/stream'
+import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as X from 'xioup.main.utils'
-import compose from 'ramda/src/compose'
-import trim from 'ramda/src/trim'
 
 const apiEndpoint = `${ X.apiUrlRoot }/users`
 const apiItem = `${ apiEndpoint }/:id`
@@ -25,7 +24,7 @@ const loadItemList = () =>
              , withCredentials: true
              }
            )
-  .then( compose( itemList, L.get( 'data' ) ) )
+  .then( R.compose( itemList, L.get( 'data' ) ) )
 
 const loadItem = id =>
   m.request( { method: "GET"
@@ -48,11 +47,11 @@ const saveItem = a =>
   .then( item )
 
 const validateAndSaveItem = () =>
-  compose( saveItem
-         , item
-         , L.modify( 'firstName', trim )
-         , L.modify( 'lastName', trim )
-         )( item() )
+  R.compose( saveItem
+           , item
+           , L.modify( 'firstName', R.trim )
+           , L.modify( 'lastName', R.trim )
+           )( item() )
 
 //computed properties
 const firstAndLastName = a => `${ L.get( 'firstName', a ) } ${ L.get( 'lastName', a ) }`
