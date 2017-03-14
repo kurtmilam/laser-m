@@ -5,11 +5,8 @@
 
 // import libraries
 import m from 'mithril'
-import * as L from 'partial.lenses'
-import append from 'ramda/src/append'
-import compose from 'ramda/src/compose'
-import concat from 'ramda/src/concat'
 import R from 'ramda'
+import * as L from 'partial.lenses'
 
 // config
 const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
@@ -21,6 +18,11 @@ const log = R.tap( console.log )
 // route and link functions
 const showItemHref = a => b => `/${ R.toLower( a ) }/${ b.id }`
 const editItemHref = a => b => `/${ R.toLower( a ) }/${ b.id }/edit/`
+
+// component functions
+const m1 = R.curryN( 1, m )
+const m2 = R.curryN( 2, m )
+const m3 = R.curryN( 3, m )
 
 // vnode functions
 const getAttrs = L.get( 'attrs' )
@@ -61,10 +63,13 @@ module.exports =
   { apiUrlRoot
   , spacer
   , log
-  , getAttrs
-  , withValueAttr
   , showItemHref
   , editItemHref
+  , m1
+  , m2
+  , m3
+  , getAttrs
+  , withValueAttr
   , getAttr
   , updateStreamProp
   , setStreamPropToAttr

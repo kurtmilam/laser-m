@@ -5,7 +5,6 @@
 // import libraries
 import m from 'mithril'
 import * as L from 'partial.lenses'
-import M from  'xioup.main.utils'
 
 const Layout =
   { view: vn =>

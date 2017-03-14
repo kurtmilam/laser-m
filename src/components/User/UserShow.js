@@ -5,9 +5,6 @@
 
 // import libraries
 import m from 'mithril'
-import * as L from 'partial.lenses'
-import X from  'xioup.main.utils'
-import compose from 'ramda/src/compose'
 
 // import model
 import M from 'User/UserModel'

@@ -5,7 +5,9 @@
 
 // import libraries
 import m from 'mithril'
-import X from 'xioup.main.utils'
+import R from 'ramda'
+import * as L from 'partial.lenses'
+import * as X from 'xioup.main.utils'
 
 // import views
 import Layout from 'Layout/Layout'
@@ -20,11 +22,17 @@ import UserEdit from 'User/UserEdit'
 // see: http://mithril.js.org/route.html#how-it-works
 // m.route.prefix( '' )
 
+const makeRoute =
+  R.curry( ( parent, main ) =>
+             R.compose( X.m2( parent ), X.m2( main ), L.get( 'attrs' ) )
+         )
+const makeLayoutRoute = makeRoute( Layout )
+
 m.route( document.body
        , ''
-       , { '': { render: vn => m( Layout, m( Home, X.getAttrs( vn ) ) ) }
-         , '/users': { render: vn => m( Layout, m( UserList, X.getAttrs( vn ) ) ) }
-         , '/users/:id': { render: vn => m( Layout, m( UserShow, X.getAttrs( vn ) ) ) }
-         , '/users/:id/edit': { render: vn => m( Layout, m( UserEdit, X.getAttrs( vn ) ) ) }
+       , { '': { render: makeLayoutRoute( Home ) }
+         , '/users': { render: makeLayoutRoute( UserList ) }
+         , '/users/:id': { render: makeLayoutRoute( UserShow ) }
+         , '/users/:id/edit': { render: makeLayoutRoute( UserEdit ) }
          }
        )
