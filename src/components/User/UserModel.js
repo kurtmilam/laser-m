@@ -5,26 +5,25 @@
 
 // import libraries
 import m from 'mithril'
-import Stream from 'mithril/stream'
 import R from 'ramda'
 import * as L from 'partial.lenses'
-import flyd from 'flyd'
 import * as X from 'xioup.main.utils'
 
 // import state
 import state from 'App/AppModel'
 
+// config
 const itemName = 'users'
-const itemPath = `${ itemName }.current`
-const item = X.lensedStream( itemPath, state, {} )
-const itemListPath = `${ itemName }.list`
-const itemList = X.lensedStream( itemListPath, state, [] )
-// const test = flyd.merge( item, itemList )
-// console.log( test() )
 
 // helpers
 const apiItemList = `${ X.apiUrlRoot }/users`
 const apiItem = `${ apiItemList }/:id`
+
+// state setup
+const itemPath = `${ itemName }.current`
+const item = X.lensedStream( itemPath, state, {} )
+const itemListPath = `${ itemName }.list`
+const itemList = X.lensedStream( itemListPath, state, [] )
 
 // api methods
 const loadItemList = X.loadItemListFromApi( apiItemList, itemList )
@@ -32,6 +31,10 @@ const loadItemList = X.loadItemListFromApi( apiItemList, itemList )
 const loadItem = X.loadItemFromApi( apiItem, item )
 
 const saveItem = X.saveItemToApi( apiItem, item )
+
+// state functions
+const setItemPropToValueAttr = X.setStreamPropToValueAttr( item )
+const getItemProp = X.getStreamProp( item )
 
 const validateAndSaveItem = () =>
   R.compose( saveItem
@@ -41,15 +44,16 @@ const validateAndSaveItem = () =>
            )( item() )
 
 //computed properties
-const firstAndLastName = a => `${ L.get( 'firstName', a ) } ${ L.get( 'lastName', a ) }`
+const firstAndLastName = model => `${ L.get( 'firstName', model ) } ${ L.get( 'lastName', model ) }`
 
 module.exports =
   { itemName
-  , itemList
   , item
+  , itemList
   , loadItemList
   , loadItem
-  , saveItem
+  , setItemPropToValueAttr
+  , getItemProp
   , firstAndLastName
   , validateAndSaveItem
   }

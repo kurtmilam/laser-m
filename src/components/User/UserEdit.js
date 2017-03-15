@@ -21,8 +21,8 @@ module.exports =
           class="input"
           type="text"
           placeholder="First Name"
-          oninput={ X.setStreamPropToAttr( 'firstName', M.item, 'value' ) }
-          value={ X.getStreamProp( 'firstName', M.item ) }
+          oninput={ M.setItemPropToValueAttr( 'firstName' ) }
+          value={ M.getItemProp( 'firstName' ) }
         />
       </label>
       <label class="label">
@@ -31,8 +31,8 @@ module.exports =
           class="input"
           type="text"
           placeholder="Last Name"
-          oninput={ X.setStreamPropToAttr( 'lastName', M.item, 'value' ) }
-          value={ X.getStreamProp( 'lastName', M.item ) }
+          oninput={ M.setItemPropToValueAttr( 'lastName' ) }
+          value={ M.getItemProp( 'lastName' ) }
         />
       </label>
       <button class="button" onclick={ M.validateAndSaveItem }>Save</button>

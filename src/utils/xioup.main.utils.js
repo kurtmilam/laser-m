@@ -7,7 +7,6 @@
 import m from 'mithril'
 import R from 'ramda'
 import * as L from 'partial.lenses'
-import * as X from 'xioup.main.utils'
 
 // config
 const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
@@ -21,7 +20,6 @@ const showItemHref = R.curry( ( a, b ) => `/${ R.toLower( a ) }/${ b.id }` )
 const editItemHref = R.curry( ( a, b ) => `/${ R.toLower( a ) }/${ b.id }/edit/` )
 
 // component functions
-const m1 = R.curryN( 1, m )
 const m2 = R.curryN( 2, m )
 const m3 = R.curryN( 3, m )
 
@@ -60,12 +58,15 @@ const saveItemToApi =
 
 // vnode functions
 const getAttrs = L.get( 'attrs' )
-// Following is a copy of withAttr that returns so it can be composed
+// Following is a copy of m.withAttr that returns so it can be composed
 // See here for the original: https://github.com/lhorie/mithril.js/blob/next/util/withAttr.js
+// See here for why m.withAttr was rewritten so it wouldn't return:
+// https://github.com/lhorie/mithril.js/issues/1551#issuecomment-273697482
+// maybe always return true or add functionality that returns true or false based on validation logic
 const withAttr =
   R.curry( ( attrName, callback, e ) =>
              callback( attrName in e.currentTarget
-                         ? e.currentTarget[attrName]
+                         ? e.currentTarget[ attrName ]
                          : e.currentTarget.getAttribute( attrName )
                      )
          )
@@ -80,32 +81,56 @@ const getAttr =
          )
 
 // stream functions
-const pathToOptic = R.split('.')
+const pathToOptic = R.split( '.' )
 
 const updateStreamProp =
   R.curry( ( lens, stream ) =>
              R.compose( stream,  R.flip( lens )( stream() ) )
          )
+
 const setStreamPropToAttr =
-  R.curry( ( optic, stream, attr ) =>
-             R.compose( updateStreamProp( L.set( optic ), stream ), getAttr( attr ) )
+  R.curry( ( attr, stream, path ) =>
+             R.compose( updateStreamProp( L.set( pathToOptic( path ) ), stream ), getAttr( attr ) )
          )
+
+const setStreamPropToValueAttr = setStreamPropToAttr( 'value' )
+
 const getStreamProp =
-  R.curry( ( optic, stream ) =>
-             L.get( optic, stream() )
+  R.curry( ( stream, path ) =>
+             L.get( pathToOptic( path ), stream() )
          )
 
 // local state
-const lensedStream = function ( path, stream, init ) {
+const lensedStreamOld = function ( path, stream, init ) {
   const optic = pathToOptic( path )
-  if ( typeof getStreamProp( optic, stream ) === 'undefined' )
+  if ( typeof getStreamProp( stream, path ) === 'undefined' ) {
     updateStreamProp( L.set( optic ), stream )( init )
+  }
     return function ( value ) {
       if ( arguments.length === 0 )
-        return getStreamProp( optic, stream )
+        return getStreamProp( stream, path )
       else
         return L.get( optic, updateStreamProp( L.set( optic ), stream )( value ) )
     }
+}
+
+const lensedStream = function ( path, stream, init ) {
+  const optic = pathToOptic( path )
+  if ( typeof getStreamProp( stream, path ) === 'undefined' ) {
+    updateStreamProp( L.set( optic ), stream )( init )
+  }
+  return function ( value ) {
+    if ( arguments.length === 0 ) {
+      return getStreamProp( stream, path )
+    } else {
+      // for mithril.stream
+      // return L.get( optic, updateStreamProp( L.set( optic ), stream )( value ) )
+      // for flyd
+      return L.get( optic, updateStreamProp( L.set( optic ), stream )( value ) )
+    }
+
+    return L.get( optic, updateStreamProp( L.set( optic ), stream )( value ) )
+  }
 }
 
 const emptyStream = stream => () =>
@@ -117,7 +142,6 @@ module.exports =
   , log
   , showItemHref
   , editItemHref
-  , m1
   , m2
   , m3
   , loadItemListFromApi
@@ -129,6 +153,7 @@ module.exports =
   , pathToOptic
   , updateStreamProp
   , setStreamPropToAttr
+  , setStreamPropToValueAttr
   , getStreamProp
   , lensedStream
   , emptyStream
