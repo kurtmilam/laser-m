@@ -12,28 +12,23 @@ import * as X from 'xioup.main.utils'
 // import model
 import M from 'User/UserModel'
 
-const showUserHref = X.showItemHref( 'users' )
-const editUserHref = X.editItemHref( 'users' )
-
 // components
-const UserListItem = a =>
-  <div class="user-list-item">
-    <span>{ M.firstAndLastName( a ) }</span>
+const UserListItem = child =>
+  <div class={ `${ M.itemName }-list-item` }>
+    <span>{ M.firstAndLastName( child ) }</span>
     &nbsp;&nbsp;
-    <a class="button" href={ showUserHref( a ) } oncreate={ m.route.link }>View</a>
+    <a class="button" href={ X.showItemHref( M.itemName, child ) } oncreate={ m.route.link }>View</a>
     &nbsp;&nbsp;
-    <a class="button" href={ editUserHref( a ) } oncreate={ m.route.link }>Edit</a>
+    <a class="button" href={ X.editItemHref( M.itemName, child ) } oncreate={ m.route.link }>Edit</a>
     &nbsp;&nbsp;
     <btn label="IT FINALLY WORKS!" raised={ true }/>
   </div>
 
-const UserList =
+module.exports =
   { oninit: M.loadItemList
-  , view: () =>
-      <div class="user-list">
+  , view: vn =>
+      <div class={ `${ M.itemName }-list` }>
         <btn label="IT FINALLY WORKS!" raised={ true }/>
         { R.map( UserListItem, M.itemList() ) }
       </div>
   }
-
-module.exports = UserList

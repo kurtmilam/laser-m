@@ -8,10 +8,11 @@ import m from 'mithril'
 
 // import model
 import M from 'User/UserModel'
+import * as X from 'xioup.main.utils'
 
 const UserShow =
   { oninit: vn => M.loadItem( vn.attrs.id )
-  , onremove: M.emptyObjectStream( M.item )
+  , onremove: X.emptyStream( M.item )
   , view: () =>
     <div>
       { M.firstAndLastName( M.item() ) }

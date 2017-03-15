@@ -8,43 +8,30 @@ import m from 'mithril'
 import Stream from 'mithril/stream'
 import R from 'ramda'
 import * as L from 'partial.lenses'
+import flyd from 'flyd'
 import * as X from 'xioup.main.utils'
 
-const apiEndpoint = `${ X.apiUrlRoot }/users`
-const apiItem = `${ apiEndpoint }/:id`
+// import state
+import state from 'App/AppModel'
 
-// streams
-const itemList = Stream( [] )
-const item = Stream( {} )
+const itemName = 'users'
+const itemPath = `${ itemName }.current`
+const item = X.lensedStream( itemPath, state, {} )
+const itemListPath = `${ itemName }.list`
+const itemList = X.lensedStream( itemListPath, state, [] )
+// const test = flyd.merge( item, itemList )
+// console.log( test() )
+
+// helpers
+const apiItemList = `${ X.apiUrlRoot }/users`
+const apiItem = `${ apiItemList }/:id`
 
 // api methods
-const loadItemList = () =>
-  m.request( { method: "GET"
-             , url: apiEndpoint
-             , withCredentials: true
-             }
-           )
-  .then( R.compose( itemList, L.get( 'data' ) ) )
+const loadItemList = X.loadItemListFromApi( apiItemList, itemList )
 
-const loadItem = id =>
-  m.request( { method: "GET"
-             , url: apiItem
-             , data: { id }
-             , withCredentials: true
-             }
-           )
-  .then( item )
+const loadItem = X.loadItemFromApi( apiItem, item )
 
-const emptyObjectStream = stream => () => stream( {} )
-
-const saveItem = a =>
-  m.request( { method: "PUT"
-             , url: apiItem
-             , data: a
-             , withCredentials: true
-             }
-           )
-  .then( item )
+const saveItem = X.saveItemToApi( apiItem, item )
 
 const validateAndSaveItem = () =>
   R.compose( saveItem
@@ -57,11 +44,11 @@ const validateAndSaveItem = () =>
 const firstAndLastName = a => `${ L.get( 'firstName', a ) } ${ L.get( 'lastName', a ) }`
 
 module.exports =
-  { itemList
+  { itemName
+  , itemList
   , item
   , loadItemList
   , loadItem
-  , emptyObjectStream
   , saveItem
   , firstAndLastName
   , validateAndSaveItem

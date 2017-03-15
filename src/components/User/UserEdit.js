@@ -10,9 +10,9 @@ import * as X from 'xioup.main.utils'
 // import model
 import M from 'User/UserModel'
 
-const UserEdit =
+module.exports =
   { oninit: vn => M.loadItem( vn.attrs.id )
-  , onremove: M.emptyObjectStream( M.item )
+  , onremove: X.emptyStream( M.item )
   , view: () =>
     <div>
       <label class="label">
@@ -21,8 +21,8 @@ const UserEdit =
           class="input"
           type="text"
           placeholder="First Name"
-          oninput={ X.setStreamPropToAttr( [ 'firstName' ], M.item, 'value' ) }
-          value={ X.getStreamProp( [ 'firstName' ], M.item ) }
+          oninput={ X.setStreamPropToAttr( 'firstName', M.item, 'value' ) }
+          value={ X.getStreamProp( 'firstName', M.item ) }
         />
       </label>
       <label class="label">
@@ -31,14 +31,12 @@ const UserEdit =
           class="input"
           type="text"
           placeholder="Last Name"
-          oninput={ X.setStreamPropToAttr( [ 'lastName' ], M.item, 'value' ) }
-          value={ X.getStreamProp( [ 'lastName' ], M.item ) }
+          oninput={ X.setStreamPropToAttr( 'lastName', M.item, 'value' ) }
+          value={ X.getStreamProp( 'lastName', M.item ) }
         />
       </label>
       <button class="button" onclick={ M.validateAndSaveItem }>Save</button>
       &nbsp;
-      <a class="button" href="/users/"  oncreate={ m.route.link }>Cancel</a>
+      <a class="button" href={ `/${ M.itemName }/` }  oncreate={ m.route.link }>Cancel</a>
     </div>
   }
-
-module.exports = UserEdit
