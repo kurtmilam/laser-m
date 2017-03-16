@@ -38,6 +38,7 @@ const getItemProp = X.getStreamProp( item )
 
 const validateAndSaveItem = () =>
   R.compose( saveItem
+           , X.alwaysCallFn( item )
            , item
            , L.modify( 'firstName', R.trim )
            , L.modify( 'lastName', R.trim )

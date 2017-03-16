@@ -7,6 +7,7 @@
 import m from 'mithril'
 import R from 'ramda'
 import * as L from 'partial.lenses'
+import flyd from 'flyd'
 
 // config
 const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
@@ -83,14 +84,26 @@ const getAttr =
 // stream functions
 const pathToOptic = R.split( '.' )
 
+// Created for flyd. Useful in compositions.
+// Set the stream, then call this to return the new stream's value by executing stream()
+// Also works with any other function
+const alwaysCallFn = stream => R.compose( R.call, R.always( stream ) )
+
 const updateStreamProp =
   R.curry( ( lens, stream ) =>
-             R.compose( stream,  R.flip( lens )( stream() ) )
+             // for flyd:
+             R.compose( alwaysCallFn( stream ), stream, R.flip( lens )( stream() ) )
+             // for mithril.stream:
+             // R.compose( stream,  R.flip( lens )( stream() ) )
          )
 
 const setStreamPropToAttr =
   R.curry( ( attr, stream, path ) =>
-             R.compose( updateStreamProp( L.set( pathToOptic( path ) ), stream ), getAttr( attr ) )
+             R.compose( updateStreamProp( L.set( pathToOptic( path ) )
+                                        , stream
+                                        )
+                      , getAttr( attr )
+                      )
          )
 
 const setStreamPropToValueAttr = setStreamPropToAttr( 'value' )
@@ -116,21 +129,18 @@ const lensedStreamOld = function ( path, stream, init ) {
 
 const lensedStream = function ( path, stream, init ) {
   const optic = pathToOptic( path )
+  const lensStream = flyd.stream()
   if ( typeof getStreamProp( stream, path ) === 'undefined' ) {
     updateStreamProp( L.set( optic ), stream )( init )
   }
-  return function ( value ) {
-    if ( arguments.length === 0 ) {
-      return getStreamProp( stream, path )
-    } else {
-      // for mithril.stream
-      // return L.get( optic, updateStreamProp( L.set( optic ), stream )( value ) )
-      // for flyd
-      return L.get( optic, updateStreamProp( L.set( optic ), stream )( value ) )
+  lensStream( getStreamProp( stream, path ) )
+  const oStream = flyd.on( function ( value ) {
+    if ( 'Undefined' !== R.type( value ) ) {
+      return updateStreamProp( L.set( optic ), stream )( value )
     }
-
-    return L.get( optic, updateStreamProp( L.set( optic ), stream )( value ) )
-  }
+    return getStreamProp( stream, path )
+  }, lensStream )
+  return lensStream
 }
 
 const emptyStream = stream => () =>
@@ -150,6 +160,7 @@ module.exports =
   , getAttrs
   , withValueAttr
   , getAttr
+  , alwaysCallFn
   , pathToOptic
   , updateStreamProp
   , setStreamPropToAttr
