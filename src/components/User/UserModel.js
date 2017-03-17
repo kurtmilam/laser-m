@@ -20,10 +20,10 @@ const apiItemList = `${ X.apiUrlRoot }/users`
 const apiItem = `${ apiItemList }/:id`
 
 // state setup
-const itemPath = `${ itemName }.current`
-const item = X.lensedStream( itemPath, state, {} )
-const itemListPath = `${ itemName }.list`
-const itemList = X.lensedStream( itemListPath, state, [] )
+const modelsOptic = [ 'models' ]
+const itemRootOptic = R.append( itemName, modelsOptic )
+const item = state( R.append( 'current', itemRootOptic ), {} )
+const itemList = state( R.append( 'list', itemRootOptic ), [] )
 
 // api methods
 const loadItemList = X.loadItemListFromApi( apiItemList, itemList )
@@ -38,6 +38,7 @@ const getItemProp = X.getStreamProp( item )
 
 const validateAndSaveItem = () =>
   R.compose( saveItem
+           // the next line is for flyd only
            , X.alwaysCallFn( item )
            , item
            , L.modify( 'firstName', R.trim )

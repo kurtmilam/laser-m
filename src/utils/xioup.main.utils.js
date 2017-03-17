@@ -8,6 +8,7 @@ import m from 'mithril'
 import R from 'ramda'
 import * as L from 'partial.lenses'
 import flyd from 'flyd'
+// import uuidV4 from 'uuid/v4'
 
 // config
 const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
@@ -90,7 +91,7 @@ const pathToOptic = R.split( '.' )
 const alwaysCallFn = stream => R.compose( R.call, R.always( stream ) )
 
 const updateStreamProp =
-  R.curry( ( lens, stream ) =>
+  R.curry( ( stream, lens ) =>
              // for flyd:
              R.compose( alwaysCallFn( stream ), stream, R.flip( lens )( stream() ) )
              // for mithril.stream:
@@ -98,9 +99,9 @@ const updateStreamProp =
          )
 
 const setStreamPropToAttr =
-  R.curry( ( attr, stream, path ) =>
-             R.compose( updateStreamProp( L.set( pathToOptic( path ) )
-                                        , stream
+  R.curry( ( attr, stream, optic ) =>
+             R.compose( updateStreamProp( stream
+                                        , L.set( optic )
                                         )
                       , getAttr( attr )
                       )
@@ -109,42 +110,38 @@ const setStreamPropToAttr =
 const setStreamPropToValueAttr = setStreamPropToAttr( 'value' )
 
 const getStreamProp =
-  R.curry( ( stream, path ) =>
-             L.get( pathToOptic( path ), stream() )
+  R.curry( ( stream, optic ) =>
+             L.get( optic, stream() )
          )
-
-// local state
-const lensedStreamOld = function ( path, stream, init ) {
-  const optic = pathToOptic( path )
-  if ( typeof getStreamProp( stream, path ) === 'undefined' ) {
-    updateStreamProp( L.set( optic ), stream )( init )
-  }
-    return function ( value ) {
-      if ( arguments.length === 0 )
-        return getStreamProp( stream, path )
-      else
-        return L.get( optic, updateStreamProp( L.set( optic ), stream )( value ) )
-    }
-}
-
-const lensedStream = function ( path, stream, init ) {
-  const optic = pathToOptic( path )
-  const lensStream = flyd.stream()
-  if ( typeof getStreamProp( stream, path ) === 'undefined' ) {
-    updateStreamProp( L.set( optic ), stream )( init )
-  }
-  lensStream( getStreamProp( stream, path ) )
-  const oStream = flyd.on( function ( value ) {
-    if ( 'Undefined' !== R.type( value ) ) {
-      return updateStreamProp( L.set( optic ), stream )( value )
-    }
-    return getStreamProp( stream, path )
-  }, lensStream )
-  return lensStream
-}
 
 const emptyStream = stream => () =>
   R.compose( stream, R.empty )( stream() )
+
+function lensedStream ( stream ) {
+  return function ( optic, init ) {
+    const payloadOptic = R.prepend( 'payload', optic )
+    // const streamsKey = uuidV4()
+    const streamsOptic = R.pair( 'streams', R.join( '.', optic ) )
+
+    const currLens = getStreamProp( stream, streamsOptic )
+    if ( flyd.isStream( currLens ) ) {
+      return currLens
+    } else {
+      updateStreamProp( stream, L.set( payloadOptic ) )( init )
+      updateStreamProp( stream, L.set( streamsOptic ) )( flyd.stream( init ) )
+      // const lensStream = optic.length > 1
+      //   ? R.last( R.map( lensedStream( stream ), optic ) )
+      //   : getStreamProp( stream, streamsOptic )
+      const lensStream = getStreamProp( stream, streamsOptic )
+      const oStream = flyd.on( function ( value ) {
+        if ( 'Undefined' !== R.type( value ) ) {
+          updateStreamProp( stream, L.set( payloadOptic ) )( value )
+        }
+      }, lensStream )
+      return lensStream
+    }
+  }
+}
 
 module.exports =
   { apiUrlRoot
@@ -166,6 +163,6 @@ module.exports =
   , setStreamPropToAttr
   , setStreamPropToValueAttr
   , getStreamProp
-  , lensedStream
   , emptyStream
+  , lensedStream
   }

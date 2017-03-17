@@ -19,7 +19,8 @@
     "partial.lenses": "^9.6.1",
     "polythene": "^0.2.35",
     "pouchdb-browser": "^6.1.2",
-    "ramda": "^0.23.0"
+    "ramda": "^0.23.0",
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",
