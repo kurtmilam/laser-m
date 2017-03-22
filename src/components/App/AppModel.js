@@ -10,7 +10,7 @@ import flyd from 'flyd'
 import * as X from 'xioup.main.utils'
 
 //const stateTest = L.set( [ 'X', 'path' ], flyd.stream( {} ), '' )
-const state = flyd.stream( { streams: {}, meta: {}, payload: {} } )
+const state = flyd.stream( { streams: {}, meta: {}, data: {} } )
 window.state = state
 
 

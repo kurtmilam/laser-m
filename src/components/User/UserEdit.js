@@ -21,7 +21,7 @@ module.exports =
           class="input"
           type="text"
           placeholder="First Name"
-          oninput={ M.setItemPropToValueAttr( 'firstName' ) }
+          onchange={ M.setItemPropToValueAttr( 'firstName' ) }
           value={ M.getItemProp( 'firstName' ) }
         />
       </label>
@@ -31,7 +31,7 @@ module.exports =
           class="input"
           type="text"
           placeholder="Last Name"
-          oninput={ M.setItemPropToValueAttr( 'lastName' ) }
+          onchange={ M.setItemPropToValueAttr( 'lastName' ) }
           value={ M.getItemProp( 'lastName' ) }
         />
       </label>

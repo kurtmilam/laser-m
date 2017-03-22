@@ -39,14 +39,14 @@ const getItemProp = X.getStreamProp( item )
 const validateAndSaveItem = () =>
   R.compose( saveItem
            // the next line is for flyd only
-           , X.alwaysCallFn( item )
-           , item
+           , R.tap( item )
            , L.modify( 'firstName', R.trim )
            , L.modify( 'lastName', R.trim )
            )( item() )
 
 //computed properties
 const firstAndLastName = model => `${ L.get( 'firstName', model ) } ${ L.get( 'lastName', model ) }`
+const listItemLabel = firstAndLastName
 
 module.exports =
   { itemName
@@ -56,6 +56,7 @@ module.exports =
   , loadItem
   , setItemPropToValueAttr
   , getItemProp
-  , firstAndLastName
   , validateAndSaveItem
+  , firstAndLastName
+  , listItemLabel
   }

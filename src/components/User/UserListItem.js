@@ -20,7 +20,7 @@ module.exports = vn =>
       &nbsp;&nbsp;
       <a class="button" href={ X.editItemHref( M.itemName, vn ) } oncreate={ m.route.link }>Edit</a>
       &nbsp;&nbsp;
-      <button class="button" >Remove</button>
+      <button class="button">Remove</button>
       &nbsp;&nbsp;
       <btn label="IT FINALLY WORKS!" raised={ true }/>
     </div>
