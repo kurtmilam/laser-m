@@ -133,19 +133,13 @@ function lensedStream ( stream ) {
                  , flyd.stream
                  , R.tap ( setData )
                  )( init )
-      const observer =
-        flyd.map( R.when( R.compose( R.not
-                                  , R.equals( 'Undefined' )
-                                  , R.type
-                                  )
-                       , setData
-                       )
-        )( lensStream )
-      console.log( observer )
-      const observersOptic = R.compose( R.pair( 'observers' ), joinOnDot )
-      updateStreamProp( stream
-                      , L.set( observersOptic( optic ) )
-                      )( observer )
+      flyd.on( R.when( R.compose( R.not
+                                , R.equals( 'Undefined' )
+                                , R.type
+                                )
+                     , setData
+                     )
+      )( lensStream )
 
       return lensStream
     }
