@@ -17,6 +17,8 @@ const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
 const spacer = R.join( ' ' )
 const joinOnDot = R.join( '.' )
 const log = R.tap( console.log )
+const isUndefined = R.compose( R.equals( 'Undefined' ), R.type )
+const isNotUndefined = R.complement( isUndefined )
 
 // route and link functions
 const showItemHref = R.curry( ( a, b ) => `/${ R.toLower( a ) }/${ b.id }` )
@@ -73,6 +75,7 @@ const withAttr =
                          : e.currentTarget.getAttribute( attrName )
                      )
          )
+
 const withValueAttr = withAttr( 'value' )
 
 // node functions
@@ -91,6 +94,14 @@ const updateStreamProp =
              // for mithril.stream:
              // R.compose( stream,  R.flip( lens )( stream() ) )
          )
+
+const setStreamProp =
+  R.curry( ( stream, optic ) =>
+             // for flyd:
+             R.compose( R.tap( stream ), R.flip( L.set( optic ) )( stream() ) )
+           // for mithril.stream:
+           // R.compose( stream,  R.flip( lens )( stream() ) )
+  )
 
 const setStreamPropToAttr =
   R.curry( ( attr, stream, optic ) =>
@@ -112,38 +123,26 @@ const emptyStream = stream => () =>
   R.compose( R.tap( stream ), R.empty )( stream() )
 
 function lensedStream ( stream ) {
-  return function bebop ( optic, init ) {
-    const streamsOptic = R.compose( R.pair( 'streams' ), joinOnDot )
-    const currLens =
-      R.compose( getStreamProp( stream )
-               , streamsOptic
-               )( optic )
-    if ( flyd.isStream( currLens ) ) {
-      return currLens
-    } else {
-      const setData =
-        updateStreamProp( stream
-                        , L.set( R.prepend( 'data')( optic ) )
-                        )
-      const lensStream =
-        R.compose( R.tap( updateStreamProp( stream
-                                          , L.set( streamsOptic( optic ) )
-                                          )
-                        )
-                 , flyd.stream
-                 , R.tap ( setData )
-                 )( init )
-      flyd.on( R.when( R.compose( R.not
-                                , R.equals( 'Undefined' )
-                                , R.type
-                                )
-                     , setData
-                     )
-      )( lensStream )
-
-      return lensStream
-    }
-  }
+  const setMainStreamProp = setStreamProp( stream )
+  const setData = R.compose( setMainStreamProp, R.prepend( 'data') )
+  const streamsOptic = R.compose( R.pair( 'streams' ), joinOnDot )
+  const registerSliceStream = R.compose( setMainStreamProp, streamsOptic )
+  const getSliceStream = R.compose( getStreamProp( stream ), streamsOptic )
+  const addToMainStream = optic =>
+    R.compose( R.tap( registerSliceStream( optic ) )
+             , flyd.stream
+             , R.tap( setData( optic ) )
+             )
+  const makeObserverStream = optic =>
+    R.tap( flyd.on( R.when( isNotUndefined
+                          , setData( optic )
+                          )
+                  )
+         )
+  return ( optic, init ) =>
+    flyd.isStream( getSliceStream( optic ) )
+      ? getSliceStream( optic )
+      : makeObserverStream( optic )( addToMainStream( optic )( init ) )
 }
 
 module.exports =
