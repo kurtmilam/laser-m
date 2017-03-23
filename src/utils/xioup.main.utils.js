@@ -89,25 +89,19 @@ const getAttr =
 // stream functions
 const updateStreamProp =
   R.curry( ( stream, lens ) =>
-             // for flyd:
              R.compose( R.tap( stream ), R.flip( lens )( stream() ) )
-             // for mithril.stream:
-             // R.compose( stream,  R.flip( lens )( stream() ) )
          )
 
 const setStreamProp =
   R.curry( ( stream, optic ) =>
-             // for flyd:
              R.compose( R.tap( stream ), R.flip( L.set( optic ) )( stream() ) )
-           // for mithril.stream:
-           // R.compose( stream,  R.flip( lens )( stream() ) )
   )
 
 const setStreamPropToAttr =
   R.curry( ( attr, stream, optic ) =>
-             R.compose( updateStreamProp( stream
-                                        , L.set( optic )
-                                        )
+             R.compose( setStreamProp( stream
+                                     , optic
+                                     )
                       , getAttr( attr )
                       )
          )
@@ -122,27 +116,32 @@ const getStreamProp =
 const emptyStream = stream => () =>
   R.compose( R.tap( stream ), R.empty )( stream() )
 
-function lensedStream ( stream ) {
-  const setMainStreamProp = setStreamProp( stream )
-  const setData = R.compose( setMainStreamProp, R.prepend( 'data') )
-  const streamsOptic = R.compose( R.pair( 'streams' ), joinOnDot )
-  const registerSliceStream = R.compose( setMainStreamProp, streamsOptic )
-  const getSliceStream = R.compose( getStreamProp( stream ), streamsOptic )
-  const addToMainStream = optic =>
-    R.compose( R.tap( registerSliceStream( optic ) )
-             , flyd.stream
-             , R.tap( setData( optic ) )
-             )
-  const makeObserverStream = optic =>
-    R.tap( flyd.on( R.when( isNotUndefined
-                          , setData( optic )
-                          )
-                  )
-         )
+// Create lensedStream functions
+const _streamsOptic = R.compose( R.pair( 'streams' ), joinOnDot )
+const _registerSliceStream = stream => R.compose( setStreamProp( stream ), _streamsOptic )
+const _getSliceStream = stream => R.compose( getStreamProp( stream ), _streamsOptic )
+
+const _dataOptic = optic => R.prepend( 'data')( optic )
+const _setData = stream => R.compose( setStreamProp( stream ), _dataOptic )
+
+const _addToMainStream = stream => optic =>
+  R.compose( R.tap( _registerSliceStream( stream )( optic ) )
+           , flyd.stream
+           , R.tap( _setData( stream )( optic ) )
+           )
+
+const _makeUpdaterStream = stream => optic =>
+  R.tap( flyd.on( R.when( isNotUndefined
+                        , _setData( stream )( optic )
+                        )
+                )
+       )
+
+function lensedStream( stream ) {
   return ( optic, init ) =>
-    flyd.isStream( getSliceStream( optic ) )
-      ? getSliceStream( optic )
-      : makeObserverStream( optic )( addToMainStream( optic )( init ) )
+    flyd.isStream( _getSliceStream( stream )( optic ) )
+      ? _getSliceStream( stream )( optic )
+      : _makeUpdaterStream( stream )( optic )( _addToMainStream( stream )( optic )( init ) )
 }
 
 module.exports =
