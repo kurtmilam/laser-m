@@ -116,20 +116,16 @@ const getStreamProp =
 const emptyStream = stream => () =>
   R.compose( R.tap( stream ), R.empty )( stream() )
 
-// Create lensedStream functions
+// lensedStream functions
 const _streamsOptic = R.compose( R.pair( 'streams' ), joinOnDot )
-const _registerSliceStream = stream => R.compose( setStreamProp( stream ), _streamsOptic )
-const _getSliceStream = stream => R.compose( getStreamProp( stream ), _streamsOptic )
+const _getSliceStream = stream =>
+  R.compose( getStreamProp( stream ), _streamsOptic )
+const _isSliceStream = stream => optic =>
+  R.compose( flyd.isStream, _getSliceStream( stream ) )( optic )
 
 const _dataOptic = optic => R.prepend( 'data')( optic )
-const _setData = stream => R.compose( setStreamProp( stream ), _dataOptic )
-
-const _addToMainStream = stream => optic =>
-  R.compose( R.tap( _registerSliceStream( stream )( optic ) )
-           , flyd.stream
-           , R.tap( _setData( stream )( optic ) )
-           )
-
+const _setData = stream =>
+  R.compose( setStreamProp( stream ), _dataOptic )
 const _makeUpdaterStream = stream => optic =>
   R.tap( flyd.on( R.when( isNotUndefined
                         , _setData( stream )( optic )
@@ -137,11 +133,25 @@ const _makeUpdaterStream = stream => optic =>
                 )
        )
 
+const _registerSliceStream = stream =>
+  R.compose( setStreamProp( stream ), _streamsOptic )
+
+const _addToMainStream = stream => optic =>
+  R.compose( R.tap( _registerSliceStream( stream )( optic ) )
+           , flyd.stream
+           , R.tap( _setData( stream )( optic ) )
+           )
+
+const _makeSliceStream = stream => optic => init =>
+  R.compose( _makeUpdaterStream( stream )( optic )
+           , _addToMainStream( stream )( optic )
+           )( init )
+
 function lensedStream( stream ) {
   return ( optic, init ) =>
-    flyd.isStream( _getSliceStream( stream )( optic ) )
+    _isSliceStream( stream )( optic )
       ? _getSliceStream( stream )( optic )
-      : _makeUpdaterStream( stream )( optic )( _addToMainStream( stream )( optic )( init ) )
+      : _makeSliceStream( stream )( optic )( init )
 }
 
 module.exports =

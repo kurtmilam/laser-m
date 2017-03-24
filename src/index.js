@@ -24,19 +24,12 @@ import UserEdit from 'User/UserEdit'
 // m.route.prefix( '' )
 
 const typeEquals = ( type ) =>
-    R.compose( R.equals( type ), R.type )
+  R.compose( R.equals( type ), R.type )
 
 const composeComponents =
   R.curry( ( root, parent, main ) =>
              R.compose( X.m2( root ), X.m2( parent ), X.m2( main ), L.get( 'attrs' ) )
          )
-const makeRouteNew = view =>
-  R.cond( [ [ typeEquals( 'Object' ), R.compose( X.m2( view ), L.get( 'attrs' ) ) ]
-          , [ typeEquals( 'Object' ), R.compose( X.m2( view ), L.get( 'attrs' ) ) ]
-          , [ typeEquals( 'Object' ), R.compose( X.m2( view ), L.get( 'attrs' ) ) ]
-          , [ typeEquals( 'Object' ), R.compose( X.m2( view ), L.get( 'attrs' ) ) ]
-          ]
-        )
 const composeAppComponent = composeComponents( App )
 const composeAppLayoutComponent = composeAppComponent( Layout )
 
