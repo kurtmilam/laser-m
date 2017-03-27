@@ -1,8 +1,19 @@
 {
-  "presets": ["es2015"],
+  "presets": [
+    "es2015"
+  ],
   "plugins": [
-    ["transform-react-jsx", {
-      "pragma": "m"
-    }]
+    [
+      "transform-react-jsx",
+      {
+        "pragma": "m"
+      },
+      "module-resolver",
+      {
+        "root": [
+          './src', './src/utils', './node_modules'
+        ]
+      }
+    ]
   ]
 }

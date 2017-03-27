@@ -4,10 +4,10 @@
 // src/components/User/UserModel.js
 
 // import libraries
-import m from 'mithril'
+import m from '../../utils/m-mock'
 import R from 'ramda'
 import * as L from 'partial.lenses'
-import * as X from 'xioup.main.utils'
+import * as X from '../../utils/xioup.main.utils'
 
 // import state
 import state from 'App/AppModel'
@@ -33,7 +33,7 @@ const loadItem = X.loadItemFromApi( apiItem, item )
 const saveItem = X.saveItemToApi( apiItem, item )
 
 // state functions
-const setItemPropToValueAttr = X.setStreamPropToValueAttr( item )
+const setItemPropToValueAttr = X.setStreamPropToEventValueAttr( item )
 const getItemProp = X.getStreamProp( item )
 
 const validateAndSaveItem = () =>

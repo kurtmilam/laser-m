@@ -4,7 +4,7 @@
 // src/index.js
 
 // import libraries
-import m from 'mithril'
+import m from 'm-mock'
 import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as X from 'xioup.main.utils'

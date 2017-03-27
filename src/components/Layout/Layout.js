@@ -3,7 +3,7 @@
  */
 
 // import libraries
-import m from 'mithril'
+import m from '../../utils/m-mock'
 import * as L from 'partial.lenses'
 
 const Layout =

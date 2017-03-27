@@ -1,17 +1,15 @@
 /**
  * Created by Kurt on 2017-03-14.
  */
-// import Stream from 'mithril/stream'
 
-// const state = Stream( {} )
-
+import m from '../../utils/m-mock'
 import flyd from 'flyd'
 // import * as L from 'partial.lenses'
-import * as X from 'xioup.main.utils'
+import * as X from '../../utils/xioup.main.utils'
 
 //const stateTest = L.set( [ 'X', 'path' ], flyd.stream( {} ), '' )
 const state = flyd.stream( { streams: {}, meta: {}, data: {} } )
-window.state = state
+// window.state = state
 
 
 /*

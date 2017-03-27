@@ -4,7 +4,7 @@
 // src/components/Home/Home.js
 
 // import libraries
-import m from 'mithril'
+import m from '../../utils/m-mock'
 
 module.exports =
   { view: () =>

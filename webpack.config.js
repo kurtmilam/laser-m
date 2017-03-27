@@ -2,16 +2,17 @@
  * Created by Kurt on 2017-03-09.
  */
 const path = require( 'path' )
+const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
   entry: './src/index.js',
   output: {
-    path: './bin',
+    path: path.resolve( 'bin' ),
     filename: 'app.js',
   },
   module: {
     loaders: [{
-      test: /\.js$/,
+      test: /\.jsx?$/,
       exclude: /node_modules/,
       loader: 'babel-loader'
     }]

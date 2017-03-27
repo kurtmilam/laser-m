@@ -4,15 +4,11 @@
 // src/components/Home/Home.js
 
 // import libraries
-import m from 'mithril'
-import Stream from 'mithril/stream'
+import m from '../../utils/m-mock'
 import * as L from 'partial.lenses'
 
-const appState = Stream( {} )
-
 const App =
-  { data: appState
-  , view: vn =>
+  { view: vn =>
     <app class="app">
       { L.get( 'children', vn ) }
     </app>

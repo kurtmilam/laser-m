@@ -4,8 +4,8 @@
 // src/components/User/UserEdit.js
 
 // import libraries
-import m from 'mithril'
-import * as X from 'xioup.main.utils'
+import m from '../../utils/m-mock'
+import * as X from '../../utils/xioup.main.utils'
 
 // import model
 import M from 'User/UserModel'
