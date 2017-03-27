@@ -66,22 +66,6 @@ const saveItemToApi =
 // vnode functions
 const getAttrs = L.get( 'attrs' )
 
-// Following is a copy of m.withAttr that returns so it can be composed
-// This is currently unused
-// See here for the original: https://github.com/lhorie/mithril.js/blob/next/util/withAttr.js
-// See here for why m.withAttr was rewritten so it wouldn't return:
-// https://github.com/lhorie/mithril.js/issues/1551#issuecomment-273697482
-// maybe always return true or add functionality that returns true or false based on validation logic
-const withAttr =
-  R.curry( ( attrName, callback, e ) =>
-             callback( attrName in e.currentTarget
-                         ? e.currentTarget[ attrName ]
-                         : e.currentTarget.getAttribute( attrName )
-                     )
-         )
-
-const withValueAttr = withAttr( 'value' )
-
 // lensedStream operations
 const getStreamProp =
   R.curry( ( stream, path ) =>
