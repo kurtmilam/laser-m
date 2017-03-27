@@ -72,14 +72,6 @@ const getStreamProp =
              L.get( path, stream() )
          )
 
-// unused
-const _updateStreamProp =
-  R.curry( ( stream, lens ) =>
-             R.compose( R.tap( stream )
-                      , R.flip( lens )( stream() )
-                      )
-         )
-
 const setStreamProp =
   R.curry( ( stream, path ) =>
              R.compose( R.tap( stream )
