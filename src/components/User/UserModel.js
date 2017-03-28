@@ -23,6 +23,7 @@ const apiItem = `${ apiItemList }/:id`
 const modelsOptic = [ 'models' ]
 const itemRootOptic = R.append( itemName, modelsOptic )
 const item = state( R.append( 'current', itemRootOptic ), {} )
+const item1 = state( R.append( 'current', itemRootOptic ), {} )
 const itemList = state( R.append( 'list', itemRootOptic ), [] )
 
 // api methods
@@ -33,7 +34,7 @@ const loadItem = X.loadItemFromApi( apiItem, item )
 const saveItem = X.saveItemToApi( apiItem, item )
 
 // state functions
-const setItemPropToValueAttr = X.setStreamPropToEventValueAttr( item )
+const setItemPropToValueAttr = X.setStreamPropToValueAttr( item )
 const getItemProp = X.getStreamProp( item )
 
 const validateAndSaveItem = () =>

@@ -33,7 +33,7 @@ describe( 'editItemHref()'
 describe( 'getStreamProp()'
         , () => {
             const stream = flyd.stream( { a: { b: 2 } } )
-            it( 'full application works'
+            it( 'complete application works'
               , () => wish( X.getStreamProp( stream, [ 'a', 'b' ] ) === 2 )
               )
 
@@ -49,7 +49,7 @@ describe( 'setStreamProp()'
             const o1 = { a: { b: 2 } }
             const o2 = { a: { b: 3 } }
             const stream = flyd.stream( o1 )
-            it( 'full application works'
+            it( 'complete application works'
               , () => wish( equals( X.setStreamProp( stream, [ 'a', 'b' ] )( 3 ), o2 ) )
               )
 
@@ -79,6 +79,40 @@ describe( 'emptyStream()'
                      streamObj.end()
                      streamArr.end()
                      streamStr.end()
+                    }
+                  )
+          }
+        )
+
+describe( 'lensedStream()'
+        , () => {
+            const o1 = {}
+            const o2 = { a: { b: 3 } }
+            const p1 = [ 'a' ]
+            const p2 = [ 'a', 'b' ]
+            const p3 = [ 'a', 'c' ]
+            const init = { streams: {}, meta: {}, data: {} }
+            const state = flyd.stream( init )
+            const state1 = flyd.stream( init )
+            const lensedStream = X.lensedStream( state )
+            const lensedStream1 = X.lensedStream( state1 )
+            let stateSlice = lensedStream( p2, o1 )
+            it( 'returns a function (fn)'
+              , () => wish( X.isFunction( lensedStream ) )
+              )
+            it( 'fn( path, initialValue ) returns a flyd.stream'
+              , () => wish( flyd.isStream( stateSlice ) )
+              )
+            it( 'fn( path, initialValue )() returns the initialValue'
+              , () => wish( equals( stateSlice(), o1 )  )
+              )
+            it( 'fn( path, initialValue ) results in equivalent state().data.path & state().stream[ path ]()'
+              , () => wish( equals( state().data.a.b, state().streams[ p2 ]() ) )
+              )
+            after( 'End all streams'
+                 , () => {
+                     state.end()
+                     state1.end()
                     }
                   )
           }
