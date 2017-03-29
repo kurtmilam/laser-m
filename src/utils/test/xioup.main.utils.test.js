@@ -11,6 +11,7 @@ import flyd from 'flyd'
 
 import X from '../xioup.main.utils'
 
+// CLI: mocha --compilers js:babel-core/register --recursive src/utils/test/xioup.main.utils.test.js
 
 describe( 'showItemHref()'
         , () => {
@@ -96,23 +97,24 @@ describe( 'lensedStream()'
             const state1 = flyd.stream( init )
             const lensedStream = X.lensedStream( state )
             const lensedStream1 = X.lensedStream( state1 )
-            let stateSlice = lensedStream( p2, o1 )
             it( 'returns a function (fn)'
               , () => wish( X.isFunction( lensedStream ) )
               )
+            const stateSlice = lensedStream( p2, o1 )
             it( 'fn( path, initialValue ) returns a flyd.stream'
               , () => wish( flyd.isStream( stateSlice ) )
               )
             it( 'fn( path, initialValue )() returns the initialValue'
               , () => wish( equals( stateSlice(), o1 )  )
               )
-            it( 'fn( path, initialValue ) results in equivalent state().data.path & state().stream[ path ]()'
-              , () => wish( equals( state().data.a.b, state().streams[ p2 ]() ) )
+            it( 'fn( path, initialValue ) results in state().data.path === state().stream[ path ]()'
+              , () => wish( state().data.a.b === state().streams[ 'a.b' ]() )
               )
             after( 'End all streams'
                  , () => {
                      state.end()
                      state1.end()
+                     stateSlice.end()
                     }
                   )
           }

@@ -23,7 +23,6 @@ const apiItem = `${ apiItemList }/:id`
 const modelsOptic = [ 'models' ]
 const itemRootOptic = R.append( itemName, modelsOptic )
 const item = state( R.append( 'current', itemRootOptic ), {} )
-const item1 = state( R.append( 'current', itemRootOptic ), {} )
 const itemList = state( R.append( 'list', itemRootOptic ), [] )
 
 // api methods
