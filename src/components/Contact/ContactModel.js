@@ -1,7 +1,7 @@
 /**
  * Created by Kurt on 2017-03-09.
  */
-// src/components/User/UserModel.js
+// src/components/Contact/ContactModel.js
 
 // import libraries
 import m from '../../utils/m-mock'
@@ -13,7 +13,7 @@ import * as X from '../../utils/xioup.main.utils'
 import state from 'App/AppModel'
 
 // config
-const itemName = 'users'
+const itemName = 'contacts'
 
 // helpers
 const apiItemList = `${ X.apiUrlRoot }/${ itemName }`

@@ -18,6 +18,9 @@ import Home from 'Home/Home'
 import UserList from 'User/UserList'
 import UserShow from 'User/UserShow'
 import UserEdit from 'User/UserEdit'
+import ContactList from 'Contact/ContactList'
+import ContactShow from 'Contact/ContactShow'
+import ContactEdit from 'Contact/ContactEdit'
 
 // get rid of the hashBang in front of routes
 // see: http://mithril.js.org/route.html#how-it-works
@@ -39,5 +42,8 @@ m.route( document.body
          , '/users': { render: composeAppLayoutComponent( UserList ) }
          , '/users/:id': { render: composeAppLayoutComponent( UserShow ) }
          , '/users/:id/edit': { render: composeAppLayoutComponent( UserEdit ) }
+         , '/contacts': { render: composeAppLayoutComponent( ContactList ) }
+         , '/contacts/:id': { render: composeAppLayoutComponent( ContactShow ) }
+         , '/contacts/:id/edit': { render: composeAppLayoutComponent( ContactEdit ) }
          }
        )

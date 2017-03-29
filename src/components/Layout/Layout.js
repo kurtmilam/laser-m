@@ -16,6 +16,9 @@ const Layout =
         <a href="/users" oncreate={ m.route.link }>
           Users
         </a>
+        <a href="/contacts" oncreate={ m.route.link }>
+          Contacts
+        </a>
       </nav>
       <section>
         { L.get( 'children', vn ) }
