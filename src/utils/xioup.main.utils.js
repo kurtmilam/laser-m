@@ -75,54 +75,66 @@ const getStreamProp =
              L.get( optic, stream() )
          )
 
-const setStreamProp =
-  R.curry( ( stream, optic, newValue ) =>
+const modifyStreamProp =
+  R.curry( ( stream, optic, fn ) =>
              R.compose( R.tap( stream )
-                      , R.flip( L.set( optic ) )( stream() )
-                      )( newValue )
+                      , R.tap( m.redraw )
+                      , L.modify( optic, fn )
+                      )( stream() )
+  )
+// For instance:
+// const list = state(['models','users','list'], {})
+// const modifyList = X.modifyStreamProp( list, [] )
+// modifyList( R.map( R.over( R.lensProp( 'firstName' ), R.toLower) ) )
+// modifyList( R.over( R.lensPath( [ 0, 'firstName' ] ), R.toUpper ) )
+
+const setStreamProp =
+  R.curry( ( stream, optic, value ) =>
+             X.modifyStreamProp( stream, optic, R.always( value ) )
   )
 
 const emptyStream = stream => () =>
-  R.compose( R.tap( stream ), R.empty )( stream() )
+  modifyStreamProp( stream, [], R.empty )
 
 // make lensedStream
 function lensedStream( stream ) {
   return function ( optic, init ) {
-    const _streamsOptic = R.compose( R.pair( 'streams' ), joinOnDot )
-    const _getSliceStream =
-      R.compose( getStreamProp( stream ), _streamsOptic )
-    const _isSliceStream =
-      R.compose( flyd.isStream, _getSliceStream )
+    const streamsOptic = R.compose( R.pair( 'streams' ), joinOnDot )
+    const getSliceStream =
+      R.compose( getStreamProp( stream ), streamsOptic )
+    const isSliceStream =
+      R.compose( flyd.isStream, getSliceStream )
 
-    const _dataOptic = R.prepend( 'data')
-    const _setData =
-      R.compose( setStreamProp( stream ), _dataOptic )
-    const _makeUpdaterStream =
-      R.tap( flyd.on( R.compose( log, R.when( isNotUndefined
-                                       , _setData( optic )
-                                       )
-                               , log
-                               )
+    const dataOptic = R.prepend( 'data')
+    const setData =
+      R.compose( setStreamProp( stream ), dataOptic )
+    const makeUpdaterStream =
+      R.tap( flyd.on( R.when( isNotUndefined
+                            , setData( optic )
+                            )
                     )
            )
 
-    const _registerSliceStream =
-      R.compose( setStreamProp( stream ), _streamsOptic )
+    const registerSliceStream =
+      R.compose( setStreamProp( stream ), streamsOptic )
 
-    const _addToMainStream =
-      R.compose( R.tap( _registerSliceStream( optic ) )
+    const addToMainStream =
+      R.compose( R.tap( registerSliceStream( optic ) )
                , flyd.stream
-               , R.tap( R.compose( _setData( optic ) ) )
+               , R.tap( R.compose( setData( optic ) ) )
                )
 
-    const _makeSliceStream =
-      R.compose( _makeUpdaterStream
-               , _addToMainStream
+    const makeSliceStream =
+      R.compose( makeUpdaterStream
+               , addToMainStream
                )
 
-    return _isSliceStream( optic )
-           ? _getSliceStream
-           : _makeSliceStream( init )
+    const sliceStream
+      = isSliceStream( optic )
+        ? getSliceStream( optic )
+        : makeSliceStream( init )
+
+    return sliceStream
 
   }
 }
@@ -146,7 +158,7 @@ const setStreamPropToAttr =
 
 const setStreamPropToValueAttr = setStreamPropToAttr( 'value' )
 
-module.exports =
+const X =
   { apiUrlRoot
   , log
   , isUndefined
@@ -164,9 +176,16 @@ module.exports =
   , saveItemToApi
   , getAttrs
   , getStreamProp // tested
+  , modifyStreamProp
   , setStreamProp // tested
   , setStreamPropToAttr
   , setStreamPropToValueAttr
   , emptyStream // tested
-  , lensedStream
+  , lensedStream // tested
   }
+
+window.X = X
+window.R = R
+window.flyd = flyd
+module.exports = X
+
