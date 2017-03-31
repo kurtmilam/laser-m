@@ -14,6 +14,8 @@ import M from 'User/UserModel'
 
 import UserListItem from 'User/UserListItem'
 
+const sortByOptic = [ 'sort ', 'by' ]
+
 module.exports =
   { oninit: M.loadItemList
   , onremove: M.itemList.end()
@@ -32,18 +34,18 @@ module.exports =
           </label>
         </div>
         <div class={ `${ M.itemName }-list-header` }>
-          <button class="button" onclick={ () => M.modifyItemList( R.sort( R.ascend( R.prop( 'id' ) ) ) ) }>
+          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi, sortByOptic, 'id' ) }>
             Order By Id
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ () => M.modifyItemList( R.sort( R.ascend( R.prop( 'lastName' ) ) ) ) }>
+          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi, sortByOptic, 'lastName' ) }>
             Order By Last Name
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ () => M.modifyItemList( R.sort( R.ascend( R.prop( 'firstName' ) ) ) ) }>
+          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi, sortByOptic, 'firstName' ) }>
             Order By First Name
           </button>
         </div>
-        { R.map( UserListItem, M.itemList() ) }
+        { R.map( UserListItem )( X.sortByProp( M.getItemListUiProp( sortByOptic ) )( M.itemList() ) ) }
       </div>
   }

@@ -20,7 +20,7 @@ const apiItemList = `${ X.apiUrlRoot }/${ itemName }`
 const apiItem = `${ apiItemList }/:id`
 
 // state setup
-const itemModelRootOptic = R.append( 'model', [ itemName ] )
+const itemModelRootOptic = R.append( 'models', [ itemName ] )
 const item = state( R.append( 'current', itemModelRootOptic ), {} )
 const itemList = state( R.append( 'list', itemModelRootOptic ), [] )
 

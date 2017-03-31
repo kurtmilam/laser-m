@@ -33,8 +33,12 @@ const editItemHref = R.curry( ( a, b ) => `/${ R.toLower( a ) }/${ b.id }/edit` 
 const m2 = R.curryN( 2, m )
 const m3 = R.curryN( 3, m )
 
-const sortByProp = prop =>
-  R.sort( R.ascend( L.get( [ prop ] ) ) )
+
+const sortByProp =
+  R.compose( R.sort
+           , R.ascend
+           , R.prop
+           )
 
 // vnode functions
 const getAttrs = L.get( 'attrs' )
@@ -131,13 +135,17 @@ const setStreamPropToValueAttr = setStreamPropToAttr( 'value' )
 
 // api model functions
 const loadItemListFromApi =
-  R.curry( ( apiUrl, stream ) => () =>
+  //R.curry( ( apiUrl, stream, reducer ) => () =>
+  R.curry( ( apiUrl ) => () =>
              m.request( { method: "GET"
                         , url: apiUrl
                         , withCredentials: true
                         }
                       )
-             .then( R.compose( stream, sortByProp( 'id' ), L.get( 'data' ) ) )
+             // .then( R.compose( stream, reducer, L.get( 'data' ) ) )
+             .then( R.compose( L.get( 'data' ) ) )
+
+
          )
 
 const loadItemFromApi =
@@ -186,6 +194,7 @@ const X =
   , setStreamPropToValueAttr
   , emptyStream // tested
   , lensedStream // tested
+  , sortByProp
   }
 
 window.X = X
