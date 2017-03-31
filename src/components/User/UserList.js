@@ -16,9 +16,10 @@ import UserListItem from 'User/UserListItem'
 
 module.exports =
   { oninit: M.loadItemList
+  , onremove: M.itemList.end()
   , view: vn =>
       <div class={ `${ M.itemName }-list` }>
-        <btn label="IT FINALLY WORKS!" raised={ true }/>
+        <btn label="polythene works!" raised={ true }/>
         { R.map( UserListItem, M.itemList() ) }
       </div>
   }

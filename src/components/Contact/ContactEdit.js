@@ -12,7 +12,7 @@ import M from 'Contact/ContactModel'
 
 module.exports =
   { oninit: vn => M.loadItem( vn.attrs.id )
-  , onremove: X.emptyStream( M.item )
+  , onremove: M.item.end()
   , view: () =>
     <div>
       <label class="label">

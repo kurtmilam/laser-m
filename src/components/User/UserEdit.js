@@ -1,7 +1,7 @@
 /**
  * Created by Kurt on 2017-03-09.
  */
-// src/components/User/UserEdit.js
+// src/components/User/ContactEdit.js
 
 // import libraries
 import m from '../../utils/m-mock'
@@ -12,7 +12,7 @@ import M from 'User/UserModel'
 
 module.exports =
   { oninit: vn => M.loadItem( vn.attrs.id )
-  , onremove: X.emptyStream( M.item )
+  , onremove: M.item.end()
   , view: () =>
     <div>
       <label class="label">
