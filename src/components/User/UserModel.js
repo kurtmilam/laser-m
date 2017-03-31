@@ -38,7 +38,6 @@ const getItemProp = X.getStreamProp( item )
 
 const validateAndSaveItem = () =>
   R.compose( saveItem
-           // the next line is for flyd only
            , R.tap( item )
            , L.modify( 'firstName', R.trim )
            , L.modify( 'lastName', R.trim )
