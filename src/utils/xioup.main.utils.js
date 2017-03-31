@@ -78,10 +78,11 @@ const getStreamProp =
 const modifyStreamProp =
   R.curry( ( stream, optic, fn ) =>
              R.compose( R.tap( stream )
-                      , R.tap( m.redraw )
+                      // , R.tap( m.redraw )
                       , L.modify( optic, fn )
                       )( stream() )
   )
+
 // For instance:
 // const list = state(['models','users','list'], {})
 // const modifyList = X.modifyStreamProp( list, [] )
@@ -186,6 +187,7 @@ const X =
 
 window.X = X
 window.R = R
+window.L = L
 window.flyd = flyd
 module.exports = X
 

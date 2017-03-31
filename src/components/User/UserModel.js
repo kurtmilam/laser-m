@@ -27,6 +27,7 @@ const itemList = state( R.append( 'list', itemRootOptic ), [] )
 
 // api methods
 const loadItemList = X.loadItemListFromApi( apiItemList, itemList )
+const modifyItemList = X.modifyStreamProp( itemList, [] )
 
 const loadItem = X.loadItemFromApi( apiItem, item )
 
@@ -44,7 +45,7 @@ const validateAndSaveItem = () =>
            )( item() )
 
 //computed properties
-const firstAndLastName = model => `${ L.get( 'firstName', model ) } ${ L.get( 'lastName', model ) }`
+const firstAndLastName = model => `${ L.get( 'id', model ) }. ${ L.get( 'firstName', model ) } ${ L.get( 'lastName', model ) }`
 const listItemLabel = firstAndLastName
 
 module.exports =
@@ -52,6 +53,7 @@ module.exports =
   , item
   , itemList
   , loadItemList
+  , modifyItemList
   , loadItem
   , setItemPropToValueAttr
   , getItemProp
