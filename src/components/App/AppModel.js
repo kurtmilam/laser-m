@@ -8,7 +8,9 @@ import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
 
 //const stateTest = L.set( [ 'X', 'path' ], flyd.stream( {} ), '' )
-const state = flyd.stream( { streams: {}, meta: {}, data: {} } )
+const stateStream = flyd.stream( { streams: {}, meta: {}, data: {} } )
+window.stateStream = stateStream
+const state = X.lensedStream( stateStream )
 window.state = state
 
 
@@ -23,4 +25,4 @@ console.log( 'test1() === test2()', test1() === test2() )
 console.log( 'test()', test() )
 */
 
-module.exports = X.lensedStream( state )
+module.exports = state
