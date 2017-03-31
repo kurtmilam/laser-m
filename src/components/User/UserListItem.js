@@ -15,7 +15,8 @@ import M from 'User/UserModel'
 
 const matchProp = prop => x =>
   R.compose( R.equals( R.prop( prop, x ) ), R.prop( prop ) )
-const matchId = matchProp( 'id' )
+const removeListItem = x =>
+  M.modifyItemList( R.reject( matchProp( 'id' )( x ) ) )
 
 module.exports = vn =>
     <div class={ `${ M.itemName }-list-item` } key={ vn.id }>
@@ -25,7 +26,7 @@ module.exports = vn =>
       &nbsp;&nbsp;
       <a class="button" href={ X.editItemHref( M.itemName, vn ) } oncreate={ m.route.link }>Edit</a>
       &nbsp;&nbsp;
-      <button class="button" onclick={ () => M.modifyItemList( R.reject( matchProp( 'id' )( vn ) ) ) }>
+      <button class="button" onclick={ () => removeListItem( vn ) }>
         Remove
       </button>
       &nbsp;&nbsp;

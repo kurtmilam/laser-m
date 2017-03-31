@@ -20,10 +20,13 @@ const apiItemList = `${ X.apiUrlRoot }/${ itemName }`
 const apiItem = `${ apiItemList }/:id`
 
 // state setup
-const modelsOptic = [ 'models' ]
-const itemRootOptic = R.append( itemName, modelsOptic )
-const item = state( R.append( 'current', itemRootOptic ), {} )
-const itemList = state( R.append( 'list', itemRootOptic ), [] )
+const itemModelRootOptic = R.append( 'model', [ itemName ] )
+const item = state( R.append( 'current', itemModelRootOptic ), {} )
+const itemList = state( R.append( 'list', itemModelRootOptic ), [] )
+
+const itemUIRootOptic = R.append( 'ui', [ itemName ] )
+const itemUi = state( R.append( 'current', itemUIRootOptic ), {} )
+const itemListUi = state( R.append( 'list', itemUIRootOptic ), {} )
 
 // api methods
 const loadItemList = X.loadItemListFromApi( apiItemList, itemList )

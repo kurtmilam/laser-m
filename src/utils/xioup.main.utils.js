@@ -33,38 +33,8 @@ const editItemHref = R.curry( ( a, b ) => `/${ R.toLower( a ) }/${ b.id }/edit` 
 const m2 = R.curryN( 2, m )
 const m3 = R.curryN( 3, m )
 
-// api model functions
-const loadItemListFromApi =
-  R.curry( ( apiUrl, stream ) => () =>
-             m.request( { method: "GET"
-                        , url: apiUrl
-                        , withCredentials: true
-                        }
-                      )
-             .then( R.compose( stream, L.get( 'data' ) ) )
-         )
-
-const loadItemFromApi =
-  R.curry( ( apiUrl, stream ) => id =>
-             m.request( { method: "GET"
-                        , url: apiUrl
-                        , data: { id }
-                        , withCredentials: true
-                        }
-                      )
-             .then( stream )
-         )
-
-const saveItemToApi =
-  R.curry( ( apiUrl, stream ) => data =>
-             m.request( { method: "PUT"
-                         , url: apiUrl
-                         , data: data
-                         , withCredentials: true
-                         }
-                      )
-             .then( stream )
-         )
+const sortByProp = prop =>
+  R.sort( R.ascend( L.get( [ prop ] ) ) )
 
 // vnode functions
 const getAttrs = L.get( 'attrs' )
@@ -158,6 +128,39 @@ const setStreamPropToAttr =
          )
 
 const setStreamPropToValueAttr = setStreamPropToAttr( 'value' )
+
+// api model functions
+const loadItemListFromApi =
+  R.curry( ( apiUrl, stream ) => () =>
+             m.request( { method: "GET"
+                        , url: apiUrl
+                        , withCredentials: true
+                        }
+                      )
+             .then( R.compose( stream, sortByProp( 'id' ), L.get( 'data' ) ) )
+         )
+
+const loadItemFromApi =
+  R.curry( ( apiUrl, stream ) => id =>
+             m.request( { method: "GET"
+                        , url: apiUrl
+                        , data: { id }
+                        , withCredentials: true
+                        }
+                      )
+             .then( stream )
+         )
+
+const saveItemToApi =
+  R.curry( ( apiUrl, stream ) => data =>
+             m.request( { method: "PUT"
+                         , url: apiUrl
+                         , data: data
+                         , withCredentials: true
+                         }
+                      )
+             .then( stream )
+         )
 
 const X =
   { apiUrlRoot

@@ -21,6 +21,17 @@ module.exports =
       <div class={ `${ M.itemName }-list` }>
         <btn label="polythene works!" raised={ true }/>
         <div class={ `${ M.itemName }-list-header` }>
+          <label class="label">
+            Filter
+            <input
+              class="input"
+              type="text"
+              placeholder="Type to Filter"
+              oninput={ M.setItemListUiPropToValueAttr( 'filter' ) }
+            />
+          </label>
+        </div>
+        <div class={ `${ M.itemName }-list-header` }>
           <button class="button" onclick={ () => M.modifyItemList( R.sort( R.ascend( R.prop( 'id' ) ) ) ) }>
             Order By Id
           </button>
