@@ -51,7 +51,7 @@ const getItemListUiProp = X.getStreamProp( itemListUi )
 const modifyItemListUi = X.modifyStreamProp( itemListUi )
 
 // initialize ui state
-modifyItemListUi( [], R.compose( L.set( [ 'filter', 'by' ], '' ), L.set( [ 'sort', 'by' ], 'id' ) ) )
+modifyItemListUi( [] )( R.compose( L.set( [ 'filter', 'by' ], '' ), L.set( [ 'sort', 'by' ], 'id' ) ) )
 
 //computed properties
 const firstAndLastName = model =>
@@ -61,13 +61,13 @@ const listItemLabel = firstAndLastName
 // api methods
 const loadItemListFromApi =
   R.composeP( itemList
-            , X.loadItemListFromApi( apiItemList, itemList )
+            , X.loadItemListFromApi( apiItemList )
             )
 
 const loadItemList =
-  R.when( R.equals( [] )
-          , R.always( loadItemListFromApi() )
-          )( itemList() )
+  R.when( R.compose( R.equals( [] ), R.call )
+          , loadItemListFromApi
+          )
 
 const loadItem = X.loadItemFromApi( apiItem, item )
 

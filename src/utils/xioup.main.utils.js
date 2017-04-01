@@ -44,32 +44,25 @@ const sortByProp =
 const getAttrs = L.get( 'attrs' )
 
 // lensedStream operations
-const getStreamProp =
-  R.curry( ( stream, optic ) =>
-             L.get( optic, stream() )
-         )
+const getStreamProp = stream => optic =>
+  L.get( optic, stream() )
 
-const modifyStreamProp =
-  R.curry( ( stream, optic, fn ) =>
-             R.compose( R.tap( stream )
-                      // , R.tap( m.redraw )
-                      , L.modify( optic, fn )
-                      )( stream() )
-  )
-
+const modifyStreamProp = stream => optic => fn =>
+  R.compose( R.tap( stream )
+           // , R.tap( m.redraw )
+           , L.modify( optic, fn )
+           )( stream() )
 // For instance:
 // const list = state(['models','users','list'], {})
 // const modifyList = X.modifyStreamProp( list, [] )
 // modifyList( R.map( R.over( R.lensProp( 'firstName' ), R.toLower) ) )
 // modifyList( R.over( R.lensPath( [ 0, 'firstName' ] ), R.toUpper ) )
 
-const setStreamProp =
-  R.curry( ( stream, optic, value ) =>
-             X.modifyStreamProp( stream, optic, R.always( value ) )
-  )
+const setStreamProp = stream => optic => value =>
+  X.modifyStreamProp( stream )( optic )( R.always( value ) )
 
-const emptyStream = stream => () =>
-  modifyStreamProp( stream, [], R.empty )
+const emptyStream = stream =>
+  modifyStreamProp( stream )( [] )( R.empty )
 
 // make lensedStream
 function lensedStream( stream ) {
@@ -173,6 +166,7 @@ const saveItemToApi =
 const X =
   { apiUrlRoot
   , log
+  , logCall
   , isUndefined
   , isNotUndefined
   , isFunction

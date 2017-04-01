@@ -6,6 +6,7 @@
 import wish from 'wish'
 import sinon from 'sinon'
 import always from 'ramda/src/always'
+import compose from 'ramda/src/compose'
 import equals from 'ramda/src/equals'
 import inc from 'ramda/src/inc'
 import * as L from 'partial.lenses'
@@ -37,13 +38,13 @@ describe( 'emptyStream()'
         , () => {
             const stream = flyd.stream( { a: 1 } )
             it( 'empties objects'
-              , () => wish( equals( X.emptyStream( stream )(), {} ) )
+              , () => wish( equals( X.emptyStream( stream ), {} ) )
               )
             it( 'empties arrays'
-              , () => wish( equals( X.emptyStream( stream( [ 1, 2 ] ) )(), [] ) )
+              , () => wish( equals( X.emptyStream( stream( [ 1, 2 ] ) ), [] ) )
               )
             it( 'empties strings'
-              , () => wish( equals( X.emptyStream( stream( 'string' ) )(), '' ) )
+              , () => wish( equals( X.emptyStream( stream( 'string' ) ), '' ) )
               )
             after( 'End stream', () => stream.end() )
           }
@@ -52,9 +53,6 @@ describe( 'emptyStream()'
 describe( 'getStreamProp()'
         , () => {
             const stream = flyd.stream( { a: { b: 2 } } )
-            it( 'complete application works'
-              , () => wish( X.getStreamProp( stream, [ 'a', 'b' ] ) === 2 )
-              )
             it( 'partial application works'
               , () => wish( X.getStreamProp( stream )( [ 'a', 'b' ] ) === 2 )
               )
@@ -66,14 +64,11 @@ describe( 'modifyStreamProp()'
         , () => {
             const o1 = { a: { b: 2 } }
             const stream = flyd.stream( o1 )
-            it( 'complete application works'
-              , () => wish( X.modifyStreamProp( stream, [ 'a', 'b' ], inc ).a.b === 3 )
-              )
             it( 'partial application works'
-              , () => wish( X.modifyStreamProp( stream, [ 'a', 'b' ] )( inc ).a.b === 4 )
+              , () => wish( X.modifyStreamProp( stream )( [ 'a', 'b' ] )( inc ).a.b === 3 )
               )
             it( 'set works'
-              , () => wish( X.modifyStreamProp( stream, [ 'a', 'b' ] )( always( 1 ) ).a.b === 1 )
+              , () => wish( X.modifyStreamProp( stream )( [ 'a', 'b' ] )( always( 1 ) ).a.b === 1 )
               )
             after( 'End stream', () => stream.end() )
           }
@@ -84,9 +79,6 @@ describe( 'setStreamProp()'
             const o1 = { a: { b: 2 } }
             const o2 = { a: { b: 3 } }
             const stream = flyd.stream( o1 )
-            it( 'complete application works'
-              , () => wish( equals( X.setStreamProp( stream, [ 'a', 'b' ] )( 2 ), o1 ) )
-              )
             it( 'partial application works'
               , () => wish( equals( X.setStreamProp( stream )( [ 'a', 'b' ] )( 3 ), o2 ) )
               )

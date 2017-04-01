@@ -16,8 +16,11 @@ import UserListItem from 'User/UserListItem'
 
 const sortByOptic = [ 'sort ', 'by' ]
 
+const resetItemList =
+  R.compose( M.loadItemList, M.itemList, X.emptyStream )
+
 module.exports =
-  { oninit: M.loadItemList
+  { oninit: () => M.loadItemList( M.itemList )
   , onremove: M.itemList.end()
   , view: vn =>
       <div class={ `${ M.itemName }-list` }>
@@ -34,19 +37,19 @@ module.exports =
           </label>
         </div>
         <div class={ `${ M.itemName }-list-header` }>
-          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi, sortByOptic, 'id' ) }>
+          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi )( sortByOptic )( 'id' ) }>
             Order By Id
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi, sortByOptic, 'lastName' ) }>
+          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi )( sortByOptic )( 'lastName' ) }>
             Order By Last Name
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi, sortByOptic, 'firstName' ) }>
+          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi )( sortByOptic )( 'firstName' ) }>
             Order By First Name
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ M.loadItemListFromApi }>
+          <button class="button" onclick={ () => resetItemList( M.itemList ) }>
             Refresh
           </button>
         </div>

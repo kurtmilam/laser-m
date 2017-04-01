@@ -16,7 +16,7 @@ import M from 'User/UserModel'
 const matchProp = prop => x =>
   R.compose( R.equals( R.prop( prop, x ) ), R.prop( prop ) )
 const removeListItem = x =>
-  R.compose( M.modifyItemList( [], R.reject( matchProp( 'id' )( x ) ) ) )
+  R.compose( M.modifyItemList( [] )( R.reject( matchProp( 'id' )( x ) ) ) )
 
 module.exports = vn =>
     <div class={ `${ M.itemName }-list-item` } key={ vn.id }>
