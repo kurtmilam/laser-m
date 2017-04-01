@@ -18,7 +18,7 @@ const sortByOptic = [ 'sort', 'by' ]
 const sortBy = X.setStreamProp( M.itemListUi )( sortByOptic )
 
 const refreshItemList =
-  R.compose( M.loadItemList, R.always( M.itemList ), X.emptyStream )
+  R.compose( M.loadItemList, X.emptyStream )
 
 // TODO: Apply transformations to state (rather than only in the view)?
 module.exports =
