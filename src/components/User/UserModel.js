@@ -58,15 +58,13 @@ const firstAndLastName = model =>
 const listItemLabel = firstAndLastName
 
 // api methods
-const loadItemListFromApi =
-  R.composeP( itemList
-            , X.loadItemListFromApi( apiItemListUrl )
-            )
-
 const loadItemList =
-  R.when( R.compose( R.equals( [] ), R.call )
-        , loadItemListFromApi
-        )
+  R.composeP( itemList
+            , R.ifElse( R.equals( [] )
+                      , X.loadItemListFromApi( apiItemListUrl )
+                      , R.identity
+                      )
+  )
 
 const loadItem = X.loadItemFromApi( apiItemUrl, item )
 

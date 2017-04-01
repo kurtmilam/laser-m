@@ -22,7 +22,7 @@ const refreshItemList =
 
 // TODO: Apply transformations to state (rather than only in the view)?
 module.exports =
-  { oninit: _ => M.loadItemList( M.itemList )
+  { oninit: _ => M.loadItemList( M.itemList() )
   // , onremove: M.itemList.end()
   , view: vn =>
       <div class={ `${ M.itemName }-list` }>
