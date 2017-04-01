@@ -16,7 +16,7 @@ import ContactListItem from 'Contact/ContactListItem'
 
 module.exports =
   { oninit: M.loadItemList
-  , onremove: M.itemList.end()
+  // , onremove: M.itemList.end()
   , view: vn =>
       <div class={ `${ M.itemName }-list` }>
         <btn label="polythene works!" raised={ true }/>

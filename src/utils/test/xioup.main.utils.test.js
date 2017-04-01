@@ -32,7 +32,6 @@ describe( 'editItemHref()'
           }
         )
 
-
 // lensedStream Operations
 describe( 'emptyStream()'
         , () => {

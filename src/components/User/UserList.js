@@ -14,14 +14,16 @@ import M from 'User/UserModel'
 
 import UserListItem from 'User/UserListItem'
 
-const sortByOptic = [ 'sort ', 'by' ]
+const sortByOptic = [ 'sort', 'by' ]
+const sortBy = X.setStreamProp( M.itemListUi )( sortByOptic )
 
-const resetItemList =
-  R.compose( M.loadItemList, M.itemList, X.emptyStream )
+const refreshItemList =
+  R.compose( M.loadItemList, R.always( M.itemList ), X.emptyStream )
 
+// TODO: Apply transformations to state (rather than only in the view)?
 module.exports =
-  { oninit: () => M.loadItemList( M.itemList )
-  , onremove: M.itemList.end()
+  { oninit: _ => M.loadItemList( M.itemList )
+  // , onremove: M.itemList.end()
   , view: vn =>
       <div class={ `${ M.itemName }-list` }>
         <btn label="polythene works!" raised={ true }/>
@@ -32,24 +34,24 @@ module.exports =
               class="input"
               type="text"
               placeholder="Type to Filter"
-              oninput={ M.setItemListUiPropToValueAttr( 'filter' ) }
+              oninput={ M.setItemListUiPropToValueAttr( [ 'filter', 'by' ] ) }
             />
           </label>
         </div>
         <div class={ `${ M.itemName }-list-header` }>
-          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi )( sortByOptic )( 'id' ) }>
+          <button class="button" onclick={ _ => sortBy( 'id' ) }>
             Order By Id
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi )( sortByOptic )( 'lastName' ) }>
+          <button class="button" onclick={ _ => sortBy( 'lastName' ) }>
             Order By Last Name
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ () => X.setStreamProp( M.itemListUi )( sortByOptic )( 'firstName' ) }>
+          <button class="button" onclick={ _ => sortBy( 'firstName' ) }>
             Order By First Name
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ () => resetItemList( M.itemList ) }>
+          <button class="button" onclick={ _ => refreshItemList( M.itemList ) }>
             Refresh
           </button>
         </div>

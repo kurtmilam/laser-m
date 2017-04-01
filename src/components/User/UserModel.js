@@ -16,17 +16,26 @@ import state from 'App/AppModel'
 const itemName = 'users'
 
 // helpers
-const apiItemList = `${ X.apiUrlRoot }/${ itemName }`
-const apiItem = `${ apiItemList }/:id`
+const apiItemListUrl = `${ X.apiUrlRoot }/${ itemName }`
+const apiItemUrl = `${ apiItemListUrl }/:id`
 
 // state setup
-const itemModelRootOptic = R.append( 'models', [ itemName ] )
-const item = state( R.append( 'current', itemModelRootOptic ), {} )
-const itemList = state( R.append( 'list', itemModelRootOptic ), [] )
+const initialItemState =
+  { current: { data: {}, ui: {}, comp: {} }
+  , list: { data: []
+          , ui: { filter: { by: '' }, sort: { by: 'id' } }
+          , comp: {}
+          }
+  }
 
-const itemUIRootOptic = R.append( 'ui', [ itemName ] )
-const itemUi = state( R.append( 'current', itemUIRootOptic ), {} )
-const itemListUi = state( R.append( 'list', itemUIRootOptic ), {} )
+const itemState = state( [ itemName ], initialItemState )
+
+const item = X.lensedStreamAlt( 'current.data', itemState, {} )
+const itemUi = X.lensedStreamAlt( 'current.ui', itemState, {} )
+
+const itemList = X.lensedStreamAlt( 'list.data', itemState, [] )
+const itemListUi = X.lensedStreamAlt( 'list.ui', itemState, {} )
+
 
 // model state functions
 const modifyItemList = X.modifyStreamProp( itemList )
@@ -34,13 +43,6 @@ const modifyItemList = X.modifyStreamProp( itemList )
 const setItemPropToValueAttr = X.setStreamPropToValueAttr( item )
 const getItemProp = X.getStreamProp( item )
 const modifyItem = X.modifyStreamProp( item )
-
-const validateAndSaveItem = () =>
-  R.compose( saveItem
-           , R.tap( item )
-           , L.modify( 'firstName', R.trim )
-           , L.modify( 'lastName', R.trim )
-           )( item() )
 
 // ui state functions
 const setItemUiPropToValueAttr = X.setStreamPropToValueAttr( itemUi )
@@ -50,9 +52,6 @@ const setItemListUiPropToValueAttr = X.setStreamPropToValueAttr( itemListUi )
 const getItemListUiProp = X.getStreamProp( itemListUi )
 const modifyItemListUi = X.modifyStreamProp( itemListUi )
 
-// initialize ui state
-modifyItemListUi( [] )( R.compose( L.set( [ 'filter', 'by' ], '' ), L.set( [ 'sort', 'by' ], 'id' ) ) )
-
 //computed properties
 const firstAndLastName = model =>
   `${ L.get( 'id', model ) }. ${ L.get( 'firstName', model ) } ${ L.get( 'lastName', model ) }`
@@ -61,27 +60,34 @@ const listItemLabel = firstAndLastName
 // api methods
 const loadItemListFromApi =
   R.composeP( itemList
-            , X.loadItemListFromApi( apiItemList )
+            , X.loadItemListFromApi( apiItemListUrl )
             )
 
 const loadItemList =
   R.when( R.compose( R.equals( [] ), R.call )
-          , loadItemListFromApi
-          )
+        , loadItemListFromApi
+        )
 
-const loadItem = X.loadItemFromApi( apiItem, item )
+const loadItem = X.loadItemFromApi( apiItemUrl, item )
 
-const saveItem = X.saveItemToApi( apiItem, item )
+const saveItem = X.saveItemToApi( apiItemUrl, item )
+
+const validateAndSaveItem = _ =>
+  R.compose( saveItem
+           , R.tap( item )
+           , L.modify( 'firstName', R.trim )
+           , L.modify( 'lastName', R.trim )
+           )( item() )
 
 module.exports =
   { itemName
+  , itemState
   , item
   , itemUi
   , itemList
   , itemListUi
   , loadItemList
   , modifyItemList
-  , loadItemListFromApi
   , modifyItemListUi
   , loadItem
   , setItemPropToValueAttr

@@ -107,6 +107,19 @@ function lensedStream( stream ) {
   }
 }
 
+const lensedStreamAlt = function ( path, stream, init ) {
+  const pathToOptic = R.split( '.' )
+  const optic = pathToOptic( path ) // = R.split( '.', optic )
+  if ( typeof getStreamProp( stream )( optic ) === 'undefined' )
+    setStreamProp( stream )( optic )( init )
+    return function ( value ) {
+      if ( arguments.length === 0 )
+        return getStreamProp( stream )( optic )
+      else
+        return L.get( optic, setStreamProp( stream )( optic )( value ) )
+    }
+}
+
 // node functions
 const _getEventAttr =
   R.curry( ( attrName, e ) =>
@@ -117,29 +130,27 @@ const _getEventAttr =
 
 const setStreamPropToAttr =
   R.curry( ( attrName, stream, optic ) =>
-             R.compose( setStreamProp( stream
-                                     , optic
-                                     )
+             R.compose( setStreamProp( stream )( optic )
                       , _getEventAttr( attrName )
                       )
          )
 
 const setStreamPropToValueAttr = setStreamPropToAttr( 'value' )
 
+// TODO: Make it possible to send in a preprocessor / reducer (for instance, for sorting)
 // api model functions
 const loadItemListFromApi =
   //R.curry( ( apiUrl, stream, reducer ) => () =>
-  R.curry( ( apiUrl ) => () =>
-             m.request( { method: "GET"
-                        , url: apiUrl
-                        , withCredentials: true
-                        }
-                      )
-             // .then( R.compose( stream, reducer, L.get( 'data' ) ) )
-             .then( R.compose( L.get( 'data' ) ) )
+  apiUrl => _ =>
+    m.request( { method: "GET"
+               , url: apiUrl
+               , withCredentials: true
+               }
+             )
+    // .then( R.compose( stream, reducer, L.get( 'data' ) ) )
+    .then( R.compose( L.get( 'data' ) ) )
+    // .then( R.compose( sortByProp( 'firstName' ), L.get( 'data' ) ) )
 
-
-         )
 
 const loadItemFromApi =
   R.curry( ( apiUrl, stream ) => id =>
@@ -188,6 +199,7 @@ const X =
   , setStreamPropToValueAttr
   , emptyStream // tested
   , lensedStream // tested
+  , lensedStreamAlt
   , sortByProp
   }
 

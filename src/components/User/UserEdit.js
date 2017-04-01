@@ -12,7 +12,7 @@ import M from 'User/UserModel'
 
 module.exports =
   { oninit: vn => M.loadItem( vn.attrs.id )
-  , onremove: M.item.end()
+  // , onremove: M.item.end()
   , view: () =>
     <div>
       <label class="label">
