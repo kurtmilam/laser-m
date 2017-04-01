@@ -12,7 +12,7 @@ import * as X from '../../utils/xioup.main.utils'
 
 const UserShow =
   { oninit: vn => M.loadItem( vn.attrs.id )
-  , onremove: X.emptyStream( M.item )
+  , onremove: M.item.end()
   , view: () =>
     <div>
       { M.firstAndLastName( M.item() ) }
