@@ -59,12 +59,15 @@ const firstAndLastName = model =>
 const listItemLabel = firstAndLastName
 
 // api methods
-const loadItemList =
+const loadItemListFromApi =
   R.composeP( itemList
-            , X.loadItemListFromApi( apiItemList
-                                   , itemList
-                                   )
+            , X.loadItemListFromApi( apiItemList, itemList )
             )
+
+const loadItemList =
+  R.when( R.equals( [] )
+          , R.always( loadItemListFromApi() )
+          )( itemList() )
 
 const loadItem = X.loadItemFromApi( apiItem, item )
 
@@ -78,6 +81,7 @@ module.exports =
   , itemListUi
   , loadItemList
   , modifyItemList
+  , loadItemListFromApi
   , modifyItemListUi
   , loadItem
   , setItemPropToValueAttr

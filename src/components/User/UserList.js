@@ -45,6 +45,10 @@ module.exports =
           <button class="button" onclick={ () => X.setStreamProp( M.itemListUi, sortByOptic, 'firstName' ) }>
             Order By First Name
           </button>
+          &nbsp;&nbsp;
+          <button class="button" onclick={ M.loadItemListFromApi }>
+            Refresh
+          </button>
         </div>
         { R.map( UserListItem )( X.sortByProp( M.getItemListUiProp( sortByOptic ) )( M.itemList() ) ) }
       </div>
