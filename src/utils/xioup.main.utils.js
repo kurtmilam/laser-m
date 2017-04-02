@@ -37,7 +37,7 @@ const m3 = R.curryN( 3, m )
 const sortByProp =
   R.compose( R.sort
            , R.ascend
-           , R.prop
+           , L.get
            )
 
 // vnode functions
@@ -137,8 +137,16 @@ const setStreamPropToAttr =
 
 const setStreamPropToValueAttr = setStreamPropToAttr( 'value' )
 
-// TODO: Make it possible to send in a preprocessor / reducer (for instance, for sorting)
 // api model functions
+const modelContainerSpec =
+  { id: R.compose( L.get( 'id' ) )
+  , model: R.identity
+  , ui: {}
+  , comp: {}
+  }
+const modelContainer = R.applySpec( modelContainerSpec )
+
+// TODO: Make it possible to send in a preprocessor / reducer (for instance, for sorting)
 const loadItemListFromApi =
   //R.curry( ( apiUrl, stream, reducer ) => () =>
   apiUrl => _ =>
@@ -148,10 +156,11 @@ const loadItemListFromApi =
                }
              )
     // .then( R.compose( stream, reducer, L.get( 'data' ) ) )
-    .then( R.compose( L.get( 'data' ) ) )
+    .then( R.compose( R.map( modelContainer ), L.get( 'data' ) ) )
     // .then( R.compose( sortByProp( 'firstName' ), L.get( 'data' ) ) )
 
 
+// TODO: Make it possible to send in a preprocessor / reducer (for instance, for normalization)
 const loadItemFromApi =
   R.curry( ( apiUrl, stream ) => id =>
              m.request( { method: "GET"
@@ -160,9 +169,10 @@ const loadItemFromApi =
                         , withCredentials: true
                         }
                       )
-             .then( stream )
+             .then( R.compose( stream, modelContainer ) )
          )
 
+// TODO: Make it possible to send in a preprocessor / reducer (for instance, for validation)
 const saveItemToApi =
   R.curry( ( apiUrl, stream ) => data =>
              m.request( { method: "PUT"

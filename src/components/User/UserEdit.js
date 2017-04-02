@@ -21,8 +21,8 @@ module.exports =
           class="input"
           type="text"
           placeholder="First Name"
-          onchange={ M.setItemPropToValueAttr( 'firstName' ) }
-          value={ M.getItemProp( 'firstName' ) }
+          onchange={ M.setItemPropToValueAttr( [ 'model', 'firstName' ] ) }
+          value={ M.getItemProp( [ 'model', 'firstName' ] ) }
         />
       </label>
       <label class="label">
@@ -31,8 +31,8 @@ module.exports =
           class="input"
           type="text"
           placeholder="Last Name"
-          onchange={ M.setItemPropToValueAttr( 'lastName' ) }
-          value={ M.getItemProp( 'lastName' ) }
+          onchange={ M.setItemPropToValueAttr( [ 'model', 'lastName' ] ) }
+          value={ M.getItemProp( [ 'model', 'lastName' ] ) }
         />
       </label>
       <button class="button" onclick={ M.validateAndSaveItem }>Save</button>

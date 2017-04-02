@@ -21,7 +21,7 @@ const apiItemUrl = `${ apiItemListUrl }/:id`
 
 // state setup
 const initialItemState =
-  { current: { data: {}, ui: {}, comp: {} }
+  { current: { model: {}, ui: {}, comp: {} }
   , list: { data: []
           , ui: { filter: { by: '' }, sort: { by: 'id' } }
           , comp: {}
@@ -30,7 +30,7 @@ const initialItemState =
 
 const itemState = state( [ itemName ], initialItemState )
 
-const item = X.lensedStreamAlt( 'current.data', itemState, {} )
+const item = X.lensedStreamAlt( 'current', itemState, {} )
 const itemUi = X.lensedStreamAlt( 'current.ui', itemState, {} )
 
 const itemList = X.lensedStreamAlt( 'list.data', itemState, [] )
@@ -54,10 +54,11 @@ const modifyItemListUi = X.modifyStreamProp( itemListUi )
 
 //computed properties
 const firstAndLastName = model =>
-  `${ L.get( 'id', model ) }. ${ L.get( 'firstName', model ) } ${ L.get( 'lastName', model ) }`
+  `${ L.get( [ 'model', 'id' ], model ) }. ${ L.get( [ 'model', 'firstName' ], model ) } ${ L.get( [ 'model', 'lastName' ], model ) }`
 const listItemLabel = firstAndLastName
 
 // api methods
+// TODO: Try to merge the following two functions into one
 const loadItemListFromApi =
   R.composeP( itemList
             , X.loadItemListFromApi( apiItemListUrl )
@@ -75,8 +76,8 @@ const saveItem = X.saveItemToApi( apiItemUrl, item )
 const validateAndSaveItem = _ =>
   R.compose( saveItem
            , R.tap( item )
-           , L.modify( 'firstName', R.trim )
-           , L.modify( 'lastName', R.trim )
+           , L.modify( [ 'model', 'firstName' ], R.trim )
+           , L.modify( [ 'model', 'lastName' ], R.trim )
            )( item() )
 
 module.exports =
