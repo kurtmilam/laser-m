@@ -39,15 +39,15 @@ module.exports =
           </label>
         </div>
         <div class={ `${ M.itemName }-list-header` }>
-          <button class="button" onclick={ _ => sortBy( [ 'model', 'id' ] ) }>
+          <button class="button" onclick={ _ => sortBy( [ 'data', 'id' ] ) }>
             Order By Id
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ _ => sortBy( [ 'model', 'firstName' ] ) }>
+          <button class="button" onclick={ _ => sortBy( [ 'data', 'firstName' ] ) }>
             Order By Last Name
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ _ => sortBy( [ 'model', 'lastName' ] ) }>
+          <button class="button" onclick={ _ => sortBy( [ 'data', 'lastName' ] ) }>
             Order By First Name
           </button>
           &nbsp;&nbsp;

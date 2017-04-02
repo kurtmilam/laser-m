@@ -10,9 +10,6 @@ import * as X from '../../utils/xioup.main.utils'
 //const stateTest = L.set( [ 'X', 'path' ], flyd.stream( {} ), '' )
 const stateStream = flyd.stream( { streams: {}, meta: {}, data: {} } )
 window.stateStream = stateStream
-const state = X.lensedStream( stateStream )
-window.state = state
-
 
 /*
 const o = { a: { b: 1 } }
@@ -25,4 +22,4 @@ console.log( 'test1() === test2()', test1() === test2() )
 console.log( 'test()', test() )
 */
 
-module.exports = state
+module.exports = X.lensedStream( stateStream )

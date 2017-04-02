@@ -21,20 +21,23 @@ const apiItemUrl = `${ apiItemListUrl }/:id`
 
 // state setup
 const initialItemState =
-  { current: { model: {}, ui: {}, comp: {} }
-  , list: { data: []
-          , ui: { filter: { by: '' }, sort: { by: 'id' } }
-          , comp: {}
-          }
+  { id: itemName
+  , current: { model: {}, ui: {}, comp: {} }
+  , data: []
+  , ui: { filter: { by: '' }, sort: { by: 'id' } }
+  , comp: {}
   }
 
 const itemState = state( [ itemName ], initialItemState )
 
+// The following also works:
+// const itemState = flyd.stream( initialItemState )
+
 const item = X.lensedStreamAlt( 'current', itemState, {} )
 const itemUi = X.lensedStreamAlt( 'current.ui', itemState, {} )
 
-const itemList = X.lensedStreamAlt( 'list.data', itemState, [] )
-const itemListUi = X.lensedStreamAlt( 'list.ui', itemState, {} )
+const itemList = X.lensedStreamAlt( 'data', itemState, [] )
+const itemListUi = X.lensedStreamAlt( 'ui', itemState, {} )
 
 
 // model state functions
@@ -54,7 +57,7 @@ const modifyItemListUi = X.modifyStreamProp( itemListUi )
 
 //computed properties
 const firstAndLastName = model =>
-  `${ L.get( [ 'model', 'id' ], model ) }. ${ L.get( [ 'model', 'firstName' ], model ) } ${ L.get( [ 'model', 'lastName' ], model ) }`
+  `${ L.get( [ 'data', 'id' ], model ) }. ${ L.get( [ 'data', 'firstName' ], model ) } ${ L.get( [ 'data', 'lastName' ], model ) }`
 const listItemLabel = firstAndLastName
 
 // api methods
@@ -76,8 +79,8 @@ const saveItem = X.saveItemToApi( apiItemUrl, item )
 const validateAndSaveItem = _ =>
   R.compose( saveItem
            , R.tap( item )
-           , L.modify( [ 'model', 'firstName' ], R.trim )
-           , L.modify( [ 'model', 'lastName' ], R.trim )
+           , L.modify( [ 'data', 'firstName' ], R.trim )
+           , L.modify( [ 'data', 'lastName' ], R.trim )
            )( item() )
 
 module.exports =

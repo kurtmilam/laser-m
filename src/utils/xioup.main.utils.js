@@ -140,7 +140,7 @@ const setStreamPropToValueAttr = setStreamPropToAttr( 'value' )
 // api model functions
 const modelContainerSpec =
   { id: R.compose( L.get( 'id' ) )
-  , model: R.identity
+  , data: R.identity
   , ui: {}
   , comp: {}
   }
