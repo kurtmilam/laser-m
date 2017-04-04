@@ -1,7 +1,7 @@
 /**
  * Created by Kurt on 2017-03-16.
  */
-// src/components/User/UserListItem.js
+// src/components/User/UserListRow.js
 
 // import libraries
 import m from '../../utils/m-mock'
@@ -15,18 +15,18 @@ import M from 'User/UserModel'
 
 const matchProp = prop => x =>
   R.compose( R.equals( R.prop( prop, x ) ), R.prop( prop ) )
-const removeListItem = x =>
-  R.compose( M.modifyItemList( [] )( R.reject( matchProp( 'id' )( x ) ) ) )
+const removeListRow = x =>
+  R.compose( M.updateRows( [] )( R.reject( matchProp( 'id' )( x ) ) ) )
 
 module.exports = vn =>
-    <div class={ `${ M.itemName }-list-item` } key={ vn.id }>
+    <div class={ `${ M.entityName }-list-item` } key={ vn.id }>
       <span>{ M.firstAndLastName( vn ) }</span>
       &nbsp;&nbsp;
-      <a class="button" href={ X.showItemHref( M.itemName, vn ) } oncreate={ m.route.link }>View</a>
+      <a class="button" href={ X.showRowHref( M.entityName, vn ) } oncreate={ m.route.link }>View</a>
       &nbsp;&nbsp;
-      <a class="button" href={ X.editItemHref( M.itemName, vn ) } oncreate={ m.route.link }>Edit</a>
+      <a class="button" href={ X.editRowHref( M.entityName, vn ) } oncreate={ m.route.link }>Edit</a>
       &nbsp;&nbsp;
-      <button class="button" onclick={ () => removeListItem( vn ) }>
+      <button class="button" onclick={ _ => removeListRow( vn ) }>
         Remove
       </button>
       &nbsp;&nbsp;

@@ -5,15 +5,30 @@
 
 // import libraries
 import m from '../../utils/m-mock'
+import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
 
 // import model
 import M from 'User/UserModel'
 
 module.exports =
-  { oninit: vn => M.loadItem( vn.attrs.id )
+  { oninit: vn =>
+      { console.log( vn )
+        const id = Number( vn.attrs.id )
+        const atom = M.selectRowById( id )
+        // atom() is undefined if no match is found
+        const data = X.lensedAtom( [ 'data' ], atom, {} )
+        // const testFreeze = atom()
+        // testFreeze.id = 2
+        // console.log( testFreeze, atom() )
+        vn.state = { atom
+                   , data
+                   , initial: data()
+                   }
+        window.vnstate = vn.state
+      }
   // , onremove: M.item.end()
-  , view: () =>
+  , view: vn =>
     <div>
       <label class="label">
         First Name
@@ -21,8 +36,8 @@ module.exports =
           class="input"
           type="text"
           placeholder="First Name"
-          onchange={ M.setItemPropToValueAttr( [ 'model', 'firstName' ] ) }
-          value={ M.getItemProp( [ 'model', 'firstName' ] ) }
+          onchange={ X.setToValueAttr( vn.state.data )( [ 'firstName' ] ) }
+          value={ X.select( vn.state.data )( [ 'firstName' ] ) }
         />
       </label>
       <label class="label">
@@ -31,12 +46,12 @@ module.exports =
           class="input"
           type="text"
           placeholder="Last Name"
-          onchange={ M.setItemPropToValueAttr( [ 'model', 'lastName' ] ) }
-          value={ M.getItemProp( [ 'model', 'lastName' ] ) }
+          onchange={ X.setToValueAttr( vn.state.data )( [ 'lastName' ] ) }
+          value={ X.select( vn.state.data )( [ 'lastName' ] ) }
         />
       </label>
-      <button class="button" onclick={ M.validateAndSaveItem }>Save</button>
+      <button class="button" onclick={ _ => M.validateAndSaveRow( vn.state.data ) }>Save</button>
       &nbsp;
-      <a class="button" href={ `/${ M.itemName }/` }  oncreate={ m.route.link }>Cancel</a>
+      <a class="button" href={ `/${ M.entityName }/` }  oncreate={ m.route.link }>Cancel</a>
     </div>
   }

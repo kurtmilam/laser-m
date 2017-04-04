@@ -32,7 +32,7 @@ const typeEquals = ( type ) =>
 const composeComponents =
   R.curry( ( root, parent, main ) =>
              R.compose( X.m2( root ), X.m2( parent ), X.m2( main ), L.get( 'attrs' ) )
-         )
+        )
 const composeAppComponent = composeComponents( App )
 const composeAppLayoutComponent = composeAppComponent( Layout )
 
@@ -46,4 +46,4 @@ m.route( document.body
          , '/contacts/:id': { render: composeAppLayoutComponent( ContactShow ) }
          , '/contacts/:id/edit': { render: composeAppLayoutComponent( ContactEdit ) }
          }
-       )
+      )

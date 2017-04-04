@@ -12,49 +12,56 @@ import * as X from '../../utils/xioup.main.utils'
 // import model
 import M from 'User/UserModel'
 
-import UserListItem from 'User/UserListItem'
+import UserListRow from 'User/UserListItem'
 
 const sortByOptic = [ 'sort', 'by' ]
-const sortBy = X.setStreamProp( M.itemListUi )( sortByOptic )
+// the returned function expects a string, not an optic
+const sortBy = X.set( M.rowsUi$ )( sortByOptic )
 
-const refreshItemList =
-  R.compose( M.loadItemList, X.emptyStream )
+const refreshTable =
+  R.compose( M.loadTable, X.emptyStream )
+
+const createRowNodes =
+  R.compose( X.map( UserListRow ), X.sortByProp( M.selectRowsUi( sortByOptic ) ) )
+  // R.compose( X.map( UserListRow ), R.compose( R.sort, R.ascend, R.prop )( M.selectRowsUi( sortByOptic ) ) )
+
+// const createRowNodes = R.transduce( createRowNodesTransducer, X.appendTo, [] )
 
 // TODO: Apply transformations to state (rather than only in the view)?
 module.exports =
-  { oninit: _ => M.loadItemList( M.itemList() )
-  // , onremove: M.itemList.end()
+  { oninit: _ => M.loadTable( M.rows$() )
+  // , onremove: M.rows$.end()
   , view: vn =>
-      <div class={ `${ M.itemName }-list` }>
+      <div class={ `${ M.entityName }-list` }>
         <btn label="polythene works!" raised={ true }/>
-        <div class={ `${ M.itemName }-list-header` }>
+        <div class={ `${ M.entityName }-list-header` }>
           <label class="label">
             Filter
             <input
               class="input"
               type="text"
               placeholder="Type to Filter"
-              oninput={ M.setItemListUiPropToValueAttr( [ 'filter', 'by' ] ) }
+              oninput={ M.setTableUiPropToValueAttr( [ 'filter', 'by' ] ) }
             />
           </label>
         </div>
-        <div class={ `${ M.itemName }-list-header` }>
-          <button class="button" onclick={ _ => sortBy( [ 'data', 'id' ] ) }>
+        <div class={ `${ M.entityName }-list-header` }>
+          <button class="button" onclick={ _ => sortBy( 'id' ) }>
             Order By Id
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ _ => sortBy( [ 'data', 'firstName' ] ) }>
+          <button class="button" onclick={ _ => sortBy( 'firstName' ) }>
             Order By Last Name
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ _ => sortBy( [ 'data', 'lastName' ] ) }>
+          <button class="button" onclick={ _ => sortBy( 'lastName' ) }>
             Order By First Name
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ _ => refreshItemList( M.itemList ) }>
+          <button class="button" onclick={ _ => refreshTable( M.rows$ ) }>
             Refresh
           </button>
         </div>
-        { R.map( UserListItem )( X.sortByProp( M.getItemListUiProp( sortByOptic ) )( M.itemList() ) ) }
+        { createRowNodes( M.rows$() ) }
       </div>
   }

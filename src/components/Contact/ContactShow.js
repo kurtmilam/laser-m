@@ -11,7 +11,7 @@ import M from 'Contact/ContactModel'
 import * as X from '../../utils/xioup.main.utils'
 
 const UserShow =
-  { oninit: vn => M.loadItem( vn.attrs.id )
+  { oninit: vn => M.loadRow( vn.attrs.id )
   // , onremove: M.item.end()
   , view: () =>
     <div>

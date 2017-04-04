@@ -1,7 +1,7 @@
 /**
  * Created by Kurt on 2017-03-16.
  */
-// src/components/Contact/ContactListItem.js
+// src/components/Contact/ContactListRow.js
 
 // import libraries
 import m from '../../utils/m-mock'
@@ -13,12 +13,12 @@ import * as X from '../../utils/xioup.main.utils'
 import M from 'Contact/ContactModel'
 
 module.exports = vn =>
-    <div class={ `${ M.itemName }-list-item` } key={ vn.id } onclick={ console.log }>
+    <div class={ `${ M.table }-list-item` } key={ vn.id } onclick={ console.log }>
       <span>{ M.firstAndLastName( vn ) }</span>
       &nbsp;&nbsp;
-      <a class="button" href={ X.showItemHref( M.itemName, vn ) } oncreate={ m.route.link }>View</a>
+      <a class="button" href={ X.showRowHref( M.table, vn ) } oncreate={ m.route.link }>View</a>
       &nbsp;&nbsp;
-      <a class="button" href={ X.editItemHref( M.itemName, vn ) } oncreate={ m.route.link }>Edit</a>
+      <a class="button" href={ X.editRowHref( M.table, vn ) } oncreate={ m.route.link }>Edit</a>
       &nbsp;&nbsp;
       <button class="button">Remove</button>
       &nbsp;&nbsp;

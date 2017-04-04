@@ -16,7 +16,7 @@ const o = { a: { b: 1 } }
 const test = flyd.stream( o )
 const test1 = X.lensedStream( test )( [ 'a' ], {} )
 const test2 = X.lensedStream( test )( [ 'a' ], {} )
-X.setStreamProp( test, [ 'b' ] )( 2 )
+X.set( test, [ 'b' ] )( 2 )
 console.log( 'test1(), test2()', test1(), test2() )
 console.log( 'test1() === test2()', test1() === test2() )
 console.log( 'test()', test() )

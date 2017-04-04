@@ -13,94 +13,90 @@ import * as X from '../../utils/xioup.main.utils'
 import state from 'App/AppModel'
 
 // config
-const itemName = 'users'
+const entityName = 'users'
 
 // helpers
-const apiItemListUrl = `${ X.apiUrlRoot }/${ itemName }`
-const apiItemUrl = `${ apiItemListUrl }/:id`
+const apiTableUrl = `${ X.apiUrlRoot }/${ entityName }`
+const apiRowUrl = `${ apiTableUrl }/:id`
 
 // state setup
-const initialItemState =
-  { id: itemName
-  , current: { model: {}, ui: {}, comp: {} }
-  , data: []
+// Todo: think about how to differentiate children of different types
+// probably add it to the container
+const containerType = 'table'
+const initTable =
+  { id: containerType + ':' + entityName
+  , computed: {}
+  , rows: []
+  , type: containerType
   , ui: { filter: { by: '' }, sort: { by: 'id' } }
-  , comp: {}
   }
 
-const itemState = state( [ itemName ], initialItemState )
+const table$ = state( [ entityName ], initTable )
 
 // The following also works:
-// const itemState = flyd.stream( initialItemState )
+// const table$ = flyd.stream( initTable )
 
-const item = X.lensedStreamAlt( 'current', itemState, {} )
-const itemUi = X.lensedStreamAlt( 'current.ui', itemState, {} )
+const rows$  = X.lensedAtom( [ 'rows' ], table$, [] )
+const rowsUi$ = X.lensedAtom( [ 'ui' ], table$, {} )
 
-const itemList = X.lensedStreamAlt( 'data', itemState, [] )
-const itemListUi = X.lensedStreamAlt( 'ui', itemState, {} )
+// table state queries
+const selectRows = X.select( rows$ )
+const updateRows = X.update( rows$ )
 
+const setTableUiPropToValueAttr = X.setToValueAttr( rowsUi$ )
+const selectRowsUi = X.select( rowsUi$ )
+const updateRowsUi = X.update( rowsUi$ )
 
-// model state functions
-const modifyItemList = X.modifyStreamProp( itemList )
-
-const setItemPropToValueAttr = X.setStreamPropToValueAttr( item )
-const getItemProp = X.getStreamProp( item )
-const modifyItem = X.modifyStreamProp( item )
-
-// ui state functions
-const setItemUiPropToValueAttr = X.setStreamPropToValueAttr( itemUi )
-const getItemUiProp = X.getStreamProp( itemUi )
-
-const setItemListUiPropToValueAttr = X.setStreamPropToValueAttr( itemListUi )
-const getItemListUiProp = X.getStreamProp( itemListUi )
-const modifyItemListUi = X.modifyStreamProp( itemListUi )
+const dataOptic = [ 'data' ]
+const dataPropOptic = X.appendTo( dataOptic )
+//const getRowById =
 
 //computed properties
 const firstAndLastName = model =>
-  `${ L.get( [ 'data', 'id' ], model ) }. ${ L.get( [ 'data', 'firstName' ], model ) } ${ L.get( [ 'data', 'lastName' ], model ) }`
-const listItemLabel = firstAndLastName
+  `${ L.get( dataPropOptic( 'id' ), model ) }. ${ L.get( dataPropOptic( 'firstName' ), model ) } ${ L.get( dataPropOptic( 'lastName' ), model ) }`
+const listRowLabel = firstAndLastName
 
 // api methods
 // TODO: Try to merge the following two functions into one
-const loadItemListFromApi =
-  R.composeP( itemList
-            , X.loadItemListFromApi( apiItemListUrl )
-            )
+const loadTableFromApi =
+  R.composeP( rows$
+            , R.map( R.tap( Object.freeze ) )
+            , X.loadTableFromApi( apiTableUrl )
+           )
 
-const loadItemList =
+const loadTable =
   R.when( R.equals( [] )
-        , loadItemListFromApi
-        )
+        , loadTableFromApi
+       )
 
-const loadItem = X.loadItemFromApi( apiItemUrl, item )
+// const selectRowById = X.loadRowFromApi( apiRowUrl, item )
+const selectRowById = id =>
+  X.lensedAtom( L.compose( L.find( R.whereEq( { id } ) ) ), rows$ )
 
-const saveItem = X.saveItemToApi( apiItemUrl, item )
+  // L.find( x => x.data.id === id )
 
-const validateAndSaveItem = _ =>
-  R.compose( saveItem
+const saveRow = X.saveRowToApi( apiRowUrl )
+
+const validateAndSaveRow = item =>
+  R.compose( saveRow( item )
            , R.tap( item )
-           , L.modify( [ 'data', 'firstName' ], R.trim )
-           , L.modify( [ 'data', 'lastName' ], R.trim )
-           )( item() )
+           , L.modify( [ 'firstName' ], R.trim )
+           , L.modify( [ 'lastName' ], R.trim )
+          )( item() )
 
 module.exports =
-  { itemName
-  , itemState
-  , item
-  , itemUi
-  , itemList
-  , itemListUi
-  , loadItemList
-  , modifyItemList
-  , modifyItemListUi
-  , loadItem
-  , setItemPropToValueAttr
-  , getItemProp
-  , setItemUiPropToValueAttr
-  , getItemUiProp
-  , setItemListUiPropToValueAttr
-  , getItemListUiProp
-  , validateAndSaveItem
+  { entityName
+  , table$
+  , rows$
+  , rowsUi$
+  , loadTable
+  , selectRows
+  , updateRows
+  , updateRowsUi
+  , selectRowById
+  , setTableUiPropToValueAttr
+  , selectRowsUi
+  , validateAndSaveRow
   , firstAndLastName
-  , listItemLabel
+  , listRowLabel
   }

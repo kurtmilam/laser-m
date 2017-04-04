@@ -13,52 +13,52 @@ import * as X from '../../utils/xioup.main.utils'
 import state from 'App/AppModel'
 
 // config
-const itemName = 'contacts'
+const entityName = 'contacts'
 
 // helpers
-const apiItemList = `${ X.apiUrlRoot }/${ itemName }`
-const apiItem = `${ apiItemList }/:id`
+const apiTable = `${ X.apiUrlRoot }/${ entityName }`
+const apiRow = `${ apiTable }/:id`
 
 // state setup
-const itemModelRootOptic = R.append( 'models', [ itemName ] )
+const itemModelRootOptic = R.append( 'models', [ entityName ] )
 const item = state( R.append( 'current', itemModelRootOptic ), {} )
-const itemList = state( R.append( 'list', itemModelRootOptic ), [] )
+const rows$ = state( R.append( 'list', itemModelRootOptic ), [] )
 
-const itemUIRootOptic = R.append( 'ui', [ itemName ] )
+const itemUIRootOptic = R.append( 'ui', [ entityName ] )
 const itemUi = state( R.append( 'current', itemUIRootOptic ), {} )
-const itemListUi = state( R.append( 'list', itemUIRootOptic ), {} )
+const rowsUi$ = state( R.append( 'list', itemUIRootOptic ), {} )
 
 // api methods
-const loadItemList = X.loadItemListFromApi( apiItemList, itemList )
+const loadTable = X.loadTableFromApi( apiTable, rows$ )
 
-const loadItem = X.loadItemFromApi( apiItem, item )
+const loadRow = X.loadRowFromApi( apiRow, item )
 
-const saveItem = X.saveItemToApi( apiItem, item )
+const saveRow = X.saveRowToApi( apiRow, item )
 
 // state functions
-const setItemPropToValueAttr = X.setStreamPropToValueAttr( item )
-const getItemProp = X.getStreamProp( item )
+const setRowPropToValueAttr = X.setToValueAttr( item )
+const getRowProp = X.select( item )
 
-const validateAndSaveItem = () =>
-  R.compose( saveItem
+const validateAndSaveRow = () =>
+  R.compose( saveRow
            , R.tap( item )
            , L.modify( 'firstName', R.trim )
            , L.modify( 'lastName', R.trim )
-           )( item() )
+          )( item() )
 
 //computed properties
 const firstAndLastName = model => `${ L.get( 'firstName', model ) } ${ L.get( 'lastName', model ) }`
-const listItemLabel = firstAndLastName
+const listRowLabel = firstAndLastName
 
 module.exports =
-  { itemName
+  { entityName
   , item
-  , itemList
-  , loadItemList
-  , loadItem
-  , setItemPropToValueAttr
-  , getItemProp
-  , validateAndSaveItem
+  , rows$
+  , loadTable
+  , loadRow
+  , setRowPropToValueAttr
+  , getRowProp
+  , validateAndSaveRow
   , firstAndLastName
-  , listItemLabel
+  , listRowLabel
   }
