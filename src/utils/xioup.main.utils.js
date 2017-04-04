@@ -41,22 +41,16 @@ const m3 = R.curryN( 3, m )
 
 
 const sortByProp =
-  R.compose( R.sort
-           , R.ascend
-           , L.get
-          )
+  R.compose( R.sort, R.ascend, L.get )
 
 // vnode functions
 const getAttrs = L.get( 'attrs' )
 
 // lensedStream operations
-const select = stream => optic => {
-  // console.log( 'stream', stream(), 'optic', optic )
-  // return Object.freeze( L.get( optic, stream() ) )
+const get = stream => optic => {
   return L.get( optic, stream() )
 }
 
-const funcOrAlways = R.when( isNotFunction, K )
 // For instance:
 // const list = state(['models','users','list'], {})
 // const modifyList = X.update( list, [] )
@@ -90,10 +84,10 @@ const emptyStream = stream =>
 function lensedStream( stream ) {
   return function ( optic, init ) {
     const streamsOptic = R.compose( R.pair( 'streams' ), joinOnDot )
-    const selectSliceStream =
-      R.compose( select( stream ), streamsOptic )
+    const getSliceStream =
+      R.compose( get( stream ), streamsOptic )
     const isSliceStream =
-      R.compose( flyd.isStream, selectSliceStream )
+      R.compose( flyd.isStream, getSliceStream )
 
     const dataOptic = R.prepend( 'data')
     const setData =
@@ -121,7 +115,7 @@ function lensedStream( stream ) {
 
     const sliceStream
       = isSliceStream( optic )
-        ? selectSliceStream( optic )
+        ? getSliceStream( optic )
         : makeSliceStream( init )
 
     return sliceStream
@@ -130,11 +124,11 @@ function lensedStream( stream ) {
 }
 
 const lensedAtom = function ( optic, stream, init ) {
-  if ( typeof select( stream )( optic ) === 'undefined' )
+  if ( typeof get( stream )( optic ) === 'undefined' )
     set( stream )( optic )( init )
     return value =>
              isUndefined( value )
-             ? select( stream )( optic )
+             ? get( stream )( optic )
              : Object.freeze( L.get( optic, set( stream )( optic )( value ) ) )
              // return L.get( optic, set( stream )( optic )( value ) )
 }
@@ -230,15 +224,15 @@ const X =
   , loadRowFromApi
   , saveRowToApi
   , getAttrs
-  , select // tested
-  , over
+  , get // tested
+  , over // tested
   , set // tested
-  , update
+  , update // tested
   , setToAttr
   , setToValueAttr
   , emptyStream // tested
   , lensedStream // tested
-  , lensedAtom
+  , lensedAtom // partially tested
   , sortByProp
   }
 

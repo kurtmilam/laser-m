@@ -37,7 +37,7 @@ const saveRow = X.saveRowToApi( apiRow, item )
 
 // state functions
 const setRowPropToValueAttr = X.setToValueAttr( item )
-const getRowProp = X.select( item )
+const getRowProp = X.get( item )
 
 const validateAndSaveRow = () =>
   R.compose( saveRow

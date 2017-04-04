@@ -13,10 +13,8 @@ import * as X from '../../utils/xioup.main.utils'
 // import model
 import M from 'User/UserModel'
 
-const matchProp = prop => x =>
-  R.compose( R.equals( R.prop( prop, x ) ), R.prop( prop ) )
-const removeListRow = x =>
-  R.compose( M.updateRows( [] )( R.reject( matchProp( 'id' )( x ) ) ) )
+const removeListRow =
+  R.compose( M.overRows( [] ), R.reject,  R.eqProps )
 
 module.exports = vn =>
     <div class={ `${ M.entityName }-list-item` } key={ vn.id }>
@@ -26,10 +24,9 @@ module.exports = vn =>
       &nbsp;&nbsp;
       <a class="button" href={ X.editRowHref( M.entityName, vn ) } oncreate={ m.route.link }>Edit</a>
       &nbsp;&nbsp;
-      <button class="button" onclick={ _ => removeListRow( vn ) }>
+      <button class="button" onclick={ _ => removeListRow( 'id', vn ) }>
         Remove
       </button>
       &nbsp;&nbsp;
       <btn label="polythene works!" raised={ true }/>
     </div>
-

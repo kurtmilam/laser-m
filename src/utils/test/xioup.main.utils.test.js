@@ -52,7 +52,7 @@ describe( 'get()'
         , () => {
             const $ = flyd.stream( { a: { b: 2 } } )
             it( 'returns the value at $[ lens ]'
-              , () => wish( X.select( $ )( [ 'a', 'b' ] ) === 2 )
+              , () => wish( X.get( $ )( [ 'a', 'b' ] ) === 2 )
              )
             after( 'End $', () => $.end() )
           }

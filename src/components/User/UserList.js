@@ -15,19 +15,17 @@ import M from 'User/UserModel'
 import UserListRow from 'User/UserListItem'
 
 const sortByOptic = [ 'sort', 'by' ]
-// the returned function expects a string, not an optic
-const sortBy = X.set( M.rowsUi$ )( sortByOptic )
+const setSortBy = X.set( M.rowsUi$ )( sortByOptic )
+// const getSortBy = _ => X.get( M.rowsUi$ )( sortByOptic )
 
 const refreshTable =
   R.compose( M.loadTable, X.emptyStream )
 
-const createRowNodes =
-  R.compose( X.map( UserListRow ), X.sortByProp( M.selectRowsUi( sortByOptic ) ) )
-  // R.compose( X.map( UserListRow ), R.compose( R.sort, R.ascend, R.prop )( M.selectRowsUi( sortByOptic ) ) )
+// don't make this point-free without testing, first
+const drawRowNodes = rows =>
+  R.compose( X.map( UserListRow ), X.sortByProp( X.get( M.rowsUi$ )( sortByOptic ) ) )( rows )
 
-// const createRowNodes = R.transduce( createRowNodesTransducer, X.appendTo, [] )
-
-// TODO: Apply transformations to state (rather than only in the view)?
+// TODO: Apply transformations to state (rather than only in the view)? Probably not
 module.exports =
   { oninit: _ => M.loadTable( M.rows$() )
   // , onremove: M.rows$.end()
@@ -46,15 +44,15 @@ module.exports =
           </label>
         </div>
         <div class={ `${ M.entityName }-list-header` }>
-          <button class="button" onclick={ _ => sortBy( 'id' ) }>
+          <button class="button" onclick={ _ => setSortBy( [ 'data', 'id' ] ) }>
             Order By Id
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ _ => sortBy( 'firstName' ) }>
+          <button class="button" onclick={ _ => setSortBy( [ 'data', 'lastName' ] ) }>
             Order By Last Name
           </button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ _ => sortBy( 'lastName' ) }>
+          <button class="button" onclick={ _ => setSortBy( [ 'data', 'firstName' ] ) }>
             Order By First Name
           </button>
           &nbsp;&nbsp;
@@ -62,6 +60,6 @@ module.exports =
             Refresh
           </button>
         </div>
-        { createRowNodes( M.rows$() ) }
+        { drawRowNodes( M.rows$() ) }
       </div>
   }

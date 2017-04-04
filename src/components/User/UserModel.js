@@ -28,7 +28,7 @@ const initTable =
   , computed: {}
   , rows: []
   , type: containerType
-  , ui: { filter: { by: '' }, sort: { by: 'id' } }
+  , ui: { filter: { by: '' }, sort: { by: [ 'id' ] } }
   }
 
 const table$ = state( [ entityName ], initTable )
@@ -36,16 +36,19 @@ const table$ = state( [ entityName ], initTable )
 // The following also works:
 // const table$ = flyd.stream( initTable )
 
-const rows$  = X.lensedAtom( [ 'rows' ], table$, [] )
+const rows$   = X.lensedAtom( [ 'rows' ], table$, [] )
 const rowsUi$ = X.lensedAtom( [ 'ui' ], table$, {} )
 
 // table state queries
-const selectRows = X.select( rows$ )
-const updateRows = X.update( rows$ )
+const getRows     = X.get( rows$ )
+const overRows    = X.over( rows$ )
+const setRows     = X.set( rows$ )
+const updateRows  = X.update( rows$ )
 
 const setTableUiPropToValueAttr = X.setToValueAttr( rowsUi$ )
-const selectRowsUi = X.select( rowsUi$ )
-const updateRowsUi = X.update( rowsUi$ )
+const setRowsUi     = X.set( rowsUi$ )
+const getRowsUi     = X.get( rowsUi$ )
+const updateRowsUi  = X.update( rowsUi$ )
 
 const dataOptic = [ 'data' ]
 const dataPropOptic = X.appendTo( dataOptic )
@@ -67,13 +70,11 @@ const loadTableFromApi =
 const loadTable =
   R.when( R.equals( [] )
         , loadTableFromApi
-       )
+        )
 
-// const selectRowById = X.loadRowFromApi( apiRowUrl, item )
-const selectRowById = id =>
+// const getRowById = X.loadRowFromApi( apiRowUrl, item )
+const getRowById = id =>
   X.lensedAtom( L.compose( L.find( R.whereEq( { id } ) ) ), rows$ )
-
-  // L.find( x => x.data.id === id )
 
 const saveRow = X.saveRowToApi( apiRowUrl )
 
@@ -90,12 +91,15 @@ module.exports =
   , rows$
   , rowsUi$
   , loadTable
-  , selectRows
+  , getRows
+  , overRows
+  , setRows
   , updateRows
   , updateRowsUi
-  , selectRowById
+  , getRowById
   , setTableUiPropToValueAttr
-  , selectRowsUi
+  , setRowsUi
+  , getRowsUi
   , validateAndSaveRow
   , firstAndLastName
   , listRowLabel
