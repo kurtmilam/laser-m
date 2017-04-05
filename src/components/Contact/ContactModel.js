@@ -1,7 +1,7 @@
 /**
  * Created by Kurt on 2017-03-09.
  */
-// src/components/Contact/ContactModel.js
+// src/components/User/UserModel.js
 
 // import libraries
 import m from '../../utils/m-mock'
@@ -16,49 +16,70 @@ import state from 'App/AppModel'
 const entityName = 'contacts'
 
 // helpers
-const apiTable = `${ X.apiUrlRoot }/${ entityName }`
-const apiRow = `${ apiTable }/:id`
+const apiTableUrl = `${ X.apiUrlRoot }/${ entityName }`
+const apiRowUrl = `${ apiTableUrl }/:id`
 
 // state setup
-const itemModelRootOptic = R.append( 'models', [ entityName ] )
-const item = state( R.append( 'current', itemModelRootOptic ), {} )
-const rows$ = state( R.append( 'list', itemModelRootOptic ), [] )
+// Todo: think about how to differentiate children of different types
+// probably add it to the container
+const containerType = 'table'
+const initTable =
+  { id: containerType + ':' + entityName
+  , computed: {}
+  , rows: []
+  , type: containerType
+  , ui: { filter: { by: '' }, sort: { by: [ 'id' ] } }
+  }
 
-const itemUIRootOptic = R.append( 'ui', [ entityName ] )
-const itemUi = state( R.append( 'current', itemUIRootOptic ), {} )
-const rowsUi$ = state( R.append( 'list', itemUIRootOptic ), {} )
+const table$ = state( [ entityName ], initTable )
 
-// api methods
-const loadTable = X.loadTableFromApi( apiTable, rows$ )
+// The following also works:
+// const table$ = flyd.stream( initTable )
 
-const loadRow = X.loadRowFromApi( apiRow, item )
+const rows_A_   = X.lensedAtom( [ 'rows' ], table$, [] )
+const rowsUI_A_ = X.lensedAtom( [ 'ui' ], table$, {} )
 
-const saveRow = X.saveRowToApi( apiRow, item )
-
-// state functions
-const setRowPropToValueAttr = X.setToValueAttr( item )
-const getRowProp = X.get( item )
-
-const validateAndSaveRow = () =>
-  R.compose( saveRow
-           , R.tap( item )
-           , L.modify( 'firstName', R.trim )
-           , L.modify( 'lastName', R.trim )
-          )( item() )
+const dataO = [ 'data' ]
+const dataPropO = X.appendTo( dataO )
 
 //computed properties
-const firstAndLastName = model => `${ L.get( 'firstName', model ) } ${ L.get( 'lastName', model ) }`
-const listRowLabel = firstAndLastName
+const listRowLabel = model =>
+  L.get( dataPropO( 'id' ), model )
+  + '. '
+  + L.get( dataPropO( 'firstName' ), model )
+  + ' '
+  + L.get( dataPropO( 'lastName' ), model )
+
+// api methods
+// TODO: Try to merge the following two functions into one
+const loadTableFromApi =
+  R.composeP( rows_A_
+            , R.map( R.tap( Object.freeze ) )
+            , X.loadTableFromApi( apiTableUrl )
+            )
+
+const loadTable = R.when( R.equals( [] ), loadTableFromApi )
+
+const getById = id =>
+  X.lensedAtom( L.find( R.whereEq( { id } ) ), rows_A_ )
+
+const saveRow = X.saveRowToApi( apiRowUrl )
+
+const validateAndSaveRow = row_A_ =>
+  R.compose( saveRow( row_A_ )
+           , R.tap( row_A_ )
+           , L.modify( [ 'firstName' ], R.trim )
+           , L.modify( [ 'lastName' ], R.trim )
+          )( row_A_() )
 
 module.exports =
   { entityName
-  , item
-  , rows$
+  , table$
+  , rows_A_
+  , rowsUI_A_
+  , loadTableFromApi
   , loadTable
-  , loadRow
-  , setRowPropToValueAttr
-  , getRowProp
+  , getById
   , validateAndSaveRow
-  , firstAndLastName
   , listRowLabel
   }

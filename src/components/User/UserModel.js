@@ -36,71 +36,53 @@ const table$ = state( [ entityName ], initTable )
 // The following also works:
 // const table$ = flyd.stream( initTable )
 
-const rows$   = X.lensedAtom( [ 'rows' ], table$, [] )
-const rowsUi$ = X.lensedAtom( [ 'ui' ], table$, {} )
+const rows_A_   = X.lensedAtom( [ 'rows' ], table$, [] )
+const rowsUI_A_ = X.lensedAtom( [ 'ui' ], table$, {} )
 
-// table state queries
-const getRows     = X.get( rows$ )
-const overRows    = X.over( rows$ )
-const setRows     = X.set( rows$ )
-const updateRows  = X.update( rows$ )
-
-const setTableUiPropToValueAttr = X.setToValueAttr( rowsUi$ )
-const setRowsUi     = X.set( rowsUi$ )
-const getRowsUi     = X.get( rowsUi$ )
-const updateRowsUi  = X.update( rowsUi$ )
-
-const dataOptic = [ 'data' ]
-const dataPropOptic = X.appendTo( dataOptic )
-//const getRowById =
+const dataO = [ 'data' ]
+const dataPropO = X.appendTo( dataO )
 
 //computed properties
-const firstAndLastName = model =>
-  `${ L.get( dataPropOptic( 'id' ), model ) }. ${ L.get( dataPropOptic( 'firstName' ), model ) } ${ L.get( dataPropOptic( 'lastName' ), model ) }`
-const listRowLabel = firstAndLastName
+const listRowLabel = record =>
+  L.get( dataPropO( 'id' ), record )
+  + '. '
+  + L.get( dataPropO( 'firstName' ), record )
+  + ' '
+  + L.get( dataPropO( 'lastName' ), record )
 
 // api methods
 // TODO: Try to merge the following two functions into one
 const loadTableFromApi =
-  R.composeP( rows$
+  R.composeP( rows_A_
             , R.map( R.tap( Object.freeze ) )
             , X.loadTableFromApi( apiTableUrl )
-           )
+            )
 
-const loadTable =
-  R.when( R.equals( [] )
-        , loadTableFromApi
-        )
+// reloads the table if called with []
+// useful for conditionally loading from the Api when the atom is empty
+const loadTable = R.when( R.equals( [] ), loadTableFromApi )
 
-// const getRowById = X.loadRowFromApi( apiRowUrl, item )
-const getRowById = id =>
-  X.lensedAtom( L.compose( L.find( R.whereEq( { id } ) ) ), rows$ )
+const getById = id =>
+  X.lensedAtom( L.find( R.whereEq( { id } ) ), rows_A_ )
 
 const saveRow = X.saveRowToApi( apiRowUrl )
 
-const validateAndSaveRow = item =>
-  R.compose( saveRow( item )
-           , R.tap( item )
-           , L.modify( [ 'firstName' ], R.trim )
-           , L.modify( [ 'lastName' ], R.trim )
-          )( item() )
+const validateAndSaveRow = row_A_ =>
+  R.compose( saveRow( row_A_ )
+           , L.get( dataO )
+           , R.tap( row_A_ )
+           , L.modify( [ 'data', 'firstName' ], R.trim )
+           , L.modify( [ 'data', 'lastName' ], R.trim )
+           )( row_A_() )
 
 module.exports =
   { entityName
   , table$
-  , rows$
-  , rowsUi$
+  , rows_A_
+  , rowsUI_A_
+  , loadTableFromApi
   , loadTable
-  , getRows
-  , overRows
-  , setRows
-  , updateRows
-  , updateRowsUi
-  , getRowById
-  , setTableUiPropToValueAttr
-  , setRowsUi
-  , getRowsUi
+  , getById
   , validateAndSaveRow
-  , firstAndLastName
   , listRowLabel
   }

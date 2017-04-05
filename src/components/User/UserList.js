@@ -14,52 +14,50 @@ import M from 'User/UserModel'
 
 import UserListRow from 'User/UserListItem'
 
-const sortByOptic = [ 'sort', 'by' ]
-const setSortBy = X.set( M.rowsUi$ )( sortByOptic )
-// const getSortBy = _ => X.get( M.rowsUi$ )( sortByOptic )
+const sortByO = [ 'sort', 'by' ]
+const setSortBy = X.set( M.rowsUI_A_ )( sortByO )
 
-const refreshTable =
-  R.compose( M.loadTable, X.emptyStream )
-
-// don't make this point-free without testing, first
+// don't make the following point-free without testing, first
 const drawRowNodes = rows =>
-  R.compose( X.map( UserListRow ), X.sortByProp( X.get( M.rowsUi$ )( sortByOptic ) ) )( rows )
+  R.compose( X.map( UserListRow )
+           , X.sortByProp( X.get( M.rowsUI_A_ )( sortByO ) )
+           )( rows )
 
 // TODO: Apply transformations to state (rather than only in the view)? Probably not
 module.exports =
-  { oninit: _ => M.loadTable( M.rows$() )
-  // , onremove: M.rows$.end()
+  { oninit: _ => M.loadTable( M.rows_A_() )
+  // , onremove: M.rows_A_.end()
   , view: vn =>
-      <div class={ `${ M.entityName }-list` }>
+      <div
+        class={ `${ M.entityName }-list` }>
         <btn label="polythene works!" raised={ true }/>
-        <div class={ `${ M.entityName }-list-header` }>
+        <div
+          class={ `${ M.entityName }-list-header` }>
           <label class="label">
             Filter
-            <input
-              class="input"
-              type="text"
-              placeholder="Type to Filter"
-              oninput={ M.setTableUiPropToValueAttr( [ 'filter', 'by' ] ) }
+            <input class="input" type="text" placeholder="Type to Filter"
+              oninput={ X.setToValueAttr( M.rowsUI_A_ )( [ 'filter', 'by' ] ) }
             />
           </label>
         </div>
-        <div class={ `${ M.entityName }-list-header` }>
-          <button class="button" onclick={ _ => setSortBy( [ 'data', 'id' ] ) }>
-            Order By Id
-          </button>
+        <div
+          class={ `${ M.entityName }-list-header` }>
+          <button class="button"
+            onclick={ _ => setSortBy( [ 'data', 'id' ] ) }
+          >Order By Id</button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ _ => setSortBy( [ 'data', 'lastName' ] ) }>
-            Order By Last Name
-          </button>
+          <button class="button"
+            onclick={ _ => setSortBy( [ 'data', 'lastName' ] ) }
+          >Order By Last Name</button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ _ => setSortBy( [ 'data', 'firstName' ] ) }>
-            Order By First Name
-          </button>
+          <button class="button"
+            onclick={ _ => setSortBy( [ 'data', 'firstName' ] ) }
+          >Order By First Name</button>
           &nbsp;&nbsp;
-          <button class="button" onclick={ _ => refreshTable( M.rows$ ) }>
-            Refresh
-          </button>
+          <button class="button"
+            onclick={ _ => M.loadTableFromApi() }
+          >Refresh</button>
         </div>
-        { drawRowNodes( M.rows$() ) }
+        { drawRowNodes( M.rows_A_() ) }
       </div>
   }

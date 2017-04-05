@@ -14,42 +14,43 @@ import flyd from 'flyd'
 const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
 
 // low level
+const compose = f => g => h => f( g( h ) )
 const log = R.tap( console.log )
-const logCall = R.tap( R.compose( log, R.call ) )
+const logCall = R.tap( compose( log, R.call ) )
 
 const list = R.unapply( R.identity )
 const map = L.modify( L.elems )
+const mapObj = L.modify( L.values )
 const K = a => _ => a
 
 const appendTo = R.flip( R.append )
 
-const isUndefined = R.compose( R.equals( 'Undefined' ), R.type )
+const isUndefined = compose( R.equals( 'Undefined' ) )( R.type )
 const isNotUndefined = R.complement( isUndefined )
-const isFunction = R.compose( R.equals( 'Function' ), R.type )
+const isFunction = compose( R.equals( 'Function' ) )( R.type )
 const isNotFunction = R.complement( isFunction )
 
 const joinOnSpace = R.join( ' ' )
 const joinOnDot = R.join( '.' )
 
 // anchor href functions
-const showRowHref = R.curry( ( a, b ) => `/${ R.toLower( a ) }/${ b.id }` )
-const editRowHref = R.curry( ( a, b ) => `/${ R.toLower( a ) }/${ b.id }/edit` )
+const showRowHref = a => b => `/${ R.toLower( a ) }/${ b.id }`
+const editRowHref = a => b => `/${ R.toLower( a ) }/${ b.id }/edit`
 
 // mithril component functions
 const m2 = R.curryN( 2, m )
 const m3 = R.curryN( 3, m )
 
-
-const sortByProp =
-  R.compose( R.sort, R.ascend, L.get )
+const srtAsc = compose( R.sort )( R.ascend )
+const sortByProp = compose( srtAsc )( L.get )
 
 // vnode functions
 const getAttrs = L.get( 'attrs' )
 
-// lensedStream operations
-const get = stream => optic => {
-  return L.get( optic, stream() )
-}
+// stateContainer operations
+const get = src$ => optic => L.get( optic, src$() )
+
+const view = optic => src$ => L.get( optic, src$() )
 
 // For instance:
 // const list = state(['models','users','list'], {})
@@ -57,99 +58,97 @@ const get = stream => optic => {
 // modifyList( R.map( R.over( R.lensProp( 'firstName' ), R.toLower) ) )
 // modifyList( R.over( R.lensPath( [ 0, 'firstName' ] ), R.toUpper ) )
 
-// This should be faster than calling 'update' with a non-function value
-const over = stream => optic => fn =>
-  R.compose( R.tap( stream )
+const over = src$ => optic => fn =>
+  R.compose( R.tap( src$ )
            , Object.freeze
            , L.modify( optic, fn )
-          )( stream() )
+           )( src$() )
 
-// This should be faster than calling 'update' with a non-function value
-const set = stream => optic => value =>
-  R.compose( R.tap( stream )
+const set = src$ => optic => value =>
+  R.compose( R.tap( src$ )
            , Object.freeze
-           , L.modify( optic, K( value ) )
-          )( stream() )
+           , L.set( optic, value )
+           )( src$() )
+
+const setNew = optic => value => src$ =>
+  R.compose( R.tap( src$ )
+           , Object.freeze
+           , L.set( optic, value )
+           , R.call
+           )
 
 // convenience function that can be called with a function or value
-const update = stream => optic => value =>
+const update = src$ => optic => value =>
   isFunction( value )
-  ? over( stream )( optic )( value )
-  : set( stream )( optic )( value )
+    ? over( src$ )( optic )( value )
+    : set( src$ )( optic )( value )
 
-const emptyStream = stream =>
-  over( stream )( [] )( R.empty )
+const emptyStream = src$ => optic =>
+  over( src$ )( optic )( R.empty )
 
-// make lensedStream
-function lensedStream( stream ) {
+// make stateContainer
+function stateContainer( src$ ) {
   return function ( optic, init ) {
-    const streamsOptic = R.compose( R.pair( 'streams' ), joinOnDot )
-    const getSliceStream =
-      R.compose( get( stream ), streamsOptic )
-    const isSliceStream =
-      R.compose( flyd.isStream, getSliceStream )
+    const streamsO = compose( R.pair( 'streams' ) )( joinOnDot )
+    const getLensed$ = compose( view )( streamsO )( optic )
+    const isLensed$ = compose( flyd.isStream )( getLensed$ )
 
-    const dataOptic = R.prepend( 'data')
+    const dataO = R.prepend( 'data' )
     const setData =
-      R.compose( set( stream ), dataOptic )
-    const makeUpdaterStream =
+      compose( set( src$ ) )( dataO )
+      // setNew( dataO( optic ) )( init )
+    const makeUpdater$ =
       R.tap( flyd.on( R.when( isNotUndefined
                             , setData( optic )
-                           )
-                   )
-          )
+                            )
+                    )
+           )
 
-    const registerSliceStream =
-      R.compose( set( stream ), streamsOptic )
+    const registerLensed$ =
+      compose( set( src$ ) )( streamsO )
 
-    const addToMainStream =
-      R.compose( R.tap( registerSliceStream( optic ) )
+    const addToMain$ =
+      R.compose( R.tap( registerLensed$( optic ) )
                , flyd.stream
-               , R.tap( R.compose( setData( optic ) ) )
-              )
+               , R.tap( setData( optic ) )
+               )
 
-    const makeSliceStream =
-      R.compose( makeUpdaterStream
-               , addToMainStream
-              )
+    const makeLensed$ =
+      compose( makeUpdater$ )( addToMain$ )
 
-    const sliceStream
-      = isSliceStream( optic )
-        ? getSliceStream( optic )
-        : makeSliceStream( init )
+    const lensed$ =
+            isLensed$( src$ )
+              ? getLensed$( src$ )
+              : makeLensed$( init )
 
-    return sliceStream
-
+    return lensed$
   }
 }
 
-const lensedAtom = function ( optic, stream, init ) {
-  if ( typeof get( stream )( optic ) === 'undefined' )
-    set( stream )( optic )( init )
+const lensedAtom = function ( optic, src$, init ) {
+  const atom = _ => view( optic )( src$ )
+  if ( typeof atom() === 'undefined' )
+    set( src$ )( optic )( init )
     return value =>
              isUndefined( value )
-             ? get( stream )( optic )
-             : Object.freeze( L.get( optic, set( stream )( optic )( value ) ) )
-             // return L.get( optic, set( stream )( optic )( value ) )
+             ? atom()
+             : Object.freeze( L.get( optic, set( src$ )( optic )( value ) ) )
+             // return L.get( optic, set( src$ )( optic )( value ) )
 }
 // not sure why the following aren't working (for instance, in UserEdit)
 // const _lensedAtom = R.curry( _lensedAtom )
-// const _lensedAtom = optic => stream => init => _lensedAtom( optic, stream, init )
+// const _lensedAtom = optic => src$ => init => _lensedAtom( optic, src$, init )
 
 // node functions
-const _getEventAttr =
-  R.curry( ( attrName, e ) =>
-             attrName in e.currentTarget
-               ? e.currentTarget[ attrName ]
-               : e.currentTarget.getAttribute( attrName )
-        )
+const _getEventAttr = attrName => e =>
+  attrName in e.currentTarget
+    ? e.currentTarget[ attrName ]
+    : e.currentTarget.getAttribute( attrName )
 
-const setToAttr =
-  R.curry( ( attrName, stream, optic ) =>
-             R.compose( set( stream )( optic )
-                      , _getEventAttr( attrName )
-                     )
-        )
+const setToAttr = attrName => src$ => optic =>
+  R.compose( set( src$ )( optic )
+           , _getEventAttr( attrName )
+           )
 
 const setToValueAttr = setToAttr( 'value' )
 
@@ -165,49 +164,43 @@ const modelContainerSpec =
 const modelContainer = R.compose( Object.freeze, R.applySpec( modelContainerSpec ) )
 
 // TODO: Make it possible to send in a preprocessor / reducer (for instance, for sorting)
-const loadTableFromApi =
-  //R.curry( ( apiUrl, stream, reducer ) => () =>
-  apiUrl => _ =>
-    m.request( { method: "GET"
-               , url: apiUrl
-               , withCredentials: true
-               }
-            )
-    // .then( R.compose( stream, reducer, L.get( 'data' ) ) )
-    .then( R.compose( Object.freeze, map( modelContainer ), L.get( 'data' ) ) )
-    // .then( R.compose( sortByProp( 'firstName' ), L.get( 'data' ) ) )
+const loadTableFromApi = apiUrl => _ =>
+  m.request( { method: "GET"
+             , url: apiUrl
+             , withCredentials: true
+             }
+          )
+  .then( R.compose( Object.freeze, map( modelContainer ), L.get( [ 'data' ] ) ) )
 
 
 // TODO: Make it possible to send in a preprocessor / reducer (for instance, for normalization)
-const loadRowFromApi =
-  R.curry( ( apiUrl, stream ) => id =>
-             m.request( { method: "GET"
-                        , url: apiUrl
-                        , data: { id }
-                        , withCredentials: true
-                        }
-                     )
-             .then( R.compose( stream, modelContainer ) )
-        )
+const loadRowFromApi = apiUrl => src$ => id =>
+  m.request( { method: "GET"
+             , url: apiUrl
+             , data: { id }
+             , withCredentials: true
+             }
+           )
+  .then( R.compose( src$, modelContainer ) )
 
 // TODO: Make it possible to send in a preprocessor / reducer (for instance, for validation)
-const saveRowToApi =
-  R.curry( ( apiUrl, stream ) => data =>
-             m.request( { method: "PUT"
-                         , url: apiUrl
-                         , data: data
-                         , withCredentials: true
-                         }
-                     )
-             .then( stream )
-        )
+const saveRowToApi = apiUrl => src$ => data =>
+  m.request( { method: "PUT"
+             , url: apiUrl
+             , data: data
+             , withCredentials: true
+             }
+           )
+  .then( set( src$, [ 'data' ] ) )
 
 const X =
   { apiUrlRoot
+  , compose
   , log
   , logCall
   , list
   , map
+  , mapObj
   , K
   , appendTo
   , isUndefined
@@ -225,13 +218,14 @@ const X =
   , saveRowToApi
   , getAttrs
   , get // tested
+  , view
   , over // tested
   , set // tested
   , update // tested
   , setToAttr
   , setToValueAttr
   , emptyStream // tested
-  , lensedStream // tested
+  , stateContainer // tested
   , lensedAtom // partially tested
   , sortByProp
   }

@@ -31,18 +31,18 @@ describe( 'editRowHref()'
           }
        )
 
-// lensedStream Operations
+// stateContainer Operations
 describe( 'emptyStream()'
         , () => {
             const $ = flyd.stream( { a: 1 } )
             it( 'empties objects'
-              , () => wish( equals( X.emptyStream( $ ), {} ) )
+              , () => wish( equals( X.emptyStream( $ )( [] ), {} ) )
              )
             it( 'empties arrays'
-              , () => wish( equals( X.emptyStream( $( [ 1, 2 ] ) ), [] ) )
+              , () => wish( equals( X.emptyStream( $( [ 1, 2 ] ) )( [] ) ) )
              )
             it( 'empties strings'
-              , () => wish( equals( X.emptyStream( $( 'string' ) ), '' ) )
+              , () => wish( equals( X.emptyStream( $( 'string' ) )( [] ), '' ) )
              )
             after( 'End $', () => $.end() )
           }
@@ -96,8 +96,8 @@ describe( 'update()'
           }
        )
 
-// lensedStream
-describe( 'lensedStream()'
+// stateContainer
+describe( 'stateContainer()'
         , () => {
             const o1 = {}
             const o2 = { test: 'firstValue' }
@@ -107,11 +107,11 @@ describe( 'lensedStream()'
             const init = { streams: {}, meta: {}, data: {} }
             const state = flyd.stream( init )
             const state1 = flyd.stream( init )
-            const lensedStream = X.lensedStream( state )
-            const stateSlice = lensedStream( p2, o1 )
-            const stateSlice1 = lensedStream( p2, o1 )
-            it( 'lensedStream() returns a function (fn)'
-              , () => wish( X.isFunction( lensedStream ) )
+            const stateContainer = X.stateContainer( state )
+            const stateSlice = stateContainer( p2, o1 )
+            const stateSlice1 = stateContainer( p2, o1 )
+            it( 'stateContainer() returns a function (fn)'
+              , () => wish( X.isFunction( stateContainer ) )
              )
             it( 'fn( path, initialValue ) returns a flyd.stream'
               , () => wish( flyd.isStream( stateSlice ) )
@@ -122,19 +122,19 @@ describe( 'lensedStream()'
             it( 'fn( path, initialValue ) results in state().data.path === state().streams[ path ]()'
               , () => wish( state().data.a.b === state().streams[ 'a.b' ]() )
              )
-            it( 'only one lensedStream is created for a given optic'
+            it( 'only one stateContainer is created for a given optic'
               , () => wish( stateSlice === stateSlice1 )
              )
-            it( 'updating a lensedStream returns a stream'
+            it( 'updating a stateContainer returns a stream'
               , () => wish( flyd.isStream( stateSlice( o2 ) ) )
              )
-            it( 'updating a lensedStream results in state().streams[ lsPath ]().path === state().data.path'
+            it( 'updating a stateContainer results in state().streams[ lsPath ]().path === state().data.path'
               , () => {
                   stateSlice( o2 )
                   wish( state().streams[ 'a.b' ]().test === state().data.a.b.test )
                 }
              )
-            it( 'updating a lensedStream results in lensedStream().path === state().data.path'
+            it( 'updating a stateContainer results in stateContainer().path === state().data.path'
               , () => {
                   stateSlice( o2 )
                   wish( stateSlice().test === state().data.a.b.test )
@@ -187,7 +187,7 @@ describe( 'lensedAtom()'
                   wish( state().atoms[ 'a.b' ]().test === state().data.a.b.test )
                 }
              )
-            it( 'updating a lensedStream results in fn().path === state().data.path'
+            it( 'updating a stateContainer results in fn().path === state().data.path'
               , () => {
                   stateSlice( o2 )
                   wish( stateSlice().test === state().data.a.b.test )

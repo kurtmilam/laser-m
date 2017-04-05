@@ -17,6 +17,6 @@ module.exports =
   { oninit: M.loadTable
   , view: vn =>
       <div class={ `${ M.table }-list` }>
-        { R.map( ContactListRow, M.rows$() ) }
+        { R.map( ContactListRow, M.rows_A_() ) }
       </div>
   }

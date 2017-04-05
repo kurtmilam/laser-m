@@ -15,7 +15,7 @@ const UserShow =
   // , onremove: M.item.end()
   , view: () =>
     <div>
-      { M.firstAndLastName( M.item() ) }
+      { M.listRowLabel( M.item() ) }
     </div>
   }
 

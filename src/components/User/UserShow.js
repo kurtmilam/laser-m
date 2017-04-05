@@ -5,17 +5,30 @@
 
 // import libraries
 import m from '../../utils/m-mock'
+import * as X from '../../utils/xioup.main.utils'
 
 // import model
 import M from 'User/UserModel'
-import * as X from '../../utils/xioup.main.utils'
 
 const UserShow =
-  { oninit: vn => M.loadRow( vn.attrs.id )
+  { oninit: vn =>
+    { // console.log( vn )
+      const id = Number( vn.attrs.id )
+      const atom = M.getById( id )
+      // console.log( atom() )
+      // typeof atom() === 'undefined' if no match is found
+      const data = X.lensedAtom( [ 'data' ], atom, {} )
+      // L.set(  )
+      vn.state = { id
+                 , atom
+                 , data
+                 }
+      // window.vnstate = vn.state
+    }
   // , onremove: M.item.end()
-  , view: () =>
+  , view: vn =>
     <div>
-      { M.firstAndLastName( M.item() ) }
+      { M.listRowLabel( vn.state.atom() ) }
     </div>
   }
 

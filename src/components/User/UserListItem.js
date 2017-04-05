@@ -14,19 +14,29 @@ import * as X from '../../utils/xioup.main.utils'
 import M from 'User/UserModel'
 
 const removeListRow =
-  R.compose( M.overRows( [] ), R.reject,  R.eqProps )
+  R.compose( X.over( M.rows_A_ )( [] ), R.reject,  R.eqProps )
 
 module.exports = vn =>
-    <div class={ `${ M.entityName }-list-item` } key={ vn.id }>
-      <span>{ M.firstAndLastName( vn ) }</span>
+    <div
+      class={ `${ M.entityName }-list-item` }
+      key={ vn.id }>
+      <span>
+        { M.listRowLabel( vn ) }
+      </span>
       &nbsp;&nbsp;
-      <a class="button" href={ X.showRowHref( M.entityName, vn ) } oncreate={ m.route.link }>View</a>
-      &nbsp;&nbsp;
-      <a class="button" href={ X.editRowHref( M.entityName, vn ) } oncreate={ m.route.link }>Edit</a>
-      &nbsp;&nbsp;
-      <button class="button" onclick={ _ => removeListRow( 'id', vn ) }>
-        Remove
-      </button>
-      &nbsp;&nbsp;
+      <a class="button"
+         href={ X.showRowHref( M.entityName )( vn ) }
+         oncreate={ m.route.link }
+      >View</a>
+      &nbsp;
+      <a class="button"
+         href={ X.editRowHref( M.entityName )( vn ) }
+         oncreate={ m.route.link }
+      >Edit</a>
+      &nbsp;
+      <button class="button"
+              onclick={ _ => removeListRow( 'id', vn ) }
+      >Remove</button>
+      &nbsp;
       <btn label="polythene works!" raised={ true }/>
     </div>
