@@ -16,12 +16,14 @@ const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
 // low level
 const compose = f => g => h => f( g( h ) )
 const log = R.tap( console.log )
-const logCall = R.tap( compose( log, R.call ) )
+const logCall = R.tap( compose( console.log )( R.call ) )
 
 const list = R.unapply( R.identity )
 const map = L.modify( L.elems )
 const mapObj = L.modify( L.values )
 const K = a => _ => a
+
+const freeze = Object.freeze
 
 const appendTo = R.flip( R.append )
 
@@ -38,106 +40,103 @@ const showRowHref = a => b => `/${ R.toLower( a ) }/${ b.id }`
 const editRowHref = a => b => `/${ R.toLower( a ) }/${ b.id }/edit`
 
 // mithril component functions
-const m2 = R.curryN( 2, m )
-const m3 = R.curryN( 3, m )
+const m2 = x => y => m( x, y )
+const m3 = x => y => z => m( x, y )
 
-const srtAsc = compose( R.sort )( R.ascend )
-const sortByProp = compose( srtAsc )( L.get )
+const sortAsc = compose( R.sort )( R.ascend )
+const sortByProp = compose( sortAsc )( L.get )
 
 // vnode functions
 const getAttrs = L.get( 'attrs' )
 
 // stateContainer operations
-const get = src$ => optic => L.get( optic, src$() )
-
-const view = optic => src$ => L.get( optic, src$() )
+const view = lens => $ => L.get( lens, $() )
+const viewOn = $ => lens => view( lens )( $ )
 
 // For instance:
 // const list = state(['models','users','list'], {})
-// const modifyList = X.update( list, [] )
-// modifyList( R.map( R.over( R.lensProp( 'firstName' ), R.toLower) ) )
-// modifyList( R.over( R.lensPath( [ 0, 'firstName' ] ), R.toUpper ) )
+// const modifyList = X.updateOn( list, [] )
+// modifyList( R.map( R.overOn( R.lensProp( 'firstName' ), R.toLower) ) )
+// modifyList( R.overOn( R.lensPath( [ 0, 'firstName' ] ), R.toUpper ) )
 
-const over = src$ => optic => fn =>
-  R.compose( R.tap( src$ )
-           , Object.freeze
-           , L.modify( optic, fn )
-           )( src$() )
+const over = lens => fn => $ =>
+  R.compose( R.tap( $ )
+           , freeze
+           , L.modify( lens, fn )
+           , R.call  
+           )( $ )
+const overOn = $ => lens => fn => over( lens )( fn )( $ )
 
-const set = src$ => optic => value =>
-  R.compose( R.tap( src$ )
-           , Object.freeze
-           , L.set( optic, value )
-           )( src$() )
-
-const setNew = optic => value => src$ =>
-  R.compose( R.tap( src$ )
-           , Object.freeze
-           , L.set( optic, value )
+const set = lens => value => $ =>
+  R.compose( R.tap( $ )
+           , freeze
+           , L.set( lens, value )
            , R.call
-           )
+           )( $ )
+const set$ = lens => value => $ =>
+  compose( $, set( lens )( value ) )( $ )
+const setOn = $ => lens => value => set( lens )( value )( $ )
 
 // convenience function that can be called with a function or value
-const update = src$ => optic => value =>
+const update = lens => value =>
   isFunction( value )
-    ? over( src$ )( optic )( value )
-    : set( src$ )( optic )( value )
+    ? over( lens )( value )
+    : set( lens )( value )
+const updateOn = $ => lens => value => update( lens )( value )( $ )
 
-const emptyStream = src$ => optic =>
-  over( src$ )( optic )( R.empty )
+const emptyStream = lens => over( lens )( R.empty )
 
 // make stateContainer
-function stateContainer( src$ ) {
-  return function ( optic, init ) {
-    const streamsO = compose( R.pair( 'streams' ) )( joinOnDot )
-    const getLensed$ = compose( view )( streamsO )( optic )
+function stateContainer( $ ) {
+  return function ( lens, init ) {
+    const streamsL = compose( R.pair( 'streams' ) )( joinOnDot )
+    const getLensed$ = compose( view )( streamsL )( lens )
     const isLensed$ = compose( flyd.isStream )( getLensed$ )
 
-    const dataO = R.prepend( 'data' )
+    const dataL = R.prepend( [ 'data' ] )
     const setData =
-      compose( set( src$ ) )( dataO )
-      // setNew( dataO( optic ) )( init )
+      compose( setOn( $ ) )( dataL )
+      // set( dataL( lens ) )( init )
     const makeUpdater$ =
       R.tap( flyd.on( R.when( isNotUndefined
-                            , setData( optic )
+                            , setData( lens )
                             )
                     )
            )
 
     const registerLensed$ =
-      compose( set( src$ ) )( streamsO )
+      compose( setOn( $ ) )( streamsL )
 
     const addToMain$ =
-      R.compose( R.tap( registerLensed$( optic ) )
+      R.compose( R.tap( registerLensed$( lens ) )
                , flyd.stream
-               , R.tap( setData( optic ) )
+               , R.tap( setData( lens ) )
                )
 
     const makeLensed$ =
       compose( makeUpdater$ )( addToMain$ )
 
     const lensed$ =
-            isLensed$( src$ )
-              ? getLensed$( src$ )
+            isLensed$( $ )
+              ? getLensed$( $ )
               : makeLensed$( init )
 
     return lensed$
   }
 }
 
-const lensedAtom = function ( optic, src$, init ) {
-  const atom = _ => view( optic )( src$ )
+const lensedAtom = function ( lens, $, init ) {
+  const atom = _ => view( lens )( $ )
   if ( typeof atom() === 'undefined' )
-    set( src$ )( optic )( init )
+    set( lens )( init )( $ )
     return value =>
              isUndefined( value )
              ? atom()
-             : Object.freeze( L.get( optic, set( src$ )( optic )( value ) ) )
-             // return L.get( optic, set( src$ )( optic )( value ) )
+             : freeze( L.get( lens, set( lens )( value )( $ ) ) )
 }
 // not sure why the following aren't working (for instance, in UserEdit)
 // const _lensedAtom = R.curry( _lensedAtom )
-// const _lensedAtom = optic => src$ => init => _lensedAtom( optic, src$, init )
+// const _lensedAtom = lens => $ => init => _lensedAtom( lens, $, init )
 
 // node functions
 const _getEventAttr = attrName => e =>
@@ -145,23 +144,26 @@ const _getEventAttr = attrName => e =>
     ? e.currentTarget[ attrName ]
     : e.currentTarget.getAttribute( attrName )
 
-const setToAttr = attrName => src$ => optic =>
-  R.compose( set( src$ )( optic )
+// setOn may be appropriate here because _getEventAttr is waiting for the event
+const setToAttr = attrName => lens => $ =>
+  R.compose( setOn( $ )( lens )
            , _getEventAttr( attrName )
            )
 
 const setToValueAttr = setToAttr( 'value' )
 
 // api model functions
-const modelContainerSpec =
+const dataContainerSpec =
   { id: L.get( 'id' )
   , children: []
   , computed: {}
-  , data: Object.freeze
+  , data: freeze
   , rowType: K( 'e.g. users, people' )
   , ui: {}
   }
-const modelContainer = R.compose( Object.freeze, R.applySpec( modelContainerSpec ) )
+const initDataContainer = compose( freeze )( R.applySpec )( dataContainerSpec )
+const putDataInContainer = compose( map( initDataContainer ) )( L.get( [ 'data' ] ) )
+const freezeDataContainer = compose( freeze )( putDataInContainer )
 
 // TODO: Make it possible to send in a preprocessor / reducer (for instance, for sorting)
 const loadTableFromApi = apiUrl => _ =>
@@ -170,28 +172,28 @@ const loadTableFromApi = apiUrl => _ =>
              , withCredentials: true
              }
           )
-  .then( R.compose( Object.freeze, map( modelContainer ), L.get( [ 'data' ] ) ) )
+  .then( freezeDataContainer )
 
 
 // TODO: Make it possible to send in a preprocessor / reducer (for instance, for normalization)
-const loadRowFromApi = apiUrl => src$ => id =>
+const loadRowFromApi = apiUrl => $ => id =>
   m.request( { method: "GET"
              , url: apiUrl
              , data: { id }
              , withCredentials: true
              }
            )
-  .then( R.compose( src$, modelContainer ) )
+  .then( compose( $, initDataContainer ) )
 
 // TODO: Make it possible to send in a preprocessor / reducer (for instance, for validation)
-const saveRowToApi = apiUrl => src$ => data =>
+const saveRowToApi = apiUrl => $ => data =>
   m.request( { method: "PUT"
              , url: apiUrl
              , data: data
              , withCredentials: true
              }
            )
-  .then( set( src$, [ 'data' ] ) )
+  .then( setOn( $ )( [ 'data' ] ) )
 
 const X =
   { apiUrlRoot
@@ -202,6 +204,7 @@ const X =
   , map
   , mapObj
   , K
+  , freeze
   , appendTo
   , isUndefined
   , isNotUndefined
@@ -217,11 +220,14 @@ const X =
   , loadRowFromApi
   , saveRowToApi
   , getAttrs
-  , get // tested
-  , view
+  , view // tested
+  , viewOn // tested
   , over // tested
+  , overOn // tested
   , set // tested
+  , setOn // tested
   , update // tested
+  , updateOn // tested
   , setToAttr
   , setToValueAttr
   , emptyStream // tested

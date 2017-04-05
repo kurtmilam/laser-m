@@ -13,10 +13,4 @@ import M from 'Contact/ContactModel'
 
 import ContactListRow from 'Contact/ContactListItem'
 
-module.exports =
-  { oninit: M.loadTable
-  , view: vn =>
-      <div class={ `${ M.table }-list` }>
-        { R.map( ContactListRow, M.rows_A_() ) }
-      </div>
-  }
+module.exports = {}

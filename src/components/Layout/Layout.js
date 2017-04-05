@@ -6,7 +6,7 @@
 import m from '../../utils/m-mock'
 import * as L from 'partial.lenses'
 
-const Layout =
+module.exports =
   { view: vn =>
     <layout class="layout">
       <nav class="menu">
@@ -15,9 +15,6 @@ const Layout =
         </a>
         <a href="/users" oncreate={ m.route.link }>
           Users
-        </a>
-        <a href="/contacts" oncreate={ m.route.link }>
-          Contacts
         </a>
       </nav>
       <section>
@@ -28,5 +25,3 @@ const Layout =
       </footer>
     </layout>
   }
-
-module.exports = Layout

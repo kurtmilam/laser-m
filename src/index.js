@@ -42,8 +42,5 @@ m.route( document.body
          , '/users': { render: composeAppLayoutComponent( UserList ) }
          , '/users/:id': { render: composeAppLayoutComponent( UserShow ) }
          , '/users/:id/edit': { render: composeAppLayoutComponent( UserEdit ) }
-         , '/contacts': { render: composeAppLayoutComponent( ContactList ) }
-         , '/contacts/:id': { render: composeAppLayoutComponent( ContactShow ) }
-         , '/contacts/:id/edit': { render: composeAppLayoutComponent( ContactEdit ) }
          }
       )

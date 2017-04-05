@@ -36,23 +36,33 @@ describe( 'emptyStream()'
         , () => {
             const $ = flyd.stream( { a: 1 } )
             it( 'empties objects'
-              , () => wish( equals( X.emptyStream( $ )( [] ), {} ) )
+              , () => wish( equals( X.emptyStream( [] )( $ ), {} ) )
              )
             it( 'empties arrays'
-              , () => wish( equals( X.emptyStream( $( [ 1, 2 ] ) )( [] ) ) )
+              , () => wish( equals( X.emptyStream( [] )( $( [ 1, 2 ] ) ) ) )
              )
             it( 'empties strings'
-              , () => wish( equals( X.emptyStream( $( 'string' ) )( [] ), '' ) )
+              , () => wish( equals( X.emptyStream( [] )( $( 'string' ) ), '' ) )
              )
             after( 'End $', () => $.end() )
           }
        )
 
-describe( 'get()'
+describe( 'view()'
         , () => {
             const $ = flyd.stream( { a: { b: 2 } } )
             it( 'returns the value at $[ lens ]'
-              , () => wish( X.get( $ )( [ 'a', 'b' ] ) === 2 )
+              , () => wish( X.view( [ 'a', 'b' ] )( $ ) === 2 )
+             )
+            after( 'End $', () => $.end() )
+          }
+       )
+
+describe( 'viewOn()'
+        , () => {
+            const $ = flyd.stream( { a: { b: 2 } } )
+            it( 'returns the value at $[ lens ]'
+              , () => wish( X.viewOn( $ )( [ 'a', 'b' ] ) === 2 )
              )
             after( 'End $', () => $.end() )
           }
@@ -64,8 +74,20 @@ describe( 'over()'
             const o2 = { a: { b: 3 } }
             const $ = flyd.stream( o1 )
             it( 'sets $[ lens ] to fn( $[ lens ] )'
-              , () => wish( equals( X.set( $ )( [ 'a', 'b' ] )( 3 ), o2 ) )
-             )
+              , () => wish( equals( X.over( [ 'a', 'b' ] )( inc )( $ ), o2 ) )
+              )
+            after( 'End $', () => $.end() )
+          }
+       )
+
+describe( 'overOn()'
+        , () => {
+            const o1 = { a: { b: 2 } }
+            const o2 = { a: { b: 3 } }
+            const $ = flyd.stream( o1 )
+            it( 'sets $[ lens ] to fn( $[ lens ] )'
+              , () => wish( equals( X.overOn( $ )( [ 'a', 'b' ] )( inc ), o2 ) )
+              )
             after( 'End $', () => $.end() )
           }
        )
@@ -76,7 +98,19 @@ describe( 'set()'
             const o2 = { a: { b: 3 } }
             const $ = flyd.stream( o1 )
             it( 'sets $[ lens ] to value'
-              , () => wish( equals( X.set( $ )( [ 'a', 'b' ] )( 3 ), o2 ) )
+              , () => wish( equals( X.set( [ 'a', 'b' ] )( 3 )( $ ), o2 ) )
+              )
+            after( 'End $', () => $.end() )
+          }
+       )
+
+describe( 'setOn()'
+        , () => {
+            const o1 = { a: { b: 2 } }
+            const o2 = { a: { b: 3 } }
+            const $ = flyd.stream( o1 )
+            it( 'sets $[ lens ] to value'
+              , () => wish( equals( X.setOn( $ )( [ 'a', 'b' ] )( 3 ), o2 ) )
              )
             after( 'End $', () => $.end() )
           }
@@ -87,10 +121,24 @@ describe( 'update()'
             const o1 = { a: { b: 2 } }
             const $ = flyd.stream( o1 )
             it( 'dispatches to "over" when value is a function'
-              , () => wish( X.update( $ )( [ 'a', 'b' ] )( inc ).a.b === 3 )
+              , () => wish( X.update( [ 'a', 'b' ] )( inc )( $ ).a.b === 3 )
              )
             it( 'dispatches to "set" when value is not a function'
-              , () => wish( X.update( $ )( [ 'a', 'b' ] )( 0 ).a.b === 0 )
+              , () => wish( X.update( [ 'a', 'b' ] )( 0 )( $ ).a.b === 0 )
+             )
+            after( 'End $', () => $.end() )
+          }
+       )
+
+describe( 'updateOn()'
+        , () => {
+            const o1 = { a: { b: 2 } }
+            const $ = flyd.stream( o1 )
+            it( 'dispatches to "over" when value is a function'
+              , () => wish( X.updateOn( $ )( [ 'a', 'b' ] )( inc ).a.b === 3 )
+             )
+            it( 'dispatches to "set" when value is not a function'
+              , () => wish( X.updateOn( $ )( [ 'a', 'b' ] )( 0 ).a.b === 0 )
              )
             after( 'End $', () => $.end() )
           }
@@ -122,7 +170,7 @@ describe( 'stateContainer()'
             it( 'fn( path, initialValue ) results in state().data.path === state().streams[ path ]()'
               , () => wish( state().data.a.b === state().streams[ 'a.b' ]() )
              )
-            it( 'only one stateContainer is created for a given optic'
+            it( 'only one stateContainer is created for a given lens'
               , () => wish( stateSlice === stateSlice1 )
              )
             it( 'updating a stateContainer returns a stream'
@@ -175,7 +223,7 @@ describe( 'lensedAtom()'
             it( 'fn( path, streamOrAtom, initialValue ) results in state().data.path === state().atoms[ path ]()'
               , () => wish( state().data.a.b === state().atoms[ 'a.b' ]() )
              )
-            it( 'only one lensedAtom is created for a given optic'
+            it( 'only one lensedAtom is created for a given lens'
               , () => wish( stateSlice === stateSlice1 )
              )
             it( 'updating a lensedAtom returns a function'

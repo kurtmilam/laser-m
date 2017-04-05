@@ -14,7 +14,7 @@ import * as X from '../../utils/xioup.main.utils'
 import M from 'User/UserModel'
 
 const removeListRow =
-  R.compose( X.over( M.rows_A_ )( [] ), R.reject,  R.eqProps )
+  R.compose( X.overOn( M.rows_A_ )( [] ), R.reject, R.eqProps )
 
 module.exports = vn =>
     <div

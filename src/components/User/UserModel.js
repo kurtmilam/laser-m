@@ -39,22 +39,22 @@ const table$ = state( [ entityName ], initTable )
 const rows_A_   = X.lensedAtom( [ 'rows' ], table$, [] )
 const rowsUI_A_ = X.lensedAtom( [ 'ui' ], table$, {} )
 
-const dataO = [ 'data' ]
-const dataPropO = X.appendTo( dataO )
+const dataL = [ 'data' ]
+const dataPropL = X.appendTo( dataL )
 
 //computed properties
 const listRowLabel = record =>
-  L.get( dataPropO( 'id' ), record )
+  L.get( dataPropL( 'id' ), record )
   + '. '
-  + L.get( dataPropO( 'firstName' ), record )
+  + L.get( dataPropL( 'firstName' ), record )
   + ' '
-  + L.get( dataPropO( 'lastName' ), record )
+  + L.get( dataPropL( 'lastName' ), record )
 
 // api methods
 // TODO: Try to merge the following two functions into one
 const loadTableFromApi =
   R.composeP( rows_A_
-            , R.map( R.tap( Object.freeze ) )
+            , R.map( R.tap( X.freeze ) )
             , X.loadTableFromApi( apiTableUrl )
             )
 
@@ -69,7 +69,7 @@ const saveRow = X.saveRowToApi( apiRowUrl )
 
 const validateAndSaveRow = row_A_ =>
   R.compose( saveRow( row_A_ )
-           , L.get( dataO )
+           , L.get( dataL )
            , R.tap( row_A_ )
            , L.modify( [ 'data', 'firstName' ], R.trim )
            , L.modify( [ 'data', 'lastName' ], R.trim )

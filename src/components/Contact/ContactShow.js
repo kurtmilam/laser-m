@@ -10,13 +10,6 @@ import m from '../../utils/m-mock'
 import M from 'Contact/ContactModel'
 import * as X from '../../utils/xioup.main.utils'
 
-const UserShow =
-  { oninit: vn => M.loadRow( vn.attrs.id )
-  // , onremove: M.item.end()
-  , view: () =>
-    <div>
-      { M.listRowLabel( M.item() ) }
-    </div>
-  }
+const ContactShow = {}
 
-module.exports = UserShow
+module.exports = ContactShow

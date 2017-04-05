@@ -14,13 +14,13 @@ import M from 'User/UserModel'
 
 import UserListRow from 'User/UserListItem'
 
-const sortByO = [ 'sort', 'by' ]
-const setSortBy = X.set( M.rowsUI_A_ )( sortByO )
+const sortByL = [ 'sort', 'by' ]
+const setSortBy = X.setOn( M.rowsUI_A_ )( sortByL )
 
 // don't make the following point-free without testing, first
 const drawRowNodes = rows =>
   R.compose( X.map( UserListRow )
-           , X.sortByProp( X.get( M.rowsUI_A_ )( sortByO ) )
+           , X.sortByProp( X.viewOn( M.rowsUI_A_ )( sortByL ) )
            )( rows )
 
 // TODO: Apply transformations to state (rather than only in the view)? Probably not
@@ -35,8 +35,8 @@ module.exports =
           class={ `${ M.entityName }-list-header` }>
           <label class="label">
             Filter
-            <input class="input" type="text" placeholder="Type to Filter"
-              oninput={ X.setToValueAttr( M.rowsUI_A_ )( [ 'filter', 'by' ] ) }
+            <input class="input" type="text" placeholder="Not Working Yet"
+              oninput={ X.setToValueAttr( [ 'filter', 'by' ] )( M.rowsUI_A_ ) }
             />
           </label>
         </div>

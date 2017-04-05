@@ -34,13 +34,13 @@ module.exports =
       <label class="label">
         First Name
         <input class="input" placeholder="First Name" type="text"
-               onchange={ X.setToValueAttr( vn.state.atom )( firstNameL ) }
+               onchange={ X.setToValueAttr( firstNameL )( vn.state.atom ) }
                value={ X.view( firstNameL )( vn.state.atom ) }/>
       </label>
       <label class="label">
         Last Name
         <input class="input" type="text" placeholder="Last Name"
-               onchange={ X.setToValueAttr( vn.state.atom )( lastNameL ) }
+               onchange={ X.setToValueAttr( lastNameL )( vn.state.atom ) }
                value={ X.view( lastNameL )( vn.state.atom ) }/>
       </label>
       <button class="button"
