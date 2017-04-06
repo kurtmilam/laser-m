@@ -27,9 +27,14 @@ const freeze = Object.freeze
 
 const appendTo = R.flip( R.append )
 
+// is is copied from https://github.com/ramda/ramda/blob/v0.23.0/src/is.js
+const is = Ctor => a =>
+  a != null && a.constructor === Ctor || a instanceof Ctor
+const not = a => !a
+const complement = fn => !fn // no worky - have to lift it
 const isUndefined = compose( R.equals( 'Undefined' ) )( R.type )
 const isNotUndefined = R.complement( isUndefined )
-const isFunction = compose( R.equals( 'Function' ) )( R.type )
+const isFunction = is( Function )
 const isNotFunction = R.complement( isFunction )
 
 const joinOnSpace = R.join( ' ' )
@@ -90,49 +95,69 @@ const emptyStream = lens => over( lens )( R.empty )
 function stateContainer( $ ) {
   return function ( lens, init ) {
     const streamsL = compose( R.pair( 'streams' ) )( joinOnDot )
-    const getLensed$ = compose( view )( streamsL )( lens )
-    const isLensed$ = compose( flyd.isStream )( getLensed$ )
+    const getLensedStream$ = compose( view )( streamsL )( lens )
 
     const dataL = R.prepend( [ 'data' ] )
-    const setData =
-      compose( setOn( $ ) )( dataL )
-      // set( dataL( lens ) )( init )
-    const makeUpdater$ =
+    const setData = compose( setOn( $ ) )( dataL )
+    
+    const makeUpdaterStream =
       R.tap( flyd.on( R.when( isNotUndefined
                             , setData( lens )
                             )
                     )
            )
 
-    const registerLensed$ =
-      compose( setOn( $ ) )( streamsL )
+    const registerLensedStream = compose( setOn( $ ) )( streamsL )
 
     const addToMain$ =
-      R.compose( R.tap( registerLensed$( lens ) )
+      R.compose( R.tap( registerLensedStream( lens ) )
                , flyd.stream
                , R.tap( setData( lens ) )
                )
 
-    const makeLensed$ =
-      compose( makeUpdater$ )( addToMain$ )
+    const makeLensed$ = compose( makeUpdaterStream )( addToMain$ )
 
-    const lensed$ =
-            isLensed$( $ )
-              ? getLensed$( $ )
-              : makeLensed$( init )
+    const lensedStream$ =
+      compose( flyd.isStream )( getLensedStream$ )( $ )
+        ? getLensedStream$( $ )
+        : makeLensed$( init )
 
-    return lensed$
+    return lensedStream$
   }
 }
 
+/*
+Another option:
+const uncurry2 = uncurryN( 2 )
+const applyViewOn = uncurry2( viewOn )
+applyViewOn( ...[ $, lens ] )
+*/
+
+const applyUnary =
+  R.reduce( R.ifElse( isFunction
+                    , R.call
+                    , R.reduced
+                    )
+          )
+const applyUnaryTo = xs => fn => applyUnary( fn, xs )
+
 const lensedAtom = function ( lens, $, init ) {
-  const atom = _ => view( lens )( $ )
-  if ( typeof atom() === 'undefined' )
-    set( lens )( init )( $ )
-    return value =>
-             isUndefined( value )
-             ? atom()
-             : freeze( L.get( lens, set( lens )( value )( $ ) ) )
+  const withAtom = applyUnaryTo( [ $, lens ] )
+  // const stream$ = flyd.stream( init )
+  if ( typeof withAtom( viewOn ) === 'undefined' )
+    withAtom( setOn )( init )
+  return value =>
+           isUndefined( value )
+           ? withAtom( viewOn )
+           : freeze( L.get( lens, withAtom( setOn )( value ) ) )
+  /*
+  return value => R.ifElse( isUndefined
+                          , _ => withAtom( viewOn )
+                          , compose( L.get( lens ), withAtom( setOn ) )
+                          // freeze( L.get( lens, withAtom( setOn )( value ) ) )
+                          )( value )
+  */
+
 }
 // not sure why the following aren't working (for instance, in UserEdit)
 // const _lensedAtom = R.curry( _lensedAtom )
@@ -151,6 +176,15 @@ const setToAttr = attrName => lens => $ =>
            )
 
 const setToValueAttr = setToAttr( 'value' )
+
+const bindS = attrName => evtName => lens => atom => (
+  { [ evtName ]: setToAttr( attrName )( lens )( atom )
+  , [ attrName ]: X.view( lens )( atom )
+  }
+)
+
+const bindSOn = attrName => evtName => atom => lens =>
+  bindS( attrName )( evtName )( lens )( atom )
 
 // api model functions
 const dataContainerSpec =
@@ -230,6 +264,8 @@ const X =
   , updateOn // tested
   , setToAttr
   , setToValueAttr
+  , bindS
+  , bindSOn
   , emptyStream // tested
   , stateContainer // tested
   , lensedAtom // partially tested

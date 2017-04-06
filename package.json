@@ -4,10 +4,10 @@
   "description": "xioup DrawTool on top of mithril.",
   "main": "index.html",
   "scripts": {
-    "webpack": "webpack -d --watch",
+    "webpack:dev": "webpack -d --watch",
     "start": "budo --live --open bin/app.js",
-    "start:old": "webpack src/index.js bin/app.js --watch",
-    "test": "mocha --compilers js:babel-core/register --require babel-polyfill --recursive ./src"
+    "test": "mocha --compilers js:babel-core/register --recursive src/**/test/**.test.js",
+    "test:old": "mocha --compilers js:babel-core/register --require babel-polyfill --recursive ./src"
   },
   "author": "Kurt Milam @ xioup",
   "license": "ISC",

@@ -8,6 +8,7 @@ import m from '../../utils/m-mock'
 import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
+import flyd from 'flyd'
 
 // import state
 import state from 'App/AppModel'
@@ -38,6 +39,8 @@ const table$ = state( [ entityName ], initTable )
 
 const rows_A_   = X.lensedAtom( [ 'rows' ], table$, [] )
 const rowsUI_A_ = X.lensedAtom( [ 'ui' ], table$, {} )
+// const testStream$ = flyd.map( rowsUI_A_ )
+// window.testStream$ = testStream$
 
 const dataL = [ 'data' ]
 const dataPropL = X.appendTo( dataL )
