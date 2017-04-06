@@ -1,13 +1,13 @@
-# stream-state
+# laser - m
+
 Functional state-management experiment using lenses and streams (currently targeted to [mithril v1+](https://mithril.js.org/))
 
-This is currently a super alpha, very dirty work in progress.
-
 __Caveats__:
-1. In its current state, the project can only be run after preprocessing with webpack and babel.
-2. I'm new to webpack and babel, so the current bundle js file is a __HUGE 1.6 MB__ until I figure out how to make it smaller.
+1. This is currently a super alpha, very dirty work in progress.
+2. The project can only be run after preprocessing with webpack and babel.
+3. I'm new to webpack and babel, and the bundle js file is currently a __HUGE 1.6 MB__.
 
-Here's a [working version](http://xioupmedia.com/mithril-dev/index.html). Force reload if you want to check for updates - that server is actually configured like a CDN, so resources have long expiry times.
+Here's a [working version](http://xioupmedia.com/mithril-dev/index.html). Force reload if you want to check for updates - the server is configured like a CDN, so resources have long expiry times.
 
 # Streams, Lenses and State
 The basic idea here is to have a single, immutable container for state, using streams ([flyd](https://github.com/paldepind/flyd)), lenses ([partial.lenses](https://github.com/calmm-js/partial.lenses)) and stream-like things that I'm currently calling 'atoms'.
@@ -30,3 +30,14 @@ I haven't done much new client-side development in the past 5 or 6 years, so I'm
 You'll see a number of assignments to `window.varName` in the code - I don't use those in the application. They're purely there to make it easier to hack the various variables from my browser console during development.
 
 I'll try to improve the live hosting and file size ASAP.
+
+```
+l a s e r - m
+e t t v e . i
+n o r e a . t
+s m e n c . h
+e s a t t . r
+s . m s i . i
+. . s . v . l
+. . . . e . .
+```

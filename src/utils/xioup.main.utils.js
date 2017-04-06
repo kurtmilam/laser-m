@@ -15,8 +15,16 @@ const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
 
 // low level
 const compose = f => g => h => f( g( h ) )
-const log = R.tap( console.log )
-const logCall = R.tap( compose( console.log )( R.call ) )
+const tap = fn => a => {
+  fn( a )
+  return a
+}
+const log = tap( console.log )
+const logCompose = f => g => h =>
+  logWithMsg( 'f' )( f( logWithMsg( 'g' )( g( logWithMsg( 'h' )( h ) ) ) ) )
+const logWithMsg = msg =>
+  tap( compose( R.apply( console.log ) )( compose( R.prepend( msg ) )( list ) ) )
+const logCall = fn => a => tap( compose( console.log )( R.call( fn ) ) )( a )
 
 const list = R.unapply( R.identity )
 const map = L.modify( L.elems )
@@ -31,11 +39,19 @@ const appendTo = R.flip( R.append )
 const is = Ctor => a =>
   a != null && a.constructor === Ctor || a instanceof Ctor
 const not = a => !a
-const complement = fn => !fn // no worky - have to lift it
-const isUndefined = compose( R.equals( 'Undefined' ) )( R.type )
+const complement = compose( not ) // no worky - have to lift it
+const isUndefined = a => typeof a === 'undefined'
 const isNotUndefined = R.complement( isUndefined )
 const isFunction = is( Function )
 const isNotFunction = R.complement( isFunction )
+
+const applyUnary =
+  R.reduce( R.ifElse( isFunction
+                    , R.call
+                    , R.reduced
+                    )
+          )
+const applyUnaryTo = xs => fn => applyUnary( fn, xs )
 
 const joinOnSpace = R.join( ' ' )
 const joinOnDot = R.join( '.' )
@@ -126,37 +142,19 @@ function stateContainer( $ ) {
   }
 }
 
-/*
-Another option:
-const uncurry2 = uncurryN( 2 )
-const applyViewOn = uncurry2( viewOn )
-applyViewOn( ...[ $, lens ] )
-*/
-
-const applyUnary =
-  R.reduce( R.ifElse( isFunction
-                    , R.call
-                    , R.reduced
-                    )
-          )
-const applyUnaryTo = xs => fn => applyUnary( fn, xs )
-
 const lensedAtom = function ( lens, $, init ) {
   const withAtom = applyUnaryTo( [ $, lens ] )
   // const stream$ = flyd.stream( init )
   if ( typeof withAtom( viewOn ) === 'undefined' )
     withAtom( setOn )( init )
-  return value =>
-           isUndefined( value )
-           ? withAtom( viewOn )
-           : freeze( L.get( lens, withAtom( setOn )( value ) ) )
-  /*
-  return value => R.ifElse( isUndefined
-                          , _ => withAtom( viewOn )
-                          , compose( L.get( lens ), withAtom( setOn ) )
-                          // freeze( L.get( lens, withAtom( setOn )( value ) ) )
-                          )( value )
-  */
+
+  // I had a hard time trying to make the following point-free
+  return a =>
+    R.ifElse( isUndefined
+            , _ => withAtom( viewOn )
+            , compose( L.get( lens ) )( withAtom( setOn ) )
+            // , freeze( L.get( lens, withAtom( setOn )( a ) ) ) // ??
+            )( a )
 
 }
 // not sure why the following aren't working (for instance, in UserEdit)
@@ -232,7 +230,9 @@ const saveRowToApi = apiUrl => $ => data =>
 const X =
   { apiUrlRoot
   , compose
+  , tap
   , log
+  , logCompose
   , logCall
   , list
   , map
@@ -240,10 +240,14 @@ const X =
   , K
   , freeze
   , appendTo
+  , is
+  , not
   , isUndefined
   , isNotUndefined
   , isFunction
   , isNotFunction
+  , applyUnary
+  , applyUnaryTo
   , joinOnSpace
   , joinOnDot
   , showRowHref // tested
@@ -257,8 +261,10 @@ const X =
   , view // tested
   , viewOn // tested
   , over // tested
+  // , over$
   , overOn // tested
   , set // tested
+  , set$
   , setOn // tested
   , update // tested
   , updateOn // tested

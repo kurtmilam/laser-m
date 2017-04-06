@@ -18,10 +18,9 @@ const sortByL = [ 'sort', 'by' ]
 const setSortBy = X.setOn( M.rowsUI_A_ )( sortByL )
 
 // don't make the following point-free without testing, first
-const drawRowNodes = rows =>
-  R.compose( X.map( UserListRow )
-           , X.sortByProp( X.viewOn( M.rowsUI_A_ )( sortByL ) )
-           )( rows )
+const drawRowNodes =
+  X.compose( X.map( UserListRow ) )
+           ( X.sortByProp( X.viewOn( M.rowsUI_A_ )( sortByL ) ) )
 
 // TODO: Apply transformations to state (rather than only in the view)? Probably not
 module.exports =
