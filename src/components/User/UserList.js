@@ -22,7 +22,7 @@ const drawRowNodes =
   X.compose( X.map( UserListRow ) )
            ( X.sortByProp( X.viewOn( M.rowsUIA )( sortByL ) ) )
 
-// TODO: Apply transformations to state (rather than only in the view)? Probably not
+// TODO: Apply transformations to stateContainer (rather than only in the view)? Probably not
 module.exports =
   { oninit: _ => M.loadTable( M.rowsA() )
   // , onremove: M.rowsA.end()

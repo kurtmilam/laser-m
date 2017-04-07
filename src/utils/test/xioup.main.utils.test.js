@@ -155,7 +155,7 @@ describe( 'stateContainer()'
             const init = { streams: {}, meta: {}, data: {} }
             const state$ = flyd.stream( init )
             const state1$ = flyd.stream( init )
-            const stateContainer = X.stateContainer( state$ )
+            const stateContainer = X.makeStateContainer( state$ )
             const stateSlice$ = stateContainer( p2, o1 )
             const stateSlice1$ = stateContainer( p2, o1 )
             it( 'stateContainer() returns a function (fn)'

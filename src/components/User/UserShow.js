@@ -23,7 +23,7 @@ const UserShow =
                  , atom
                  , data
                  }
-      // window.vnstate = vn.state
+      // window.vnstate = vn.stateContainer
     }
   // , onremove: M.item.end()
   , view: vn =>

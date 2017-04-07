@@ -9,7 +9,7 @@ import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
 
-// import state
+// import stateContainer
 import state from 'App/AppModel'
 
 // config

@@ -10,8 +10,8 @@ import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
 import flyd from 'flyd'
 
-// import state
-import state from 'App/AppModel'
+// import stateContainer
+import stateContainer from 'App/AppModel'
 
 // config
 const entityName = 'users'
@@ -20,7 +20,7 @@ const entityName = 'users'
 const apiTableUrl = `${ X.apiUrlRoot }/${ entityName }`
 const apiRowUrl = `${ apiTableUrl }/:id`
 
-// state setup
+// stateContainer setup
 // Todo: think about how to differentiate children of different types
 // probably add it to the container
 const containerType = 'table'
@@ -32,15 +32,15 @@ const initTable =
   , ui: { filter: { by: '' }, sort: { by: [ 'id' ] } }
   }
 
-const table$ = state( [ entityName ], initTable )
+const table$ = stateContainer( [ entityName ], initTable )
 
 // The following also works:
 // const table$ = flyd.stream( initTable )
 
 const rowsA   = X.lensedAtom( [ 'rows' ], table$, [] )
 const rowsUIA = X.lensedAtom( [ 'ui' ], table$, {} )
-// const testStream$ = flyd.map( rowsUIA )
-// window.testStream$ = testStream$
+// const testAtom = X.lensedAtom( [ 'test', 'delete', 'me' ], stateContainer(), [] )
+// window.testAtom = testAtom
 
 const dataL = [ 'data' ]
 const dataPropL = X.appendTo( dataL )

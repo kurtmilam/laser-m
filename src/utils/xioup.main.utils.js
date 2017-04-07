@@ -88,12 +88,12 @@ const sortByProp = compose( sortAsc )( L.get )
 // vnode functions
 const getAttrs = L.get( 'attrs' )
 
-// stateContainer operations
+// makeStateContainer operations
 const view = lens => $ => L.get( lens, $() )
 const viewOn = $ => lens => view( lens )( $ )
 
 // For instance:
-// const list = state(['models','users','list'], {})
+// const list = makeStateContainer(['models','users','list'], {})
 // const modifyList = X.updateOn( list, [] )
 // modifyList( R.map( R.overOn( R.lensProp( 'firstName' ), R.toLower) ) )
 // modifyList( R.overOn( R.lensPath( [ 0, 'firstName' ] ), R.toUpper ) )
@@ -125,9 +125,32 @@ const updateOn = $ => lens => value => update( lens )( value )( $ )
 
 const emptyStream = lens => over( lens )( R.empty )
 
-// make stateContainer
-function stateContainer( $ ) {
+const lensedAtom = function ( lens, $, init ) {
+  const withAtom = applyUnaryTo( [ $, lens ] )
+  // const stream$ = flyd.stream( init )
+  if ( typeof withAtom( viewOn ) === 'undefined' )
+    withAtom( setOn )( init )
+
+  // I had a hard time trying to make the following point-free
+  return a =>
+    R.ifElse( isUndefined
+            , _ => withAtom( viewOn )
+            , compose( L.get( lens ) )( withAtom( setOn ) )
+            // , freeze( L.get( lens, withAtom( setOn )( a ) ) ) // ??
+            )( a )
+
+}
+// not sure why the following aren't working (for instance, in UserEdit)
+// const _lensedAtom = R.curry( _lensedAtom )
+// const _lensedAtom = lens => $ => init => _lensedAtom( lens, $, init )
+
+// make makeStateContainer
+function makeStateContainer( $ ) {
   return function ( lens, init ) {
+    // return the root makeStateContainer stream if no arguments are supplied
+    if( isUndefined( lens ) ) {
+      return lensedAtom( [ 'data' ], $, {} )
+    }
     const streamsL = compose( R.pair( 'streams' ) )( joinOnDot )
     const getLensedStream$ = compose( view )( streamsL )( lens )
 
@@ -158,25 +181,6 @@ function stateContainer( $ ) {
     return lensedStream$
   }
 }
-
-const lensedAtom = function ( lens, $, init ) {
-  const withAtom = applyUnaryTo( [ $, lens ] )
-  // const stream$ = flyd.stream( init )
-  if ( typeof withAtom( viewOn ) === 'undefined' )
-    withAtom( setOn )( init )
-
-  // I had a hard time trying to make the following point-free
-  return a =>
-    R.ifElse( isUndefined
-            , _ => withAtom( viewOn )
-            , compose( L.get( lens ) )( withAtom( setOn ) )
-            // , freeze( L.get( lens, withAtom( setOn )( a ) ) ) // ??
-            )( a )
-
-}
-// not sure why the following aren't working (for instance, in UserEdit)
-// const _lensedAtom = R.curry( _lensedAtom )
-// const _lensedAtom = lens => $ => init => _lensedAtom( lens, $, init )
 
 // node functions
 const _getEventAttr = attrName => e =>
@@ -303,7 +307,7 @@ const X =
   , bindS
   , bindSOn
   , emptyStream // tested
-  , stateContainer // tested
+  , makeStateContainer // tested
   , lensedAtom // partially tested
   , sortByProp
   }
