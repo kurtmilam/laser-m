@@ -37,9 +37,9 @@ const table$ = state( [ entityName ], initTable )
 // The following also works:
 // const table$ = flyd.stream( initTable )
 
-const rows_A_   = X.lensedAtom( [ 'rows' ], table$, [] )
-const rowsUI_A_ = X.lensedAtom( [ 'ui' ], table$, {} )
-// const testStream$ = flyd.map( rowsUI_A_ )
+const rowsA   = X.lensedAtom( [ 'rows' ], table$, [] )
+const rowsUIA = X.lensedAtom( [ 'ui' ], table$, {} )
+// const testStream$ = flyd.map( rowsUIA )
 // window.testStream$ = testStream$
 
 const dataL = [ 'data' ]
@@ -56,33 +56,33 @@ const listRowLabel = record =>
 // api methods
 // TODO: Try to merge the following two functions into one
 const loadTableFromApi =
-  R.composeP( rows_A_
-            , R.map( R.tap( X.freeze ) )
+  R.composeP( rowsA
+            , X.map( X.tap( X.freeze ) )
             , X.loadTableFromApi( apiTableUrl )
             )
 
 // reloads the table if called with []
 // useful for conditionally loading from the Api when the atom is empty
-const loadTable = R.when( R.equals( [] ), loadTableFromApi )
+const loadTable = X.when( R.equals( [] ) )( loadTableFromApi )
 
 const getById = id =>
-  X.lensedAtom( L.find( R.whereEq( { id } ) ), rows_A_ )
+  X.lensedAtom( L.find( R.whereEq( { id } ) ), rowsA )
 
 const saveRow = X.saveRowToApi( apiRowUrl )
 
-const validateAndSaveRow = row_A_ =>
-  R.compose( saveRow( row_A_ )
+const validateAndSaveRow = row =>
+  R.compose( saveRow( row )
            , L.get( dataL )
-           , R.tap( row_A_ )
+           , X.tap( row )
            , L.modify( [ 'data', 'firstName' ], R.trim )
            , L.modify( [ 'data', 'lastName' ], R.trim )
-           )( row_A_() )
+           )( row() )
 
 module.exports =
   { entityName
   , table$
-  , rows_A_
-  , rowsUI_A_
+  , rowsA
+  , rowsUIA
   , loadTableFromApi
   , loadTable
   , getById

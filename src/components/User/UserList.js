@@ -15,17 +15,17 @@ import M from 'User/UserModel'
 import UserListRow from 'User/UserListItem'
 
 const sortByL = [ 'sort', 'by' ]
-const setSortBy = X.setOn( M.rowsUI_A_ )( sortByL )
+const setSortBy = X.setOn( M.rowsUIA )( sortByL )
 
 // don't make the following point-free without testing, first
 const drawRowNodes =
   X.compose( X.map( UserListRow ) )
-           ( X.sortByProp( X.viewOn( M.rowsUI_A_ )( sortByL ) ) )
+           ( X.sortByProp( X.viewOn( M.rowsUIA )( sortByL ) ) )
 
 // TODO: Apply transformations to state (rather than only in the view)? Probably not
 module.exports =
-  { oninit: _ => M.loadTable( M.rows_A_() )
-  // , onremove: M.rows_A_.end()
+  { oninit: _ => M.loadTable( M.rowsA() )
+  // , onremove: M.rowsA.end()
   , view: vn =>
       <div
         class={ `${ M.entityName }-list` }>
@@ -35,7 +35,7 @@ module.exports =
           <label class="label">
             Filter
             <input class="input" type="text" placeholder="Not Working Yet"
-              oninput={ X.setToValueAttr( [ 'filter', 'by' ] )( M.rowsUI_A_ ) }
+              oninput={ X.setToValueAttr( [ 'filter', 'by' ] )( M.rowsUIA ) }
             />
           </label>
         </div>
@@ -57,6 +57,6 @@ module.exports =
             onclick={ _ => M.loadTableFromApi() }
           >Refresh</button>
         </div>
-        { drawRowNodes( M.rows_A_() ) }
+        { drawRowNodes( M.rowsA() ) }
       </div>
   }

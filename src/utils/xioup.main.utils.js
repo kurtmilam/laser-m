@@ -29,29 +29,47 @@ const logCall = fn => a => tap( compose( console.log )( R.call( fn ) ) )( a )
 const list = R.unapply( R.identity )
 const map = L.modify( L.elems )
 const mapObj = L.modify( L.values )
+// like R.identity
+const I = a => a
+// like R.always
 const K = a => _ => a
+
 
 const freeze = Object.freeze
 
 const appendTo = R.flip( R.append )
 
+const complement = R.complement
+const equals = R.equals
+const notEquals = complement( equals )
+const not = a => !a
+// const complement = f => compose( not )( f ) // not working - have to lift it
 // is is copied from https://github.com/ramda/ramda/blob/v0.23.0/src/is.js
 const is = Ctor => a =>
   a != null && a.constructor === Ctor || a instanceof Ctor
-const not = a => !a
-const complement = compose( not ) // no worky - have to lift it
 const isUndefined = a => typeof a === 'undefined'
 const isNotUndefined = R.complement( isUndefined )
 const isFunction = is( Function )
 const isNotFunction = R.complement( isFunction )
 
+const ifElse = f => g => h => a =>
+  f( a ) ? g( a ) : h( a )
+const when = f => g => a =>
+  ifElse( f )( g )( I )( a )
+
+const flip = fn => a => b => fn( b )( a )
+
+// not working
+const converge = f => gs => h => compose( R.apply( f ) )
+                                        ( R.map( gs, list( h ) ) )
+
+// not sure why I can't get the following to work with my ifElse
 const applyUnary =
-  R.reduce( R.ifElse( isFunction
-                    , R.call
-                    , R.reduced
-                    )
+  R.reduce( R.ifElse( isFunction )
+                    ( R.call )
+                    ( R.reduced )
           )
-const applyUnaryTo = xs => fn => applyUnary( fn, xs )
+const applyUnaryTo = flip( applyUnary )
 
 const joinOnSpace = R.join( ' ' )
 const joinOnDot = R.join( '.' )
@@ -117,9 +135,8 @@ function stateContainer( $ ) {
     const setData = compose( setOn( $ ) )( dataL )
     
     const makeUpdaterStream =
-      R.tap( flyd.on( R.when( isNotUndefined
-                            , setData( lens )
-                            )
+      R.tap( flyd.on( when( isNotUndefined )
+                          ( setData( lens ) )
                     )
            )
 
@@ -182,7 +199,13 @@ const bindS = attrName => evtName => lens => atom => (
 )
 
 const bindSOn = attrName => evtName => atom => lens =>
-  bindS( attrName )( evtName )( lens )( atom )
+  bindS( attrName )
+       ( evtName )
+       ( when( isUndefined )
+             ( _ => [] )
+             ( lens )
+       )
+       ( atom )
 
 // api model functions
 const dataContainerSpec =
@@ -237,15 +260,22 @@ const X =
   , list
   , map
   , mapObj
+  , I
   , K
   , freeze
   , appendTo
-  , is
+  , complement
+  , equals
+  , notEquals
   , not
+  , is
   , isUndefined
   , isNotUndefined
   , isFunction
   , isNotFunction
+  , ifElse
+  , when
+  // , converge // not working
   , applyUnary
   , applyUnaryTo
   , joinOnSpace
@@ -278,9 +308,5 @@ const X =
   , sortByProp
   }
 
-window.X = X
-window.R = R
-window.L = L
-window.flyd = flyd
 module.exports = X
 
