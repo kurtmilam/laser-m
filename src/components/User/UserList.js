@@ -15,7 +15,7 @@ import M from 'User/UserModel'
 import UserListRow from 'User/UserListItem'
 
 const sortByL = [ 'sort', 'by' ]
-const setSortBy = X.setOn( M.rowsUIA )( sortByL )
+const setSortBy = X.setOn$( M.rowsUIA )( sortByL )
 
 // don't make the following point-free without testing, first
 const drawRowNodes = rows =>

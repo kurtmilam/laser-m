@@ -20,7 +20,7 @@ const tap = fn => a => {
   return a
 }
 const log = tap( console.log )
-const logCompose = f => g => h =>
+const composeLog = f => g => h =>
   logWithMsg( 'f' )( f( logWithMsg( 'g' )( g( logWithMsg( 'h' )( h ) ) ) ) )
 const logWithMsg = msg =>
   tap( compose( R.apply( console.log ) )( compose( R.prepend( msg ) )( list ) ) )
@@ -105,40 +105,39 @@ const _dispatch = action => post => lens => x => $ =>
                   ( L[ action ]( lens, x ) )
          )
          ( $() )
+const _dispatchModify = _dispatch( 'modify' )
+const _dispatchSet = _dispatch( 'set' )
+
 const setAndReturn$ = $ =>
   compose( K( $ ) )
          ( $ )
 
 // over starts here
 const over = lens => a => $ =>
-  _dispatch( 'modify' )
-           ( tap( $ ) )
-           ( lens )
-           ( a )
-           ( $ )
+  _dispatchModify( tap( $ ) )
+                 ( lens )
+                 ( a )
+                 ( $ )
 const overOn = $ => lens => fn => over( lens )( fn )( $ )
 const over$ = lens => a => $ =>
-  _dispatch( 'modify' )
-           ( setAndReturn$( $ ) )
-           ( lens )
-           ( a )
-           ( $ )
+  _dispatchModify( setAndReturn$( $ ) )
+                 ( lens )
+                 ( a )
+                 ( $ )
 const overOn$ = $ => lens => fn => over$( lens )( fn )( $ )
 
 // set starts here
 const set = lens => a => $ =>
-  _dispatch( 'set' )
-           ( tap( $ ) )
-           ( lens )
-           ( a )
-           ( $ )
+  _dispatchSet( tap( $ ) )
+              ( lens )
+              ( a )
+              ( $ )
 const setOn = $ => lens => value => set( lens )( value )( $ )
 const set$ = lens => a => $ =>
-  _dispatch( 'set' )
-           ( setAndReturn$( $ ) )
-           ( lens )
-           ( a )
-           ( $ )
+  _dispatchSet( setAndReturn$( $ ) )
+              ( lens )
+              ( a )
+              ( $ )
 const setOn$ = $ => lens => value => set$( lens )( value )( $ )
 
 // convenience function that can be called with a function or value
@@ -160,7 +159,7 @@ const lensedAtom = function ( lens, $, init ) {
   return a =>
     R.ifElse( isUndefined
             , _ => withAtom( viewOn )
-            , compose( L.get( lens ) )( withAtom( setOn ) )
+            , withAtom( setOn$ )
             )( a )
 
 }
@@ -214,7 +213,7 @@ const _getEventAttr = attrName => e =>
 
 // setOn may be appropriate here because _getEventAttr is waiting for the event
 const setToAttr = attrName => lens => $ =>
-  compose( setOn( $ )( lens ) )
+  compose( setOn$( $ )( lens ) )
          ( _getEventAttr( attrName ) )
 
 const setToValueAttr = setToAttr( 'value' )
@@ -275,7 +274,7 @@ const saveRowToApi = apiUrl => $ => dataL =>
              , withCredentials: true
              }
            )
-  .then( setOn( $ )( dataL ) )
+  .then( setOn$( $ )( dataL ) )
 const saveRowToApi_ = apiUrl => dataL => $ =>
   saveRowToApi( apiUrl )( $ )( dataL )
 
@@ -284,7 +283,7 @@ const X =
   , compose
   , tap
   , log
-  , logCompose
+  , composeLog
   , logCall
   , list
   , map
@@ -323,9 +322,11 @@ const X =
   , over // tested
   , over$
   , overOn // tested
+  , overOn$
   , set // tested
   , set$
   , setOn // tested
+  , setOn$
   , update // tested
   , updateOn // tested
   , setToAttr

@@ -43,11 +43,11 @@ module.exports =
                    , lastNameL
                    , bindLastName2:   _ => bindValueChange( lastNameL )
                    }
-        X.set( initialL )
-             ( X.view( dataL )
-                     ( state )
-             )
-             ( state )
+        X.set$( initialL )
+              ( X.view( dataL )
+                      ( state )
+              )
+              ( state )
         vn.state.formIsDirty =
           R.converge( X.notEquals
                     , [ X.view( initialL )
@@ -57,9 +57,9 @@ module.exports =
                     )
 
         vn.state.cleanFormOnSave = s =>
-          X.set( initialL )
-               ( X.view( dataL )( s ) )
-               ( s )
+          X.set$( initialL )
+                ( X.view( dataL )( s ) )
+                ( s )
         // console.log( 'Last Name Lens', lastNameL )
         window.vn = vn
         // window.onbeforeunload = e => 'are you sure?'
@@ -77,9 +77,10 @@ module.exports =
                { ...vn.state.bindValueChange( vn.state.lastNameL ) }/>
       </label>
       <button class="button"
-              onclick={ _ => X.compose( vn.state.cleanFormOnSave )
-                                      ( X.tap( M.validateAndSaveRow( vn.state.dataL ) ) )
-                                      ( vn.state.state )
+              onclick={ _ => R.composeP( vn.state.cleanFormOnSave
+                                       , M.validateAndSaveRow( vn.state.dataL )
+                                       )
+                                       ( vn.state.state )
                       }
       >Save</button>
       &nbsp;
