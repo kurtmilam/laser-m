@@ -106,9 +106,11 @@ const over = lens => fn => $ =>
            )( $ )
 // TODO: This is convoluted, should be simplified:
 const over$ = lens => fn => $ =>
-  logCompose( compose( K( $ ) )( $ ) ) // Should $( newObj ) return newObj or $? See lensedAtom()
-            ( L.modify( lens, fn ) )
-            ( $() )
+  compose( compose( K( $ ) )
+                  ( $ )
+         ) // Should $( data ) return data or $? See lensedAtom()
+         ( L.modify( lens, fn ) )
+         ( $() )
 /*
   R.compose( $
            , freeze
@@ -125,7 +127,9 @@ const set = lens => value => $ =>
            , R.call
            )( $ )
 const set$ = lens => value => $ =>
-  compose( $ )
+  compose( compose( K( $ ) )
+                  ( $ )
+         )
          ( set( lens )
               ( value )
          )
@@ -189,9 +193,10 @@ function makeStateContainer( $ ) {
     const makeLensed$ = compose( makeUpdaterStream )( addToMain$ )
 
     const lensedStream$ =
-      compose( flyd.isStream )( getLensedStream$ )( $ )
-        ? getLensedStream$( $ )
-        : makeLensed$( init )
+      compose( flyd.isStream )
+             ( getLensedStream$ )( $ )
+               ? getLensedStream$( $ )
+               : makeLensed$( init )
 
     return lensedStream$
   }

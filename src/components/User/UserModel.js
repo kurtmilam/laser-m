@@ -27,7 +27,6 @@ const apiRowUrl = `${ apiTableUrl }/:id`
 const containerType = 'table'
 const initTable =
   { id: containerType + ':' + entityName
-  , computed: {}
   , rows: []
   , type: containerType
   , ui: { filter: { by: '' }, sort: { by: [ 'id' ] } }
@@ -38,9 +37,10 @@ const table$ = stateContainer( [ entityName ], initTable )
 // The following also works:
 // const table$ = flyd.stream( initTable )
 
-const rowsL = [ entityName, 'rows' ]
-const rowsA   = X.lensedAtom( [ entityName, 'rows' ], state, [] )
-const rowsUIA = X.lensedAtom( [ entityName, 'ui' ], state, {} )
+const rowsL   = [ entityName, 'rows' ]
+const rowsA   = X.lensedAtom( rowsL, state, [] )
+const rowsUIL = [ entityName, 'ui' ]
+const rowsUIA = X.lensedAtom( rowsUIL, state, {} )
 // const testAtom = X.lensedAtom( [ 'test', 'delete', 'me' ], stateContainer(), [] )
 // window.testAtom = testAtom
 window.state = state
@@ -57,10 +57,10 @@ const listRowLabel = record =>
   + L.get( dataPropL( 'lastName' ), record )
 
 // api methods
-// TODO: Try to merge the following two functions into one
+// TODO: Try to merge the following two functions into one?
 const loadTableFromApi =
   R.composeP( rowsA
-            , X.map( X.tap( X.freeze ) )
+            , X.map( X.freeze )
             , X.loadTableFromApi( apiTableUrl )
             )
 
