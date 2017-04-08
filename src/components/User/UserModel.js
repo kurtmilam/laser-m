@@ -41,8 +41,8 @@ const rowsL   = [ entityName, 'rows' ]
 const rowsA   = X.lensedAtom( rowsL, state, [] )
 const rowsUIL = [ entityName, 'ui' ]
 const rowsUIA = X.lensedAtom( rowsUIL, state, {} )
-// const testAtom = X.lensedAtom( [ 'test', 'delete', 'me' ], stateContainer(), [] )
-// window.testAtom = testAtom
+const testAtom = X.lensedAtom( [ 'test', 'delete', 'me' ], stateContainer(), [] )
+window.testAtom = testAtom
 window.state = state
 
 const dataL = [ 'data' ]

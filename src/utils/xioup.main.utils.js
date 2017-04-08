@@ -98,43 +98,48 @@ const viewOn = $ => lens => view( lens )( $ )
 // modifyList( R.map( R.overOn( R.lensProp( 'firstName' ), R.toLower) ) )
 // modifyList( R.overOn( R.lensPath( [ 0, 'firstName' ] ), R.toUpper ) )
 
-const over = lens => fn => $ =>
-  R.compose( R.tap( $ )
-           , freeze
-           , L.modify( lens, fn )
-           , R.call  
-           )( $ )
-// TODO: This is convoluted, should be simplified:
-const over$ = lens => fn => $ =>
-  compose( compose( K( $ ) )
-                  ( $ )
-         ) // Should $( data ) return data or $? See lensedAtom()
-         ( L.modify( lens, fn ) )
+// dispatcher for L.modify and L.get
+const _dispatch = action => post => lens => x => $ =>
+  compose( post )
+         ( compose( freeze )
+                  ( L[ action ]( lens, x ) )
+         )
          ( $() )
-/*
-  R.compose( $
-           , freeze
-           , L.modify( lens, fn )
-           , R.call
-           )( $ )
-           */
-const overOn = $ => lens => fn => over( lens )( fn )( $ )
-
-const set = lens => value => $ =>
-  R.compose( R.tap( $ )
-           , freeze
-           , L.set( lens, value )
-           , R.call
-           )( $ )
-const set$ = lens => value => $ =>
-  compose( compose( K( $ ) )
-                  ( $ )
-         )
-         ( set( lens )
-              ( value )
-         )
+const setAndReturn$ = $ =>
+  compose( K( $ ) )
          ( $ )
+
+// over starts here
+const over = lens => a => $ =>
+  _dispatch( 'modify' )
+           ( tap( $ ) )
+           ( lens )
+           ( a )
+           ( $ )
+const overOn = $ => lens => fn => over( lens )( fn )( $ )
+const over$ = lens => a => $ =>
+  _dispatch( 'modify' )
+           ( setAndReturn$( $ ) )
+           ( lens )
+           ( a )
+           ( $ )
+const overOn$ = $ => lens => fn => over$( lens )( fn )( $ )
+
+// set starts here
+const set = lens => a => $ =>
+  _dispatch( 'set' )
+           ( tap( $ ) )
+           ( lens )
+           ( a )
+           ( $ )
 const setOn = $ => lens => value => set( lens )( value )( $ )
+const set$ = lens => a => $ =>
+  _dispatch( 'set' )
+           ( setAndReturn$( $ ) )
+           ( lens )
+           ( a )
+           ( $ )
+const setOn$ = $ => lens => value => set$( lens )( value )( $ )
 
 // convenience function that can be called with a function or value
 const update = lens => value =>
@@ -156,7 +161,6 @@ const lensedAtom = function ( lens, $, init ) {
     R.ifElse( isUndefined
             , _ => withAtom( viewOn )
             , compose( L.get( lens ) )( withAtom( setOn ) )
-            // , freeze( L.get( lens, withAtom( setOn )( a ) ) ) // ??
             )( a )
 
 }
@@ -210,9 +214,8 @@ const _getEventAttr = attrName => e =>
 
 // setOn may be appropriate here because _getEventAttr is waiting for the event
 const setToAttr = attrName => lens => $ =>
-  R.compose( setOn( $ )( lens )
-           , _getEventAttr( attrName )
-           )
+  compose( setOn( $ )( lens ) )
+         ( _getEventAttr( attrName ) )
 
 const setToValueAttr = setToAttr( 'value' )
 
@@ -336,4 +339,3 @@ const X =
   }
 
 module.exports = X
-

@@ -6,7 +6,7 @@ import m from '../../utils/m-mock'
 import flyd from 'flyd'
 import * as X from '../../utils/xioup.main.utils'
 
-const state$ = flyd.stream( { streams: {}, meta: {}, data: {} } )
+const state$ = flyd.stream( { data: {}, history: [], meta: {}, streams: {} } )
 window.state$ = state$
 const stateContainer = X.makeStateContainer( state$ )
 // const stateContainer = X.lensedAtom( [ 'data' ], state$, {} )
