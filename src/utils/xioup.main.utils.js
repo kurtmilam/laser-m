@@ -104,6 +104,18 @@ const over = lens => fn => $ =>
            , L.modify( lens, fn )
            , R.call  
            )( $ )
+// TODO: This is convoluted, should be simplified:
+const over$ = lens => fn => $ =>
+  logCompose( compose( K( $ ) )( $ ) ) // Should $( newObj ) return newObj or $? See lensedAtom()
+            ( L.modify( lens, fn ) )
+            ( $() )
+/*
+  R.compose( $
+           , freeze
+           , L.modify( lens, fn )
+           , R.call
+           )( $ )
+           */
 const overOn = $ => lens => fn => over( lens )( fn )( $ )
 
 const set = lens => value => $ =>
@@ -113,7 +125,11 @@ const set = lens => value => $ =>
            , R.call
            )( $ )
 const set$ = lens => value => $ =>
-  compose( $, set( lens )( value ) )( $ )
+  compose( $ )
+         ( set( lens )
+              ( value )
+         )
+         ( $ )
 const setOn = $ => lens => value => set( lens )( value )( $ )
 
 // convenience function that can be called with a function or value
@@ -244,14 +260,16 @@ const loadRowFromApi = apiUrl => $ => id =>
   .then( compose( $, initDataContainer ) )
 
 // TODO: Make it possible to send in a preprocessor / reducer (for instance, for validation)
-const saveRowToApi = apiUrl => $ => data =>
+const saveRowToApi = apiUrl => $ => dataL =>
   m.request( { method: "PUT"
              , url: apiUrl
-             , data: data
+             , data: view( dataL )( $ )
              , withCredentials: true
              }
            )
-  .then( setOn( $ )( [ 'data' ] ) )
+  .then( setOn( $ )( dataL ) )
+const saveRowToApi_ = apiUrl => dataL => $ =>
+  saveRowToApi( apiUrl )( $ )( dataL )
 
 const X =
   { apiUrlRoot
@@ -290,11 +308,12 @@ const X =
   , loadTableFromApi
   , loadRowFromApi
   , saveRowToApi
+  , saveRowToApi_
   , getAttrs
   , view // tested
   , viewOn // tested
   , over // tested
-  // , over$
+  , over$
   , overOn // tested
   , set // tested
   , set$

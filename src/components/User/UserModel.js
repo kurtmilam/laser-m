@@ -72,18 +72,22 @@ const rowByIdL = id =>
   L.compose( rowsL
            , L.find( R.whereEq( { id } ) )
            )
+const getRowL = X.compose( rowByIdL )
+                         ( Number )
 const getById = id =>
   X.lensedAtom( rowByIdL( id ), state )
 
-const saveRow = X.saveRowToApi( apiRowUrl )
+const saveRow = X.saveRowToApi_( apiRowUrl )
 
-const validateAndSaveRow = row =>
-  R.compose( saveRow( row )
-           , L.get( dataL )
-           , X.tap( row )
-           , L.modify( [ 'data', 'firstName' ], R.trim )
-           , L.modify( [ 'data', 'lastName' ], R.trim )
-           )( row() )
+const validateAndSaveRow = dataL =>
+  X.compose( saveRow( dataL ) )
+           ( X.compose( X.over$( [ dataL, 'firstName' ] )
+                               ( R.trim )
+                      )
+                      ( X.over$( [ dataL, 'lastName' ] )
+                               ( R.trim )
+                      )
+           )
 
 module.exports =
   { entityName
@@ -94,6 +98,7 @@ module.exports =
   , loadTableFromApi
   , loadTable
   , rowByIdL
+  , getRowL
   , getById
   , validateAndSaveRow
   , listRowLabel

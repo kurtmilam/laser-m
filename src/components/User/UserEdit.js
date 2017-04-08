@@ -12,20 +12,22 @@ import * as X from '../../utils/xioup.main.utils'
 // import model
 import M from 'User/UserModel'
 
-const getRowL = X.compose( M.rowByIdL )( Number )
-
 module.exports =
   { oninit: vn =>
       { // console.log( vn )
         const id = Number( vn.attrs.id )
         const state = M.state
-        const rowL = getRowL( id )
-        const dataL = L.compose( rowL, 'data' )
-        const atom = X.lensedAtom( getRowL( id ), M.state )
-        const firstNameL = L.compose( dataL, 'firstName' )
-        const lastNameL = L.compose( dataL, 'lastName' )
+        const rowL = M.getRowL( id )
+        const dataL = [ rowL, 'data' ]
+        const atom = X.lensedAtom( M.getRowL( id ), M.state )
+        const firstNameL = [ dataL, 'firstName' ]
+        const lastNameL = [ dataL, 'lastName' ]
+        const uiL = [ rowL, 'ui' ]
+        const formL = [ uiL, 'form' ]
+        const initialL = [ formL, 'initial' ]
         const bindValue = X.bindSOn( 'value' )
-        const bindValueChange = bindValue( 'onchange' )( state )
+        const bindValueChange = bindValue( 'onchange' )
+                                         ( state )
         // console.log( vn.atom() )
         // typeof vn.atom() === 'undefined' if no match is found
         // L.set(  )
@@ -34,24 +36,31 @@ module.exports =
                    , atom
                    , rowL
                    , dataL
+                   , initialL
                    , bindValueChange
                    , firstNameL
-                   , bindFirstName: bindValueChange( firstNameL )
+                   , bindFirstName2:  _ => bindValueChange( firstNameL )
                    , lastNameL
-                   , bindLastName:  bindValueChange( lastNameL )
+                   , bindLastName2:   _ => bindValueChange( lastNameL )
                    }
-        X.set( [ 'ui', 'form', 'initial' ] )( atom().data )( atom )
+        X.set( initialL )
+             ( X.view( dataL )
+                     ( state )
+             )
+             ( state )
         vn.state.formIsDirty =
           R.converge( X.notEquals
-                    , [ X.view( [ 'ui', 'form', 'initial' ] )
-                      , X.compose( L.get( [ 'data' ] ) )( R.call )
+                    , [ X.view( initialL )
+                      , X.compose( L.get( dataL ) )
+                                 ( R.call )
                       ]
                     )
 
-        vn.state.cleanFormOnSave = a =>
-          X.set( [ 'ui', 'form', 'initial' ] )
-               ( X.view( [ 'data' ] )( a ) )
-               ( a )
+        vn.state.cleanFormOnSave = s =>
+          X.set( initialL )
+               ( X.view( dataL )( s ) )
+               ( s )
+        // console.log( 'Last Name Lens', lastNameL )
         window.vn = vn
         // window.onbeforeunload = e => 'are you sure?'
       }
@@ -60,7 +69,7 @@ module.exports =
       <label class="label">
         First Name
         <input class="input" placeholder="First Name" type="text"
-               { ...vn.state.bindValueChange( vn.state.firstNameL ) }/>
+               { ...vn.state.bindFirstName2() }/>
       </label>
       <label class="label">
         Last Name
@@ -69,8 +78,8 @@ module.exports =
       </label>
       <button class="button"
               onclick={ _ => X.compose( vn.state.cleanFormOnSave )
-                                       ( X.tap( M.validateAndSaveRow ) )
-                                       ( vn.state.atom )
+                                      ( X.tap( M.validateAndSaveRow( vn.state.dataL ) ) )
+                                      ( vn.state.state )
                       }
       >Save</button>
       &nbsp;

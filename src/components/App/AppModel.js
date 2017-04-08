@@ -9,5 +9,6 @@ import * as X from '../../utils/xioup.main.utils'
 const state$ = flyd.stream( { streams: {}, meta: {}, data: {} } )
 window.state$ = state$
 const stateContainer = X.makeStateContainer( state$ )
+// const stateContainer = X.lensedAtom( [ 'data' ], state$, {} )
 window.stateContainer = stateContainer
 module.exports = stateContainer
