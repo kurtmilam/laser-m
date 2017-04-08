@@ -16,12 +16,13 @@ import stateContainer from 'App/AppModel'
 // config
 const entityName = 'users'
 
+const state = stateContainer()
+
 // helpers
 const apiTableUrl = `${ X.apiUrlRoot }/${ entityName }`
 const apiRowUrl = `${ apiTableUrl }/:id`
 
 // stateContainer setup
-// Todo: think about how to differentiate children of different types
 // probably add it to the container
 const containerType = 'table'
 const initTable =
@@ -37,10 +38,12 @@ const table$ = stateContainer( [ entityName ], initTable )
 // The following also works:
 // const table$ = flyd.stream( initTable )
 
-const rowsA   = X.lensedAtom( [ 'rows' ], table$, [] )
-const rowsUIA = X.lensedAtom( [ 'ui' ], table$, {} )
+const rowsL = [ entityName, 'rows' ]
+const rowsA   = X.lensedAtom( [ entityName, 'rows' ], state, [] )
+const rowsUIA = X.lensedAtom( [ entityName, 'ui' ], state, {} )
 // const testAtom = X.lensedAtom( [ 'test', 'delete', 'me' ], stateContainer(), [] )
 // window.testAtom = testAtom
+window.state = state
 
 const dataL = [ 'data' ]
 const dataPropL = X.appendTo( dataL )
@@ -65,8 +68,12 @@ const loadTableFromApi =
 // useful for conditionally loading from the Api when the atom is empty
 const loadTable = X.when( R.equals( [] ) )( loadTableFromApi )
 
+const rowByIdL = id =>
+  L.compose( rowsL
+           , L.find( R.whereEq( { id } ) )
+           )
 const getById = id =>
-  X.lensedAtom( L.find( R.whereEq( { id } ) ), rowsA )
+  X.lensedAtom( rowByIdL( id ), state )
 
 const saveRow = X.saveRowToApi( apiRowUrl )
 
@@ -80,11 +87,13 @@ const validateAndSaveRow = row =>
 
 module.exports =
   { entityName
+  , state
   , table$
   , rowsA
   , rowsUIA
   , loadTableFromApi
   , loadTable
+  , rowByIdL
   , getById
   , validateAndSaveRow
   , listRowLabel

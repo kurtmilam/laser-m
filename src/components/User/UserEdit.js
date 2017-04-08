@@ -12,33 +12,33 @@ import * as X from '../../utils/xioup.main.utils'
 // import model
 import M from 'User/UserModel'
 
-const getAtom = X.compose( M.getById )( Number )
+const getRowL = X.compose( M.rowByIdL )( Number )
 
 module.exports =
   { oninit: vn =>
       { // console.log( vn )
         const id = Number( vn.attrs.id )
-        const atom = getAtom( id )
-        const firstName = X.lensedAtom( [ 'data', 'firstName' ]
-                                      , atom
-                                      , ''
-                                      )
-        const lastName = X.lensedAtom( [ 'data', 'lastName' ]
-                                      , atom
-                                      , ''
-                                      )
-        const bindSOnValue = X.bindSOn( 'value' )
+        const state = M.state
+        const rowL = getRowL( id )
+        const dataL = L.compose( rowL, 'data' )
+        const atom = X.lensedAtom( getRowL( id ), M.state )
+        const firstNameL = L.compose( dataL, 'firstName' )
+        const lastNameL = L.compose( dataL, 'lastName' )
+        const bindValue = X.bindSOn( 'value' )
+        const bindValueChange = bindValue( 'onchange' )( state )
         // console.log( vn.atom() )
         // typeof vn.atom() === 'undefined' if no match is found
         // L.set(  )
         vn.state = { id
+                   , state
                    , atom
-                   , bindSOnAtom:   bindSOnValue( 'onchange' )
-                                                ( atom )
-                   , bindFirstName: bindSOnValue( 'onchange' )
-                                                ( firstName )
-                   , bindLastName:  bindSOnValue( 'onchange' )
-                                                ( lastName )
+                   , rowL
+                   , dataL
+                   , bindValueChange
+                   , firstNameL
+                   , bindFirstName: bindValueChange( firstNameL )
+                   , lastNameL
+                   , bindLastName:  bindValueChange( lastNameL )
                    }
         X.set( [ 'ui', 'form', 'initial' ] )( atom().data )( atom )
         vn.state.formIsDirty =
@@ -53,19 +53,19 @@ module.exports =
                ( X.view( [ 'data' ] )( a ) )
                ( a )
         window.vn = vn
-        window.onbeforeunload = e => 'are you sure?'
+        // window.onbeforeunload = e => 'are you sure?'
       }
   , view: vn =>
     <div>
       <label class="label">
         First Name
         <input class="input" placeholder="First Name" type="text"
-               { ...vn.state.bindSOnAtom( [ 'data', 'firstName' ] ) }/>
+               { ...vn.state.bindValueChange( vn.state.firstNameL ) }/>
       </label>
       <label class="label">
         Last Name
         <input class="input" type="text" placeholder="Last Name"
-               { ...vn.state.bindLastName( [] ) }/>
+               { ...vn.state.bindValueChange( vn.state.lastNameL ) }/>
       </label>
       <button class="button"
               onclick={ _ => X.compose( vn.state.cleanFormOnSave )

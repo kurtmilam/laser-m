@@ -144,10 +144,9 @@ const lensedAtom = function ( lens, $, init ) {
 // const _lensedAtom = R.curry( _lensedAtom )
 // const _lensedAtom = lens => $ => init => _lensedAtom( lens, $, init )
 
-// make makeStateContainer
 function makeStateContainer( $ ) {
   return function ( lens, init ) {
-    // return the root makeStateContainer stream if no arguments are supplied
+    // return a lensedAtom on [ 'data' ] in the state stream if no arguments are supplied
     if( isUndefined( lens ) ) {
       return lensedAtom( [ 'data' ], $, {} )
     }
