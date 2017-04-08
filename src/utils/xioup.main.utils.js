@@ -98,11 +98,15 @@ const viewOn = $ => lens => view( lens )( $ )
 // modifyList( R.map( R.overOn( R.lensProp( 'firstName' ), R.toLower) ) )
 // modifyList( R.overOn( R.lensPath( [ 0, 'firstName' ] ), R.toUpper ) )
 
+const saveHistory = logWithMsg( 'Save history here' )
+
 // dispatcher for L.modify and L.get
 const _dispatch = action => updateStream => lens => a => $ =>
-  compose( updateStream )
-         ( compose( freeze )
-                  ( L[ action ]( lens, a ) )
+  compose( compose( updateStream )
+                  ( freeze )
+         )
+         ( compose( L[ X.log( action ) ]( lens, X.log( a ) ) )
+                  ( saveHistory )
          )
          ( $() )
 

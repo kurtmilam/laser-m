@@ -43,11 +43,12 @@ module.exports =
                    , lastNameL
                    , bindLastName2:   _ => bindValueChange( lastNameL )
                    }
-        X.set$( initialL )
-              ( X.view( dataL )
-                      ( state )
-              )
-              ( state )
+        const setInitial =
+          X.set$( initialL )
+                ( X.view( dataL )
+                        ( state )
+                )
+        setInitial( state )
         vn.state.formIsDirty =
           R.converge( X.notEquals
                     , [ X.view( initialL )

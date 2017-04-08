@@ -38,11 +38,10 @@ const table$ = stateContainer( [ entityName ], initTable )
 // const table$ = flyd.stream( initTable )
 
 const rowsL   = [ entityName, 'rows' ]
-const rowsA   = X.lensedAtom( rowsL, state, [] )
+// const rowsA   = X.lensedAtom( rowsL, state, [] )
 const rowsUIL = [ entityName, 'ui' ]
-const rowsUIA = X.lensedAtom( rowsUIL, state, {} )
-const testAtom = X.lensedAtom( [ 'test', 'delete', 'me' ], stateContainer(), [] )
-window.testAtom = testAtom
+// const testAtom = X.lensedAtom( [ 'test', 'delete', 'me' ], stateContainer(), [] )
+// window.testAtom = testAtom
 window.state = state
 
 const dataL = [ 'data' ]
@@ -50,16 +49,16 @@ const dataPropL = X.appendTo( dataL )
 
 //computed properties
 const listRowLabel = record =>
-  L.get( dataPropL( 'id' ), record )
+  L.get( [ dataL, 'id' ], record )
   + '. '
-  + L.get( dataPropL( 'firstName' ), record )
+  + L.get( [ dataL, 'firstName' ], record )
   + ' '
-  + L.get( dataPropL( 'lastName' ), record )
+  + L.get( [ dataL, 'lastName' ], record )
 
 // api methods
 // TODO: Try to merge the following two functions into one?
 const loadTableFromApi =
-  R.composeP( rowsA
+  R.composeP( X.setOn$( state )( rowsL )
             , X.map( X.freeze )
             , X.loadTableFromApi( apiTableUrl )
             )
@@ -92,9 +91,9 @@ const validateAndSaveRow = dataL =>
 module.exports =
   { entityName
   , state
-  , table$
-  , rowsA
-  , rowsUIA
+  // , table$
+  , rowsL
+  , rowsUIL
   , loadTableFromApi
   , loadTable
   , rowByIdL

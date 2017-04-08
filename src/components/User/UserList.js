@@ -15,13 +15,13 @@ import M from 'User/UserModel'
 import UserListRow from 'User/UserListItem'
 
 const sortByL = [ 'sort', 'by' ]
-const setSortBy = X.setOn$( M.rowsUIA )( sortByL )
+const setSortBy = X.setOn$( M.state )( [ M.rowsUIL, sortByL ] )
 
 // don't make the following point-free without testing, first
 const drawRowNodes = rows =>
   X.compose( X.map( UserListRow ) )
-           ( X.sortAscByProp( X.viewOn( M.rowsUIA )
-                                      ( sortByL )
+           ( X.sortAscByProp( X.viewOn( M.state )
+                                      ( [ M.rowsUIL, sortByL ] )
                             )
            )
            ( rows )
@@ -29,7 +29,7 @@ const drawRowNodes = rows =>
 
 // TODO: Apply transformations to stateContainer (rather than only in the view)? Probably not
 module.exports =
-  { oninit: _ => M.loadTable( M.rowsA() )
+  { oninit: _ => M.loadTable( X.view( M.rowsL )( M.state ) )
   // , onremove: M.rowsA.end()
   , view: vn =>
       <div
@@ -40,7 +40,7 @@ module.exports =
           <label class="label">
             Filter
             <input class="input" type="text" placeholder="Not Working Yet"
-              oninput={ X.setToValueAttr( [ 'filter', 'by' ] )( M.rowsUIA ) }
+              oninput={ X.setToValueAttr( [ M.rowsUIL, 'filter', 'by' ] )( M.state ) }
             />
           </label>
         </div>
@@ -62,6 +62,6 @@ module.exports =
             onclick={ _ => M.loadTableFromApi() }
           >Refresh</button>
         </div>
-        { drawRowNodes( M.rowsA() ) }
+        { drawRowNodes( X.view( M.rowsL )( M.state ) ) }
       </div>
   }
