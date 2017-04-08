@@ -19,7 +19,7 @@ module.exports =
         const state = M.state
         const rowL = M.getRowL( id )
         const dataL = [ rowL, 'data' ]
-        const atom = X.lensedAtom( M.getRowL( id ), M.state )
+        // const atom = X.lensedAtom( M.getRowL( id ), M.state )
         const firstNameL = [ dataL, 'firstName' ]
         const lastNameL = [ dataL, 'lastName' ]
         const uiL = [ rowL, 'ui' ]
@@ -33,7 +33,7 @@ module.exports =
         // L.set(  )
         vn.state = { id
                    , state
-                   , atom
+                   // , atom
                    , rowL
                    , dataL
                    , initialL

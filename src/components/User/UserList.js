@@ -20,9 +20,9 @@ const setSortBy = X.setOn$( M.rowsUIA )( sortByL )
 // don't make the following point-free without testing, first
 const drawRowNodes = rows =>
   X.compose( X.map( UserListRow ) )
-           ( X.sortByProp( X.viewOn( M.rowsUIA )
-                                   ( sortByL )
-                         )
+           ( X.sortAscByProp( X.viewOn( M.rowsUIA )
+                                      ( sortByL )
+                            )
            )
            ( rows )
 

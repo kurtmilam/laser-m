@@ -83,7 +83,7 @@ const m2 = x => y => m( x, y )
 const m3 = x => y => z => m( x, y )
 
 const sortAsc = compose( R.sort )( R.ascend )
-const sortByProp = compose( sortAsc )( L.get )
+const sortAscByProp = compose( sortAsc )( L.get )
 
 // vnode functions
 const getAttrs = L.get( 'attrs' )
@@ -99,46 +99,62 @@ const viewOn = $ => lens => view( lens )( $ )
 // modifyList( R.overOn( R.lensPath( [ 0, 'firstName' ] ), R.toUpper ) )
 
 // dispatcher for L.modify and L.get
-const _dispatch = action => post => lens => x => $ =>
-  compose( post )
+const _dispatch = action => updateStream => lens => a => $ =>
+  compose( updateStream )
          ( compose( freeze )
-                  ( L[ action ]( lens, x ) )
+                  ( L[ action ]( lens, a ) )
          )
          ( $() )
-const _dispatchModify = _dispatch( 'modify' )
-const _dispatchSet = _dispatch( 'set' )
 
 const setAndReturn$ = $ =>
   compose( K( $ ) )
          ( $ )
 
 // over starts here
+const _dispatchModify = _dispatch( 'modify' )
+
 const over = lens => a => $ =>
   _dispatchModify( tap( $ ) )
                  ( lens )
                  ( a )
                  ( $ )
-const overOn = $ => lens => fn => over( lens )( fn )( $ )
+const overOn = $ => lens => a =>
+  over( lens )
+      ( a )
+      ( $ )
+
 const over$ = lens => a => $ =>
   _dispatchModify( setAndReturn$( $ ) )
                  ( lens )
                  ( a )
                  ( $ )
-const overOn$ = $ => lens => fn => over$( lens )( fn )( $ )
+const overOn$ = $ => lens => a =>
+  over$( lens )
+       ( a )
+       ( $ )
 
 // set starts here
+const _dispatchSet = _dispatch( 'set' )
+
 const set = lens => a => $ =>
   _dispatchSet( tap( $ ) )
               ( lens )
               ( a )
               ( $ )
-const setOn = $ => lens => value => set( lens )( value )( $ )
+const setOn = $ => lens => a =>
+  set( lens )
+     ( a )
+     ( $ )
+
 const set$ = lens => a => $ =>
   _dispatchSet( setAndReturn$( $ ) )
               ( lens )
               ( a )
               ( $ )
-const setOn$ = $ => lens => value => set$( lens )( value )( $ )
+const setOn$ = $ => lens => a =>
+  set$( lens )
+      ( a )
+      ( $ )
 
 // convenience function that can be called with a function or value
 const update = lens => value =>
@@ -336,7 +352,7 @@ const X =
   , emptyStream // tested
   , makeStateContainer // tested
   , lensedAtom // partially tested
-  , sortByProp
+  , sortAscByProp
   }
 
 module.exports = X
