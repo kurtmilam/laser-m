@@ -17,6 +17,7 @@ import stateContainer from 'App/AppModel'
 const entityName = 'users'
 
 const state = stateContainer()
+// const state = stateContainer
 
 // helpers
 const apiTableUrl = `${ X.apiUrlRoot }/${ entityName }`
@@ -32,7 +33,7 @@ const initTable =
   , ui: { filter: { by: '' }, sort: { by: [ 'id' ] } }
   }
 
-const table$ = stateContainer( [ entityName ], initTable )
+// const table$ = stateContainer( [ entityName ], initTable )
 
 // The following also works:
 // const table$ = flyd.stream( initTable )
@@ -73,8 +74,8 @@ const rowByIdL = id =>
            )
 const getRowL = X.compose( rowByIdL )
                          ( Number )
-const getById = id =>
-  X.lensedAtom( rowByIdL( id ), state )
+// const getById = id =>
+//   X.lensedAtom( rowByIdL( id ), state )
 
 const saveRow = X.saveRowToApi_( apiRowUrl )
 

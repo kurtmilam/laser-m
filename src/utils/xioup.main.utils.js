@@ -29,6 +29,7 @@ const logCall = fn => a => tap( compose( console.log )( R.call( fn ) ) )( a )
 const list = R.unapply( R.identity )
 const map = L.modify( L.elems )
 const mapObj = L.modify( L.values )
+
 // like R.identity
 const I = a => a
 // like R.always
@@ -173,7 +174,8 @@ const lensedAtom = function ( lens, $, init ) {
   const withAtom = applyUnaryTo( [ $, lens ] )
   // const stream$ = flyd.stream( init )
   if ( typeof withAtom( viewOn ) === 'undefined' )
-    withAtom( setOn )( init )
+    withAtom( setOn$ )( init )
+    // withAtom( setOn )( init )
 
   // I had a hard time trying to make the following point-free
   return a =>
@@ -192,6 +194,7 @@ function makeStateContainer( $ ) {
     // return a lensedAtom on [ 'data' ] in the state stream if no arguments are supplied
     if( isUndefined( lens ) ) {
       return lensedAtom( [ 'data' ], $, {} )
+      // return $
     }
     const streamsL = compose( R.pair( 'streams' ) )( joinOnDot )
     const getLensedStream$ = compose( view )( streamsL )( lens )
