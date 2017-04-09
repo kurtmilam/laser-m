@@ -11,24 +11,25 @@ import * as X from '../../utils/xioup.main.utils'
 import M from 'User/UserModel'
 
 const UserShow =
+
   { oninit: vn =>
-    { // console.log( vn )
-      const id = Number( vn.attrs.id )
-      const atom = M.getById( id )
-      // console.log( atom() )
-      // typeof atom() === 'undefined' if no match is found
-      const data = X.lensedAtom( [ 'data' ], atom, {} )
-      // L.set(  )
-      vn.state = { id
-                 , atom
-                 , data
-                 }
-      // window.vnstate = vn.stateContainer
-    }
-  // , onremove: M.item.end()
+      { // console.log( vn )
+        const id = Number( vn.attrs.id )
+        const state = M.state
+        const rowL = M.getRowL( id )
+        const dataL = [ rowL, 'data' ]
+        // const atom = X.lensedAtom( M.getRowL( id ), M.state )
+        vn.state = { id
+                   , state
+                   // , atom
+                   , rowL
+                   , dataL
+                   }
+      }
   , view: vn =>
     <div>
-      { M.listRowLabel( vn.state.atom() ) }
+      { M.listRowLabel( X.view( M.dataL, M.state ) ) }
+      { /* M.listRowLabel( vn.state.atom() ) */ }
     </div>
   }
 
