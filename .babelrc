@@ -1,6 +1,7 @@
 {
   "presets": [
     "es2015"
+    // [ "es2015", { modules: false } ]
   ],
   "plugins": [
     [
@@ -11,7 +12,7 @@
       "module-resolver",
       {
         "root": [
-          './src', './src/utils', './node_modules'
+          "./src", "./src/utils", "./node_modules"
         ]
       }
     ]
