@@ -3,7 +3,6 @@
  */
 
 // import libraries
-import m from './m-mock'
 import * as R__ from './xioup.ramda'
 import * as X from './xioup.main.utils'
 import R from 'ramda'
@@ -32,7 +31,7 @@ const _dispatch = action => updateStream => lens => a => $ =>
          )
          ( $() )
 
-const setAndReturn$ = $ =>
+const _setAndReturn$ = $ =>
   R__.compose( R__.always( $ ) )
          ( $ )
 
@@ -50,7 +49,7 @@ const overOn = $ => lens => a =>
       ( $ )
 
 const over$ = lens => a => $ =>
-  _dispatchModify( setAndReturn$( $ ) )
+  _dispatchModify( _setAndReturn$( $ ) )
                  ( lens )
                  ( a )
                  ( $ )
@@ -73,7 +72,7 @@ const setOn = $ => lens => a =>
      ( $ )
 
 const set$ = lens => a => $ =>
-  _dispatchSet( setAndReturn$( $ ) )
+  _dispatchSet( _setAndReturn$( $ ) )
               ( lens )
               ( a )
               ( $ )

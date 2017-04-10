@@ -7,7 +7,6 @@
 import m from '../../utils/m-mock'
 import * as R__ from 'xioup.ramda'
 import R from 'ramda'
-import L from 'partial.lenses'
 // import btn from 'polythene/button/button'
 import * as X from '../../utils/xioup.main.utils'
 import * as laser from '../../utils/xioup.laser'

@@ -4,14 +4,12 @@
 // src/components/User/UserModel.js
 
 // import libraries
-import m from '../../utils/m-mock'
 import * as R__ from 'xioup.ramda'
 import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
 import * as laser from '../../utils/xioup.laser'
 import * as D from '../../utils/xioup.data'
-import flyd from 'flyd'
 
 // import stateContainer
 import stateContainer from 'App/AppModel'

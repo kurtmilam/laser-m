@@ -15,11 +15,11 @@ const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
 
 // debug stuff
 const log = R__.tap( console.log )
-const composeLog = f => g => h =>
-  logWithMsg( 'f' )( f( logWithMsg( 'g' )( g( logWithMsg( 'h' )( h ) ) ) ) )
+const composeLog = f => g => ( ...h ) =>
+  logWithMsg( 'f' )( f( logWithMsg( 'g' )( g( logWithMsg( 'h' )( ...h ) ) ) ) )
 const logWithMsg = msg =>
   R__.tap( R__.compose( R.apply( console.log ) )( R__.compose( R.prepend( msg ) )( list ) ) )
-const logCall = fn => a => R__.tap( R__.compose( console.log )( R.call( fn ) ) )( a )
+const logCall = fn => ( ...a ) => R__.tap( R__.compose( console.log )( R.call( fn ) ) )( ...a )
 
 // array functions
 const list = R.unapply( R__.identity )
