@@ -14,7 +14,7 @@ import flyd from 'flyd'
 // config
 const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
 
-// low level
+// debug stuff
 const log = R__.tap( console.log )
 const composeLog = f => g => h =>
   logWithMsg( 'f' )( f( logWithMsg( 'g' )( g( logWithMsg( 'h' )( h ) ) ) ) )
@@ -32,18 +32,10 @@ const freeze = Object.freeze
 const appendTo = R__.flip( R.append )
 
 const notEquals = R__.complement( R__.equals )
-
-
-
-
 const isUndefined = a => typeof a === 'undefined'
 const isNotUndefined = R__.complement( isUndefined )
 const isFunction = R__.is( Function )
 const isNotFunction = R__.complement( isFunction )
-
-// not working
-const converge = f => gs => h => R__.compose( R.apply( f ) )
-                                        ( R__.map( gs, list( h ) ) )
 
 // not sure why ! can't get the following to work with my ifElse
 const applyUnary =
