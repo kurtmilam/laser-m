@@ -9,6 +9,7 @@ import * as R__ from 'xioup.ramda'
 import R from 'ramda'
 // import btn from 'polythene/button/button'
 import * as X from '../../utils/xioup.main.utils'
+import * as laser from '../../utils/xioup.laser'
 
 // import model
 import M from 'User/UserModel'
@@ -16,12 +17,12 @@ import M from 'User/UserModel'
 import UserListRow from 'User/UserListItem'
 
 const sortByL = [ 'sort', 'by' ]
-const setSortBy = X.setOn$( M.state )( [ M.rowsUIL, sortByL ] )
+const setSortBy = laser.setOn$( M.state )( [ M.rowsUIL, sortByL ] )
 
 // don't make the following point-free without testing, first
 const drawRowNodes = rows =>
   R__.compose( R__.map( UserListRow ) )
-           ( X.sortAscByProp( X.viewOn( M.state )
+           ( X.sortAscByProp( laser.viewOn( M.state )
                                       ( [ M.rowsUIL, sortByL ] )
                             )
            )
@@ -30,7 +31,7 @@ const drawRowNodes = rows =>
 
 // TODO: Apply transformations to stateContainer (rather than only in the view)? Probably not
 module.exports =
-  { oninit: _ => M.loadTable( X.view( M.rowsL )( M.state ) )
+  { oninit: _ => M.loadTable( laser.view( M.rowsL )( M.state ) )
   // , onremove: M.rowsA.end()
   , view: vn =>
       <div
@@ -41,7 +42,7 @@ module.exports =
           <label class="label">
             Filter
             <input class="input" type="text" placeholder="Not Working Yet"
-              oninput={ X.setToValueAttr( [ M.rowsUIL, 'filter', 'by' ] )( M.state ) }
+              oninput={ laser.setToValueAttr( [ M.rowsUIL, 'filter', 'by' ] )( M.state ) }
             />
           </label>
         </div>
@@ -63,6 +64,6 @@ module.exports =
             onclick={ _ => M.loadTableFromApi() }
           >Refresh</button>
         </div>
-        { drawRowNodes( X.view( M.rowsL )( M.state ) ) }
+        { drawRowNodes( laser.view( M.rowsL )( M.state ) ) }
       </div>
   }

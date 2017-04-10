@@ -10,12 +10,13 @@ import R from 'ramda'
 import L from 'partial.lenses'
 // import btn from 'polythene/button/button'
 import * as X from '../../utils/xioup.main.utils'
+import * as laser from '../../utils/xioup.laser'
 
 // import model
 import M from 'User/UserModel'
 
 const removeListRow =
-  R__.compose( X.overOn$( M.state )( M.rowsL ) )
+  R__.compose( laser.overOn$( M.state )( M.rowsL ) )
              ( R__.compose( R.reject )
                           ( R.eqProps )
              )

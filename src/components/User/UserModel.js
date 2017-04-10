@@ -9,6 +9,8 @@ import * as R__ from 'xioup.ramda'
 import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
+import * as laser from '../../utils/xioup.laser'
+import * as D from '../../utils/xioup.data'
 import flyd from 'flyd'
 
 // import stateContainer
@@ -41,9 +43,9 @@ const table$ = stateContainer( [ entityName ], initTable )
 // const table$ = flyd.stream( initTable )
 
 const rowsL   = [ entityName, 'rows' ]
-// const rowsA   = X.lensedAtom( rowsL, state, [] )
+// const rowsA   = laser.lensedAtom( rowsL, state, [] )
 const rowsUIL = [ entityName, 'ui' ]
-// const testAtom = X.lensedAtom( [ 'test', 'delete', 'me' ], stateContainer(), [] )
+// const testAtom = laser.lensedAtom( [ 'test', 'delete', 'me' ], stateContainer(), [] )
 // window.testAtom = testAtom
 window.state = state
 
@@ -58,8 +60,8 @@ const listRowLabel = record =>
 // api methods
 // TODO: Try to merge the following two functions into one?
 const loadTableFromApi =
-  R.composeP( X.setOn$( state )( rowsL )
-            , X.loadTableFromApi( apiTableUrl )
+  R.composeP( laser.setOn$( state )( rowsL )
+            , D.loadTableFromApi( apiTableUrl )
             )
 
 // reloads the table if called with []
@@ -73,16 +75,16 @@ const rowByIdL = id =>
 const getRowL = R__.compose( rowByIdL )
                          ( Number )
 // const getById = id =>
-//   X.lensedAtom( rowByIdL( id ), state )
+//   laser.lensedAtom( rowByIdL( id ), state )
 
-const saveRow = X.saveRowToApi_( apiRowUrl )
+const saveRow = D.saveRowToApi_( apiRowUrl )
 
 const validateAndSaveRow = dataL =>
   R__.compose( saveRow( dataL ) )
-           ( R__.compose( X.over$( [ dataL, 'firstName' ] )
+           ( R__.compose( laser.over$( [ dataL, 'firstName' ] )
                                ( R.trim )
                       )
-                      ( X.over$( [ dataL, 'lastName' ] )
+                      ( laser.over$( [ dataL, 'lastName' ] )
                                ( R.trim )
                       )
            )

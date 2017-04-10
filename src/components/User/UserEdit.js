@@ -9,6 +9,7 @@ import * as R__ from 'xioup.ramda'
 import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
+import * as laser from '../../utils/xioup.laser'
 
 // import model
 import M from 'User/UserModel'
@@ -26,7 +27,7 @@ module.exports =
         const uiL = X.appendTo( rowL )( 'ui' )
         const formL = X.appendTo( uiL )( 'form' )
         const initialL = X.appendTo( formL )( 'initial' )
-        const bindValue = X.bindSOn( 'value' )
+        const bindValue = laser.bindSOn( 'value' )
         const bindValueChange = bindValue( 'onchange' )
                                          ( state )
         // console.log( atom() )
@@ -46,23 +47,23 @@ module.exports =
                    }
         // TODO: Add reusable copy function
         const setInitial =
-          X.set$( initialL )
-                ( X.view( dataL )
+          laser.set$( initialL )
+                ( laser.view( dataL )
                         ( state )
                 )
         setInitial( state )
         // TODO: Add reusable compare function
         vn.state.formIsDirty =
           R.converge( X.notEquals
-                    , [ X.view( initialL )
+                    , [ laser.view( initialL )
                       , R__.compose( L.get( dataL ) )
                                  ( R.call )
                       ]
                     )
 
         vn.state.cleanFormOnSave = s =>
-          X.set$( initialL )
-                ( X.view( dataL )( s ) )
+          laser.set$( initialL )
+                ( laser.view( dataL )( s ) )
                 ( s )
         console.log( 'Last Name Lens', lastNameL )
         window.vn = vn

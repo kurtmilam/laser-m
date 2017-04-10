@@ -6,6 +6,7 @@
 // import libraries
 import m from '../../utils/m-mock'
 import * as X from '../../utils/xioup.main.utils'
+import * as laser from '../../utils/xioup.laser'
 
 // import model
 import M from 'User/UserModel'
@@ -25,7 +26,7 @@ const UserShow =
       }
   , view: vn =>
     <div>
-      { M.listRowLabel( X.view( vn.state.rowL )( vn.state.state ) ) }
+      { M.listRowLabel( laser.view( vn.state.rowL )( vn.state.state ) ) }
     </div>
   }
 
