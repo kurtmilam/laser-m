@@ -16,7 +16,7 @@ import M from 'User/UserModel'
 
 const removeListRow =
   R__.compose( X.overOn$( M.state )( M.rowsL ) )
-             ( R.reject )
+             ( R__.compose( R.reject )( R.eqProps ) )
 
 module.exports = vn =>
     <div
@@ -37,7 +37,7 @@ module.exports = vn =>
       >Edit</a>
       &nbsp;
       <button class="button"
-              onclick={ _ => removeListRow( R.eqProps( 'id', vn ) ) }
+              onclick={ _ => removeListRow( 'id', vn ) }
       >Remove</button>
       &nbsp;
       <btn label="polythene works!" raised={ true }/>

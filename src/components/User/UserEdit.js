@@ -29,7 +29,7 @@ module.exports =
         const bindValue = X.bindSOn( 'value' )
         const bindValueChange = bindValue( 'onchange' )
                                          ( state )
-        // console.log( vn.atom() )
+        // console.log( atom() )
         // typeof vn.atom() === 'undefined' if no match is found
         // L.set(  )
         vn.state = { id

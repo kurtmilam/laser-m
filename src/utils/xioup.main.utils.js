@@ -22,7 +22,7 @@ const logWithMsg = msg =>
   R__.tap( R__.compose( R.apply( console.log ) )( R__.compose( R.prepend( msg ) )( list ) ) )
 const logCall = fn => a => R__.tap( R__.compose( console.log )( R.call( fn ) ) )( a )
 
-const list = R.unapply( R.identity )
+const list = R.unapply( R__.identity )
 
 const mapObj = L.modify( L.values )
 
@@ -42,10 +42,10 @@ const isNotUndefined = R__.complement( isUndefined )
 const isFunction = R__.is( Function )
 const isNotFunction = R__.complement( isFunction )
 
-const ifElse = f => g => h => a =>
-  f( a ) ? g( a ) : h( a )
-const when = f => g => a =>
-  ifElse( f )( g )( R__.identity )( a )
+const ifElse = f => g => h => ( ...a ) =>
+  f( ...a ) ? g( ...a ) : h( ...a )
+const when = f => g => ( ...a ) =>
+  ifElse( f )( g )( R__.identity )( ...a )
 
 // not working
 const converge = f => gs => h => R__.compose( R.apply( f ) )
@@ -53,9 +53,9 @@ const converge = f => gs => h => R__.compose( R.apply( f ) )
 
 // not sure why ! can't get the following to work with my ifElse
 const applyUnary =
-  R.reduce( R.ifElse( isFunction )
-                    ( R.call )
-                    ( R.reduced )
+  R.reduce( ifElse( isFunction )
+                  ( R.call )
+                  ( R.reduced )
           )
 const applyUnaryTo = R__.flip( applyUnary )
 

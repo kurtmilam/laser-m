@@ -8,7 +8,7 @@ import * as L from 'partial.lenses'
 
 
 const always = a => _ => a
-const compose = f => g => h => f( g( h ) )
+const compose = f => g => ( ...h ) => f( g( ...h ) )
 const identity = a => a
 const flip = fn => a => b => fn( b )( a )
 const tap = fn => a => {
