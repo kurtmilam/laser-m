@@ -13,8 +13,15 @@ import flyd from 'flyd'
 // config
 const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
 
+// combinators
+// like R.identity
+const I = a => a
+// like R.always
+const K = a => _ => a
+
 // low level
 const compose = f => g => h => f( g( h ) )
+const flip = fn => a => b => fn( b )( a )
 const tap = fn => a => {
   fn( a )
   return a
@@ -30,21 +37,17 @@ const list = R.unapply( R.identity )
 const map = L.modify( L.elems )
 const mapObj = L.modify( L.values )
 
-// like R.identity
-const I = a => a
-// like R.always
-const K = a => _ => a
-
 
 const freeze = Object.freeze
 
-const appendTo = R.flip( R.append )
+const appendTo = flip( R.append )
 
 const complement = R.complement
 const equals = R.equals
 const notEquals = complement( equals )
 const not = a => !a
 // const complement = f => compose( not )( f ) // not working - have to lift it
+
 // is is copied from https://github.com/ramda/ramda/blob/v0.23.0/src/is.js
 const is = Ctor => a =>
   a != null && a.constructor === Ctor || a instanceof Ctor
@@ -57,8 +60,6 @@ const ifElse = f => g => h => a =>
   f( a ) ? g( a ) : h( a )
 const when = f => g => a =>
   ifElse( f )( g )( I )( a )
-
-const flip = fn => a => b => fn( b )( a )
 
 // not working
 const converge = f => gs => h => compose( R.apply( f ) )
@@ -99,14 +100,14 @@ const viewOn = $ => lens => view( lens )( $ )
 // modifyList( R.map( R.overOn( R.lensProp( 'firstName' ), R.toLower) ) )
 // modifyList( R.overOn( R.lensPath( [ 0, 'firstName' ] ), R.toUpper ) )
 
-const saveHistory = logWithMsg( 'Save history here' )
-
+const saveHistory = I // logWithMsg( 'history' )
+// TODO: Only update if the new value != the old value?
 // dispatcher for L.modify and L.get
 const _dispatch = action => updateStream => lens => a => $ =>
   compose( compose( updateStream )
                   ( freeze )
          )
-         ( compose( L[ X.log( action ) ]( lens, X.log( a ) ) )
+         ( compose( L[ action ]( lens, a ) )
                   ( saveHistory )
          )
          ( $() )
@@ -174,6 +175,7 @@ const lensedAtom = function ( lens, $, init ) {
   const withAtom = applyUnaryTo( [ $, lens ] )
   // const stream$ = flyd.stream( init )
   if ( typeof withAtom( viewOn ) === 'undefined' )
+    // The following change isn't really tested. The tested version is commented out
     withAtom( setOn$ )( init )
     // withAtom( setOn )( init )
 

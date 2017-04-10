@@ -18,13 +18,13 @@ module.exports =
         const id = Number( vn.attrs.id )
         const state = M.state
         const rowL = M.getRowL( id )
-        const dataL = [ rowL, 'data' ]
+        const dataL = X.appendTo( rowL )( 'data' )
         // const atom = X.lensedAtom( M.getRowL( id ), M.state )
-        const firstNameL = [ dataL, 'firstName' ]
-        const lastNameL = [ dataL, 'lastName' ]
-        const uiL = [ rowL, 'ui' ]
-        const formL = [ uiL, 'form' ]
-        const initialL = [ formL, 'initial' ]
+        const firstNameL = X.appendTo( dataL )( 'firstName' )
+        const lastNameL = X.appendTo( dataL )( 'lastName' )
+        const uiL = X.appendTo( rowL )( 'ui' )
+        const formL = X.appendTo( uiL )( 'form' )
+        const initialL = X.appendTo( formL )( 'initial' )
         const bindValue = X.bindSOn( 'value' )
         const bindValueChange = bindValue( 'onchange' )
                                          ( state )
@@ -43,12 +43,14 @@ module.exports =
                    , lastNameL
                    , bindLastName2:   _ => bindValueChange( lastNameL )
                    }
+        // TODO: Add reusable copy function
         const setInitial =
           X.set$( initialL )
                 ( X.view( dataL )
                         ( state )
                 )
         setInitial( state )
+        // TODO: Add reusable compare function
         vn.state.formIsDirty =
           R.converge( X.notEquals
                     , [ X.view( initialL )
@@ -61,7 +63,7 @@ module.exports =
           X.set$( initialL )
                 ( X.view( dataL )( s ) )
                 ( s )
-        // console.log( 'Last Name Lens', lastNameL )
+        console.log( 'Last Name Lens', lastNameL )
         window.vn = vn
         // window.onbeforeunload = e => 'are you sure?'
       }

@@ -33,7 +33,8 @@ const initTable =
   , ui: { filter: { by: '' }, sort: { by: [ 'id' ] } }
   }
 
-// const table$ = stateContainer( [ entityName ], initTable )
+// Need to keep this in order to initiate the table with all of its fields
+const table$ = stateContainer( [ entityName ], initTable )
 
 // The following also works:
 // const table$ = flyd.stream( initTable )
@@ -45,16 +46,13 @@ const rowsUIL = [ entityName, 'ui' ]
 // window.testAtom = testAtom
 window.state = state
 
-const dataL = [ 'data' ]
-const dataPropL = X.appendTo( dataL )
-
 //computed properties
 const listRowLabel = record =>
-  L.get( [ dataL, 'id' ], record )
+  L.get( [ 'data', 'id' ], record )
   + '. '
-  + L.get( [ dataL, 'firstName' ], record )
+  + L.get( [ 'data', 'firstName' ], record )
   + ' '
-  + L.get( [ dataL, 'lastName' ], record )
+  + L.get( [ 'data', 'lastName' ], record )
 
 // api methods
 // TODO: Try to merge the following two functions into one?
@@ -68,10 +66,10 @@ const loadTableFromApi =
 // useful for conditionally loading from the Api when the atom is empty
 const loadTable = X.when( R.equals( [] ) )( loadTableFromApi )
 
+// TODO: lensCreator? lc() returns the lens, lc(x) returns new lc with x appended to previous lens
 const rowByIdL = id =>
-  L.compose( rowsL
-           , L.find( R.whereEq( { id } ) )
-           )
+  X.appendTo( rowsL )
+            ( L.find( R.whereEq( { id } ) ) )
 const getRowL = X.compose( rowByIdL )
                          ( Number )
 // const getById = id =>
@@ -99,7 +97,7 @@ module.exports =
   , loadTable
   , rowByIdL
   , getRowL
-  , getById
+  // , getById
   , validateAndSaveRow
   , listRowLabel
   }
