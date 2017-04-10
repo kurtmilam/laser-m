@@ -5,7 +5,7 @@
 
 // import libraries
 import m from '../../utils/m-mock'
-import R__ from 'xioup.ramda'
+import * as R__ from 'xioup.ramda'
 import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'

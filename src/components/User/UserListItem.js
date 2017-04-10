@@ -5,7 +5,7 @@
 
 // import libraries
 import m from '../../utils/m-mock'
-import R__ from 'xioup.ramda'
+import * as R__ from 'xioup.ramda'
 import R from 'ramda'
 import L from 'partial.lenses'
 // import btn from 'polythene/button/button'
