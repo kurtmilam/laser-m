@@ -4,8 +4,7 @@
 // src/components/User/UserModel.js
 
 // import libraries
-import * as R__ from 'xioup.ramda'
-import R from 'ramda'
+import * as R from 'xioup.ramda'
 import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
 import * as laser from '../../utils/xioup.laser'
@@ -64,13 +63,13 @@ const loadTableFromApi =
 
 // reloads the table if called with []
 // useful for conditionally loading from the Api when the atom is empty
-const loadTable = R__.when( R__.equals( [] ) )( loadTableFromApi )
+const loadTable = R.when( R.equals( [] ) )( loadTableFromApi )
 
 // TODO: lensCreator? lc() returns the lens, lc(x) returns new lc with x appended to previous lens
 const rowByIdL = id =>
   X.appendTo( rowsL )
             ( L.find( R.whereEq( { id } ) ) )
-const getRowL = R__.compose( rowByIdL )
+const getRowL = R.compose( rowByIdL )
                          ( Number )
 // const getById = id =>
 //   laser.lensedAtom( rowByIdL( id ), state )
@@ -78,8 +77,8 @@ const getRowL = R__.compose( rowByIdL )
 const saveRow = D.saveRowToApi_( apiRowUrl )
 
 const validateAndSaveRow = dataL =>
-  R__.compose( saveRow( dataL ) )
-           ( R__.compose( laser.over$( [ dataL, 'firstName' ] )
+  R.compose( saveRow( dataL ) )
+           ( R.compose( laser.over$( [ dataL, 'firstName' ] )
                                ( R.trim )
                       )
                       ( laser.over$( [ dataL, 'lastName' ] )

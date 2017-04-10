@@ -1,11 +1,11 @@
 /**
  * Created by Kurt on 2017-04-10.
  */
+// src/utils/xioup.laser.js
 
 // import libraries
-import * as R__ from './xioup.ramda'
+import * as R from './xioup.ramda'
 import * as X from './xioup.main.utils'
-import R from 'ramda'
 import * as L from 'partial.lenses'
 import flyd from 'flyd'
 
@@ -13,33 +13,28 @@ import flyd from 'flyd'
 const view = lens => $ => L.get( lens, $() )
 const viewOn = $ => lens => view( lens )( $ )
 
-// For instance:
-// const list = makeStateContainer(['models','users','list'], {})
-// const modifyList = X.updateOn( list, [] )
-// modifyList( R__.map( R.overOn( R.lensProp( 'firstName' ), R.toLower) ) )
-// modifyList( R.overOn( R.lensPath( [ 0, 'firstName' ] ), R.toUpper ) )
+const saveHistory = R.identity // logWithMsg( 'history' )
 
-const saveHistory = R__.identity // logWithMsg( 'history' )
 // TODO: Only update if the new value != the old value?
 // dispatcher for L.modify and L.get
 const _dispatch = action => updateStream => lens => a => $ =>
-  R__.compose( R__.compose( updateStream )
+  R.compose( R.compose( updateStream )
                   ( X.freeze )
          )
-         ( R__.compose( L[ action ]( lens, a ) )
+         ( R.compose( L[ action ]( lens, a ) )
                   ( saveHistory )
          )
          ( $() )
 
 const _setAndReturn$ = $ =>
-  R__.compose( R__.always( $ ) )
+  R.compose( R.always( $ ) )
          ( $ )
 
 // over starts here
 const _dispatchModify = _dispatch( 'modify' )
 
 const over = lens => a => $ =>
-  _dispatchModify( R__.tap( $ ) )
+  _dispatchModify( R.tap( $ ) )
                  ( lens )
                  ( a )
                  ( $ )
@@ -62,7 +57,7 @@ const overOn$ = $ => lens => a =>
 const _dispatchSet = _dispatch( 'set' )
 
 const set = lens => a => $ =>
-  _dispatchSet( R__.tap( $ ) )
+  _dispatchSet( R.tap( $ ) )
               ( lens )
               ( a )
               ( $ )
@@ -94,7 +89,7 @@ const lensedAtom = function ( lens, $, init ) {
   // I had a hard time trying to make the following point-free
   // Also having trouble making it work with my ifElse
   return a =>
-    R.ifElse( X.isUndefined
+    R.ifElse_R( X.isUndefined
             , _ => withAtom( viewOn )
             , withAtom( setOn$ )
             )( a )
@@ -111,33 +106,38 @@ function makeStateContainer( $ ) {
       return lensedAtom( [ 'data' ], $, {} )
       // return $
     }
-    const streamsL = R__.compose( R.pair( 'streams' ) )( X.joinOnDot )
-    const getLensedStream$ = R__.compose( view )( streamsL )( lens )
+    const streamsL = R.compose( R.pair( 'streams' ) )
+                              ( X.joinOnDot )
+    const getLensedStream$ = R.compose( view )
+                                      ( streamsL )
+                                      ( lens )
 
     const dataL = R.prepend( [ 'data' ] )
-    const setData = R__.compose( setOn( $ ) )( dataL )
+    const setData = R.compose( setOn( $ ) )
+                             ( dataL )
 
     const makeUpdaterStream =
-      R__.tap( flyd.on( R__.when( X.isNotUndefined )
+      R.tap( flyd.on( R.when( X.isNotUndefined )
                           ( setData( lens ) )
                     )
            )
 
-    const registerLensedStream = R__.compose( setOn( $ ) )( streamsL )
+    const registerLensedStream = R.compose( setOn( $ ) )( streamsL )
 
     const addToMain$ =
-      R__.compose( R__.tap( registerLensedStream( lens ) ) )
-                        ( R__.compose( flyd.stream )
-                                     ( R__.tap( setData( lens ) ) )
-                        )
+      R.compose( R.tap( registerLensedStream( lens ) ) )
+               ( R.compose( flyd.stream )
+                          ( R.tap( setData( lens ) ) )
+               )
 
-    const makeLensed$ = R__.compose( makeUpdaterStream )( addToMain$ )
+    const makeLensed$ = R.compose( makeUpdaterStream )
+                                 ( addToMain$ )
 
     const lensedStream$ =
-      R__.compose( flyd.isStream )
-             ( getLensedStream$ )( $ )
-               ? getLensedStream$( $ )
-               : makeLensed$( init )
+      R.compose( flyd.isStream )
+               ( getLensedStream$ )( $ )
+                 ? getLensedStream$( $ )
+                 : makeLensed$( init )
 
     return lensedStream$
   }
@@ -151,7 +151,7 @@ const _getEventAttr = attrName => e =>
 
 // setOn may be appropriate here because _getEventAttr is waiting for the event
 const setToAttr = attrName => lens => $ =>
-  R__.compose( setOn$( $ )( lens ) )
+  R.compose( setOn$( $ )( lens ) )
          ( _getEventAttr( attrName ) )
 
 const setToValueAttr = setToAttr( 'value' )
@@ -165,7 +165,7 @@ const bindS = attrName => evtName => lens => atom => (
 const bindSOn = attrName => evtName => atom => lens =>
   bindS( attrName )
        ( evtName )
-       ( R__.when( X.isUndefined )
+       ( R.when( X.isUndefined )
              ( _ => [] )
              ( lens )
        )

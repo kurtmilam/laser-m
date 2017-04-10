@@ -5,49 +5,12 @@
 
 // import libraries
 import m from './m-mock'
-import * as R__ from './xioup.ramda'
-import R from 'ramda'
+import * as R from './xioup.ramda'
 import * as L from 'partial.lenses'
 // import uuidV4 from 'uuid/v4'
 
 // config
 const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
-
-// debug stuff
-const log = R__.tap( console.log )
-const composeLog = f => g => ( ...h ) =>
-  logWithMsg( 'f' )( f( logWithMsg( 'g' )( g( logWithMsg( 'h' )( ...h ) ) ) ) )
-const logWithMsg = msg =>
-  R__.tap( R__.compose( R.apply( console.log ) )( R__.compose( R.prepend( msg ) )( list ) ) )
-const logCall = fn => ( ...a ) => R__.tap( R__.compose( console.log )( R.call( fn ) ) )( ...a )
-
-// array functions
-const list = R.unapply( R__.identity )
-const appendTo = R__.flip( R.append )
-const _sortAsc = R__.compose( R.sort )( R.ascend )
-const sortAscByProp = R__.compose( _sortAsc )( L.get )
-const joinOnSpace = R.join( ' ' )
-const joinOnDot = R.join( '.' )
-
-// object functions
-const mapObj = L.modify( L.values )
-const freeze = Object.freeze
-
-// comparison and data type functions
-const notEquals = R__.complement( R__.equals )
-const isUndefined = a => typeof a === 'undefined'
-const isNotUndefined = R__.complement( isUndefined )
-const isFunction = R__.is( Function )
-const isNotFunction = R__.complement( isFunction )
-
-// function functions
-// not sure why ! can't get the following to work with my ifElse
-const applyUnary =
-  R.reduce( R__.ifElse( isFunction )
-                  ( R.call )
-                  ( R.reduced )
-          )
-const applyUnaryTo = R__.flip( applyUnary )
 
 // anchor href functions
 const showRowHref = a => b => `/${ R.toLower( a ) }/${ b.id }`
@@ -57,16 +20,52 @@ const editRowHref = a => b => `/${ R.toLower( a ) }/${ b.id }/edit`
 const m2 = x => y => m( x, y )
 const m3 = x => y => z => m( x, y )
 
+// array functions
+const list = R.unapply( R.identity )
+const appendTo = R.flip( R.append )
+const _sortAsc = R.compose( R.sort )( R.ascend )
+const sortAscByProp = R.compose( _sortAsc )( L.get )
+
+// object functions
+const mapObj = L.modify( L.values )
+const freeze = Object.freeze
+
+// comparison and data type functions
+const notEquals = R.complement( R.equals )
+const isUndefined = a => typeof a === 'undefined'
+const isNotUndefined = R.complement( isUndefined )
+const isFunction = R.is( Function )
+const isNotFunction = R.complement( isFunction )
+
+// function functions
+// not sure why ! can't get the following to work with my ifElse
+const applyUnary =
+  R.reduce( R.ifElse( isFunction )
+                  ( R.call )
+                  ( R.reduced )
+          )
+const applyUnaryTo = R.flip( applyUnary )
+
+// string functions
+const joinOnDot = R.join( '.' )
+
+// debug stuff
+const log = R.tap( console.log )
+const composeLog = f => g => ( ...h ) =>
+  logWithMsg( 'f' )( f( logWithMsg( 'g' )( g( logWithMsg( 'h' )( ...h ) ) ) ) )
+const logWithMsg = msg =>
+  R.tap( R.compose( R.apply( console.log ) )( R.compose( R.prepend( msg ) )( list ) ) )
+const logCall = fn => ( ...a ) => R.tap( R.compose( console.log )( R.call( fn ) ) )( ...a )
+
 const X =
   { apiUrlRoot
-  , log
-  , composeLog
-  , logCall
+  , showRowHref // tested
+  , editRowHref // tested
+  , m2
+  , m3
   , list
   , appendTo
   , sortAscByProp
-  , joinOnSpace
-  , joinOnDot
   , mapObj
   , freeze
   , notEquals
@@ -76,10 +75,10 @@ const X =
   , isNotFunction
   , applyUnary
   , applyUnaryTo
-  , showRowHref // tested
-  , editRowHref // tested
-  , m2
-  , m3
+  , joinOnDot
+  , log
+  , composeLog
+  , logCall
   }
 
 module.exports = X

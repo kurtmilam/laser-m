@@ -5,7 +5,7 @@
 
 // import libraries
 import m from '../../utils/m-mock'
-import * as R__ from 'xioup.ramda'
+import * as R from 'xioup.ramda'
 // import btn from 'polythene/button/button'
 import * as X from '../../utils/xioup.main.utils'
 import * as laser from '../../utils/xioup.laser'
@@ -20,7 +20,7 @@ const setSortBy = laser.setOn$( M.state )( [ M.rowsUIL, sortByL ] )
 
 // don't make the following point-free without testing, first
 const drawRowNodes = rows =>
-  R__.compose( R__.map( UserListRow ) )
+  R.compose( R.map( UserListRow ) )
            ( X.sortAscByProp( laser.viewOn( M.state )
                                       ( [ M.rowsUIL, sortByL ] )
                             )

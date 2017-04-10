@@ -1,12 +1,12 @@
 /**
  * Created by Kurt on 2017-04-10.
  */
+// src/utils/xioup.data.js
 
 // import libraries
 import m from './m-mock'
-import * as R__ from './xioup.ramda'
+import * as R from './xioup.ramda'
 import * as X from './xioup.main.utils'
-import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as laser from './xioup.laser'
 
@@ -16,12 +16,12 @@ const dataContainerSpec =
   , children: []
   , computed: {}
   , data: X.freeze
-  , rowType: R__.always( 'e.g. users, people' )
+  , rowType: R.always( 'e.g. users, people' )
   , ui: {}
   }
-const initDataContainer = R__.compose( X.freeze )( R.applySpec )( dataContainerSpec )
-const putDataInContainer = R__.compose( R__.map( initDataContainer ) )( L.get( [ 'data' ] ) )
-const freezeDataContainer = R__.compose( X.freeze )( putDataInContainer )
+const initDataContainer = R.compose( X.freeze )( R.applySpec )( dataContainerSpec )
+const putDataInContainer = R.compose( R.map( initDataContainer ) )( L.get( [ 'data' ] ) )
+const freezeDataContainer = R.compose( X.freeze )( putDataInContainer )
 
 // TODO: Make it possible to send in a preprocessor / reducer (for instance, for sorting)
 const loadTableFromApi = apiUrl => _ =>
@@ -41,7 +41,7 @@ const loadRowFromApi = apiUrl => $ => id =>
              , withCredentials: true
              }
            )
-  .then( R__.compose( $, initDataContainer ) )
+  .then( R.compose( $, initDataContainer ) )
 
 // TODO: Make it possible to send in a preprocessor / reducer (for instance, for validation)
 const saveRowToApi = apiUrl => $ => dataL =>

@@ -5,8 +5,7 @@
 
 // import libraries
 import m from '../../utils/m-mock'
-import * as R__ from 'xioup.ramda'
-import R from 'ramda'
+import * as R from 'xioup.ramda'
 import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
 import * as laser from '../../utils/xioup.laser'
@@ -56,7 +55,7 @@ module.exports =
         vn.state.formIsDirty =
           R.converge( X.notEquals
                     , [ laser.view( initialL )
-                      , R__.compose( L.get( dataL ) )
+                      , R.compose( L.get( dataL ) )
                                  ( R.call )
                       ]
                     )
@@ -65,7 +64,8 @@ module.exports =
           laser.set$( initialL )
                 ( laser.view( dataL )( s ) )
                 ( s )
-        console.log( 'Last Name Lens', lastNameL )
+        // console.log( 'Last Name Lens', lastNameL )
+        console.log( R.toLower('SSS') )
         window.vn = vn
         // window.onbeforeunload = e => 'are you sure?'
       }
