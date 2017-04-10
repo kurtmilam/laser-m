@@ -5,6 +5,7 @@
 
 // import libraries
 import m from '../../utils/m-mock'
+import R__ from 'xioup.ramda'
 import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
@@ -58,7 +59,6 @@ const listRowLabel = record =>
 // TODO: Try to merge the following two functions into one?
 const loadTableFromApi =
   R.composeP( X.setOn$( state )( rowsL )
-            , X.map( X.freeze )
             , X.loadTableFromApi( apiTableUrl )
             )
 
@@ -70,7 +70,7 @@ const loadTable = X.when( R.equals( [] ) )( loadTableFromApi )
 const rowByIdL = id =>
   X.appendTo( rowsL )
             ( L.find( R.whereEq( { id } ) ) )
-const getRowL = X.compose( rowByIdL )
+const getRowL = R__.compose( rowByIdL )
                          ( Number )
 // const getById = id =>
 //   X.lensedAtom( rowByIdL( id ), state )
@@ -78,8 +78,8 @@ const getRowL = X.compose( rowByIdL )
 const saveRow = X.saveRowToApi_( apiRowUrl )
 
 const validateAndSaveRow = dataL =>
-  X.compose( saveRow( dataL ) )
-           ( X.compose( X.over$( [ dataL, 'firstName' ] )
+  R__.compose( saveRow( dataL ) )
+           ( R__.compose( X.over$( [ dataL, 'firstName' ] )
                                ( R.trim )
                       )
                       ( X.over$( [ dataL, 'lastName' ] )

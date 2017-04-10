@@ -5,6 +5,7 @@
 
 // import libraries
 import m from '../../utils/m-mock'
+import R__ from 'xioup.ramda'
 import R from 'ramda'
 import L from 'partial.lenses'
 // import btn from 'polythene/button/button'
@@ -14,7 +15,10 @@ import * as X from '../../utils/xioup.main.utils'
 import M from 'User/UserModel'
 
 const removeListRow =
-  R.compose( X.overOn$( M.state )( M.rowsL ), R.reject, R.eqProps )
+  R__.compose( X.overOn$( M.state )( M.rowsL ) )
+             (  R__.compose( R.reject )
+                           ( R.eqProps )
+             )
 
 module.exports = vn =>
     <div

@@ -5,6 +5,7 @@
 
 // import libraries
 import m from '../../utils/m-mock'
+import R__ from 'xioup.ramda'
 import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
@@ -54,7 +55,7 @@ module.exports =
         vn.state.formIsDirty =
           R.converge( X.notEquals
                     , [ X.view( initialL )
-                      , X.compose( L.get( dataL ) )
+                      , R__.compose( L.get( dataL ) )
                                  ( R.call )
                       ]
                     )

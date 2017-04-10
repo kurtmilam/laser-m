@@ -5,6 +5,7 @@
 
 // import libraries
 import m from '../../utils/m-mock'
+import R__ from 'xioup.ramda'
 import R from 'ramda'
 // import btn from 'polythene/button/button'
 import * as X from '../../utils/xioup.main.utils'
@@ -19,7 +20,7 @@ const setSortBy = X.setOn$( M.state )( [ M.rowsUIL, sortByL ] )
 
 // don't make the following point-free without testing, first
 const drawRowNodes = rows =>
-  X.compose( X.map( UserListRow ) )
+  R__.compose( R__.map( UserListRow ) )
            ( X.sortAscByProp( X.viewOn( M.state )
                                       ( [ M.rowsUIL, sortByL ] )
                             )

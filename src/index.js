@@ -5,6 +5,7 @@
 
 // import libraries
 import m from 'm-mock'
+import R__ from 'xioup.ramda'
 import R from 'ramda'
 import * as L from 'partial.lenses'
 import * as X from 'xioup.main.utils'
@@ -27,11 +28,12 @@ import ContactEdit from 'Contact/ContactEdit'
 // m.route.prefix( '' )
 
 const typeEquals = ( type ) =>
-  R.compose( R.equals( type ), R.type )
+  R__.compose( R.equals( type ) )( R.type )
 
 const composeComponents =
   R.curry( ( root, parent, main ) =>
-             R.compose( X.m2( root ), X.m2( parent ), X.m2( main ), L.get( 'attrs' ) )
+             R__.compose( R__.compose( X.m2( root ) )( X.m2( parent ) ) )
+                        ( R__.compose( X.m2( main ) )( L.get( 'attrs' ) ) )
         )
 const composeAppComponent = composeComponents( App )
 const composeAppLayoutComponent = composeAppComponent( Layout )
