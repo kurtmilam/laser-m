@@ -15,7 +15,8 @@ import * as X from '../../utils/xioup.main.utils'
 import M from 'User/UserModel'
 
 const removeListRow =
-  R.compose( X.overOn$( M.state )( M.rowsL ), R.reject,  R.eqProps )
+  R__.compose( X.overOn$( M.state )( M.rowsL ) )
+             ( R.reject )
 
 module.exports = vn =>
     <div
@@ -36,7 +37,7 @@ module.exports = vn =>
       >Edit</a>
       &nbsp;
       <button class="button"
-              onclick={ _ => removeListRow( 'id', vn ) }
+              onclick={ _ => removeListRow( R.eqProps( 'id', vn ) ) }
       >Remove</button>
       &nbsp;
       <btn label="polythene works!" raised={ true }/>
