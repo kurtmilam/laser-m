@@ -37,12 +37,9 @@ const notEquals = R__.complement( R__.equals )
 
 
 
-// is is copied from https://github.com/ramda/ramda/blob/v0.23.0/src/is.js
-const is = Ctor => a =>
-  a != null && a.constructor === Ctor || a instanceof Ctor
 const isUndefined = a => typeof a === 'undefined'
 const isNotUndefined = R__.complement( isUndefined )
-const isFunction = is( Function )
+const isFunction = R__.is( Function )
 const isNotFunction = R__.complement( isFunction )
 
 const ifElse = f => g => h => a =>
@@ -294,7 +291,6 @@ const X =
   , mapObj
   , appendTo
   , notEquals
-  , is
   , isUndefined
   , isNotUndefined
   , isFunction
