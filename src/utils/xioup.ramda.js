@@ -17,6 +17,7 @@ const tap = fn => a => {
 }
 const map = L.modify( L.elems )
 import equals from 'ramda/src/equals.js'
+const not = a => !a
 import complement from 'ramda/src/complement.js'
 // const complement = f => R__.compose( not )( f ) // not working - have to lift it
 
@@ -28,6 +29,7 @@ const R__ =
   , tap
   , map
   , equals
+  , not
   , complement
   }
 

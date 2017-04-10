@@ -31,9 +31,11 @@ const freeze = Object.freeze
 
 const appendTo = R__.flip( R.append )
 
-
 const notEquals = R__.complement( R__.equals )
-const not = a => !a
+
+
+
+
 
 // is is copied from https://github.com/ramda/ramda/blob/v0.23.0/src/is.js
 const is = Ctor => a =>
@@ -292,7 +294,6 @@ const X =
   , mapObj
   , appendTo
   , notEquals
-  , not
   , is
   , isUndefined
   , isNotUndefined
