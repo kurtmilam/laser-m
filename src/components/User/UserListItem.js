@@ -15,10 +15,7 @@ import * as X from '../../utils/xioup.main.utils'
 import M from 'User/UserModel'
 
 const removeListRow =
-  R__.compose( X.overOn$( M.state )( M.rowsL ) )
-             (  R__.compose( R.reject )
-                           ( R.eqProps )
-             )
+  R.compose( X.overOn$( M.state )( M.rowsL ), R.reject,  R.eqProps )
 
 module.exports = vn =>
     <div
