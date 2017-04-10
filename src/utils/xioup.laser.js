@@ -99,7 +99,8 @@ const lensedAtom = function ( lens, $, init ) {
 // const _lensedAtom = R.curry( _lensedAtom )
 // const _lensedAtom = lens => $ => init => _lensedAtom( lens, $, init )
 
-function makeStateContainer( $ ) {
+function makeStateContainer() {
+  const $ = flyd.stream( { data: {}, history: [], meta: {}, streams: {} } )
   return function ( lens, init ) {
     // return a lensedAtom on [ 'data' ] in the state stream if no arguments are supplied
     if( X.isUndefined( lens ) ) {
