@@ -24,6 +24,11 @@ const is = Ctor => a =>
 import complement from 'ramda/src/complement.js'
 // const complement = f => R__.compose( not )( f ) // not working - have to lift it
 
+const ifElse = f => g => h => ( ...a ) =>
+  f( ...a ) ? g( ...a ) : h( ...a )
+const when = f => g => ( ...a ) =>
+  ifElse( f )( g )( R__.identity )( ...a )
+
 const R__ =
   { always
   , compose
@@ -35,6 +40,8 @@ const R__ =
   , not
   , is
   , complement
+  , ifElse
+  , when
   }
 
 module.exports = R__

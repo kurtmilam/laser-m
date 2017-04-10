@@ -36,16 +36,10 @@ const notEquals = R__.complement( R__.equals )
 
 
 
-
 const isUndefined = a => typeof a === 'undefined'
 const isNotUndefined = R__.complement( isUndefined )
 const isFunction = R__.is( Function )
 const isNotFunction = R__.complement( isFunction )
-
-const ifElse = f => g => h => ( ...a ) =>
-  f( ...a ) ? g( ...a ) : h( ...a )
-const when = f => g => ( ...a ) =>
-  ifElse( f )( g )( R__.identity )( ...a )
 
 // not working
 const converge = f => gs => h => R__.compose( R.apply( f ) )
@@ -53,7 +47,7 @@ const converge = f => gs => h => R__.compose( R.apply( f ) )
 
 // not sure why ! can't get the following to work with my ifElse
 const applyUnary =
-  R.reduce( ifElse( isFunction )
+  R.reduce( R__.ifElse( isFunction )
                   ( R.call )
                   ( R.reduced )
           )
@@ -159,6 +153,7 @@ const lensedAtom = function ( lens, $, init ) {
     // withAtom( setOn )( init )
 
   // I had a hard time trying to make the following point-free
+  // Also having trouble making it work with my ifElse
   return a =>
     R.ifElse( isUndefined
             , _ => withAtom( viewOn )
@@ -184,7 +179,7 @@ function makeStateContainer( $ ) {
     const setData = R__.compose( setOn( $ ) )( dataL )
     
     const makeUpdaterStream =
-      R__.tap( flyd.on( when( isNotUndefined )
+      R__.tap( flyd.on( R__.when( isNotUndefined )
                           ( setData( lens ) )
                     )
            )
@@ -231,7 +226,7 @@ const bindS = attrName => evtName => lens => atom => (
 const bindSOn = attrName => evtName => atom => lens =>
   bindS( attrName )
        ( evtName )
-       ( when( isUndefined )
+       ( R__.when( isUndefined )
              ( _ => [] )
              ( lens )
        )
@@ -295,8 +290,6 @@ const X =
   , isNotUndefined
   , isFunction
   , isNotFunction
-  , ifElse
-  , when
   // , converge // not working
   , applyUnary
   , applyUnaryTo

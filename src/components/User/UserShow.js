@@ -16,7 +16,7 @@ const UserShow =
         const id = Number( vn.attrs.id )
         const state = M.state
         const rowL = M.getRowL( id )
-        const dataL = [ rowL, 'data' ]
+        const dataL = X.appendTo( rowL, 'data' )
         vn.state = { id
                    , state
                    , rowL
