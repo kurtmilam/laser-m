@@ -28,7 +28,7 @@ import ContactEdit from 'Contact/ContactEdit'
 // m.route.prefix( '' )
 
 const typeEquals = ( type ) =>
-  R__.compose( R.equals( type ) )( R.type )
+  R__.compose( R__.equals( type ) )( R.type )
 
 const composeComponents =
   R.curry( ( root, parent, main ) =>

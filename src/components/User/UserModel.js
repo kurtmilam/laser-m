@@ -64,7 +64,7 @@ const loadTableFromApi =
 
 // reloads the table if called with []
 // useful for conditionally loading from the Api when the atom is empty
-const loadTable = X.when( R.equals( [] ) )( loadTableFromApi )
+const loadTable = X.when( R__.equals( [] ) )( loadTableFromApi )
 
 // TODO: lensCreator? lc() returns the lens, lc(x) returns new lc with x appended to previous lens
 const rowByIdL = id =>
