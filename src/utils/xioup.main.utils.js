@@ -162,13 +162,6 @@ const setOn$ = $ => lens => a =>
       ( a )
       ( $ )
 
-// convenience function that can be called with a function or value
-const update = lens => value =>
-  isFunction( value )
-    ? over( lens )( value )
-    : set( lens )( value )
-const updateOn = $ => lens => value => update( lens )( value )( $ )
-
 const emptyStream = lens => over( lens )( R.empty )
 
 const lensedAtom = function ( lens, $, init ) {
@@ -352,8 +345,6 @@ const X =
   , set$
   , setOn // tested
   , setOn$
-  , update // tested
-  , updateOn // tested
   , setToAttr
   , setToValueAttr
   , bindS

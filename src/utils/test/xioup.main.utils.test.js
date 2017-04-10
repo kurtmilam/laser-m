@@ -116,34 +116,6 @@ describe( 'setOn()'
           }
        )
 
-describe( 'update()'
-        , () => {
-            const o1 = { a: { b: 2 } }
-            const $ = flyd.stream( o1 )
-            it( 'dispatches to "over" when value is a function'
-              , () => wish( X.update( [ 'a', 'b' ] )( inc )( $ ).a.b === 3 )
-             )
-            it( 'dispatches to "set" when value is not a function'
-              , () => wish( X.update( [ 'a', 'b' ] )( 0 )( $ ).a.b === 0 )
-             )
-            after( 'End $', () => $.end() )
-          }
-       )
-
-describe( 'updateOn()'
-        , () => {
-            const o1 = { a: { b: 2 } }
-            const $ = flyd.stream( o1 )
-            it( 'dispatches to "over" when value is a function'
-              , () => wish( X.updateOn( $ )( [ 'a', 'b' ] )( inc ).a.b === 3 )
-             )
-            it( 'dispatches to "set" when value is not a function'
-              , () => wish( X.updateOn( $ )( [ 'a', 'b' ] )( 0 ).a.b === 0 )
-             )
-            after( 'End $', () => $.end() )
-          }
-       )
-
 // stateContainer
 describe( 'stateContainer()'
         , () => {
