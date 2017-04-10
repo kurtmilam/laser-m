@@ -8,7 +8,6 @@ import * as R__ from './xioup.ramda'
 import * as X from './xioup.main.utils'
 import R from 'ramda'
 import * as L from 'partial.lenses'
-import flyd from 'flyd'
 import * as laser from './xioup.laser'
 
 // api model functions
