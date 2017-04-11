@@ -62,8 +62,11 @@ import pipe from 'ramda/src/pipe.js'
 import whereEq from 'ramda/src/whereEq.js'
 import unnest from 'ramda/src/unnest.js'
 import curry from 'ramda/src/curry.js'
+import eqProps from 'ramda/src/eqProps.js'
+import reject from 'ramda/src/reject.js'
 
 
+import compose_R from 'ramda/src/compose.js'
 import ifElse_R from 'ramda/src/ifElse.js'
 
 // sort, ascend, call, reduce, reduced
@@ -104,6 +107,9 @@ const R =
   , whereEq
   , unnest
   , curry
+  , eqProps
+  , reject
+  , compose_R
   }
 
 module.exports = R

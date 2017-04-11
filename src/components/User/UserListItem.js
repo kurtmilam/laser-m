@@ -15,9 +15,9 @@ import M from 'User/UserModel'
 
 const removeListRow =
   R.compose( laser.overOn$( M.state )( M.rowsL ) )
-             ( R.compose( R.reject )
-                          ( R.eqProps )
-             )
+           ( R.compose( R.reject )
+                      ( R.eqProps )
+           )
 
 module.exports = vn =>
     <div
