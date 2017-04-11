@@ -96,16 +96,18 @@ module.exports =
         <input class="input" type="text" placeholder="Age"
                { ...vn.state.bindAge2() }/>
       </label>
-      <button class="button"
-              onclick={ _ => R.composeP( vn.state.cleanFormOnSave
-                                       , M.validateAndSaveRow( vn.state.dataL )
-                                       )
-                                       ( vn.state.state )
-                      }
-      >Save</button>
-      <button class="button"
-         href={ `/${ M.entityName }/` }
-         oncreate={ m.route.link }
-      >Cancel</button>
+      <div class="navbar">
+        <button class="button"
+                onclick={ _ => R.composeP( vn.state.cleanFormOnSave
+                                         , M.validateAndSaveRow( vn.state.dataL )
+                                         )
+                                         ( vn.state.state )
+                        }
+        >Save</button>
+        <button class="button"
+           href={ `/${ M.entityName }/` }
+           oncreate={ m.route.link }
+        >Cancel</button>
+      </div>
     </div>
   }

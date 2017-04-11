@@ -5,8 +5,7 @@
 
 // import libraries
 import m from 'm-mock'
-import * as R__ from 'xioup.ramda'
-import R from 'ramda'
+import * as R from 'xioup.ramda'
 import * as L from 'partial.lenses'
 import * as X from 'xioup.main.utils'
 
@@ -19,21 +18,21 @@ import Home from 'Home/Home'
 import UserList from 'User/UserList'
 import UserShow from 'User/UserShow'
 import UserEdit from 'User/UserEdit'
-import ContactList from 'Contact/ContactList'
-import ContactShow from 'Contact/ContactShow'
-import ContactEdit from 'Contact/ContactEdit'
+// import ContactList from 'Contact/ContactList'
+// import ContactShow from 'Contact/ContactShow'
+// import ContactEdit from 'Contact/ContactEdit'
 
 // get rid of the hashBang in front of routes
 // see: http://mithril.js.org/route.html#how-it-works
 // m.route.prefix( '' )
 
 const typeEquals = ( type ) =>
-  R__.compose( R__.equals( type ) )( R.type )
+  R.compose( R.equals( type ) )( R.type )
 
 const composeComponents =
   R.curry( ( root, parent, main ) =>
-             R__.compose( R__.compose( X.m2( root ) )( X.m2( parent ) ) )
-                        ( R__.compose( X.m2( main ) )( L.get( 'attrs' ) ) )
+             R.compose( R.compose( X.m2( root ) )( X.m2( parent ) ) )
+                        ( R.compose( X.m2( main ) )( L.get( 'attrs' ) ) )
         )
 const composeAppComponent = composeComponents( App )
 const composeAppLayoutComponent = composeAppComponent( Layout )

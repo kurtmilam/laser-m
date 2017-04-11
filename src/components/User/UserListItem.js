@@ -5,8 +5,7 @@
 
 // import libraries
 import m from '../../utils/m-mock'
-import * as R__ from 'xioup.ramda'
-import R from 'ramda'
+import * as R from 'xioup.ramda'
 // import btn from 'polythene/button/button'
 import * as X from '../../utils/xioup.main.utils'
 import * as laser from '../../utils/xioup.laser'
@@ -15,8 +14,8 @@ import * as laser from '../../utils/xioup.laser'
 import M from 'User/UserModel'
 
 const removeListRow =
-  R__.compose( laser.overOn$( M.state )( M.rowsL ) )
-             ( R__.compose( R.reject )
+  R.compose( laser.overOn$( M.state )( M.rowsL ) )
+             ( R.compose( R.reject )
                           ( R.eqProps )
              )
 

@@ -26,7 +26,7 @@ const is = Constructor => a =>
 const ifElse = f => g => h => ( ...a ) =>
   f( ...a ) ? g( ...a ) : h( ...a )
 const when = f => g => ( ...a ) =>
-  ifElse( f )( g )( R__.identity )( ...a )
+  ifElse( f )( g )( identity )( ...a )
 
 
 const join = a => b =>
@@ -61,13 +61,14 @@ import composeP from 'ramda/src/composeP.js'
 import pipe from 'ramda/src/pipe.js'
 import whereEq from 'ramda/src/whereEq.js'
 import unnest from 'ramda/src/unnest.js'
+import curry from 'ramda/src/curry.js'
 
 
 import ifElse_R from 'ramda/src/ifElse.js'
 
 // sort, ascend, call, reduce, reduced
 
-const R__ =
+const R =
   { always
   , compose
   , complement
@@ -102,6 +103,7 @@ const R__ =
   , pipe
   , whereEq
   , unnest
+  , curry
   }
 
-module.exports = R__
+module.exports = R
