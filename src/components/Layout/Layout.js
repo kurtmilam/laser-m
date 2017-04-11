@@ -9,11 +9,11 @@ import * as L from 'partial.lenses'
 module.exports =
   { view: vn =>
     <layout class="layout">
-      <nav class="menu">
-        <a href="/" oncreate={ m.route.link }>
+      <nav class="navbar">
+        <a class="button" href="/" oncreate={ m.route.link }>
           Home
         </a>
-        <a href="/users" oncreate={ m.route.link }>
+        <a class="button" href="/users" oncreate={ m.route.link }>
           Users
         </a>
       </nav>

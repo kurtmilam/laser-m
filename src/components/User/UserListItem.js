@@ -24,23 +24,21 @@ module.exports = vn =>
     <div
       class={ `${ M.entityName }-list-item list-item` }
       key={ vn.id }>
-      <span>
+      <div class="list-item-label">
         { M.listRowLabel( vn ) }
-      </span>
-      &nbsp;&nbsp;
-      <a class="button"
-         href={ X.showRowHref( M.entityName )( vn ) }
-         oncreate={ m.route.link }
-      >View</a>
-      &nbsp;
-      <a class="button"
-         href={ X.editRowHref( M.entityName )( vn ) }
-         oncreate={ m.route.link }
-      >Edit</a>
-      &nbsp;
-      <button class="button"
-              onclick={ _ => removeListRow( 'id', vn ) }
-      >Remove</button>
-      &nbsp;
-      <btn label="polythene works!" raised={ true }/>
+      </div>
+      <div class="list-item-buttons">
+        <a class="button"
+           href={ X.showRowHref( M.entityName )( vn ) }
+           oncreate={ m.route.link }
+        >View</a>
+        <a class="button"
+           href={ X.editRowHref( M.entityName )( vn ) }
+           oncreate={ m.route.link }
+        >Edit</a>
+        <button class="button"
+                onclick={ _ => removeListRow( 'id', vn ) }
+        >Remove</button>
+        <btn label="polythene works!" raised={ true }/>
+      </div>
     </div>

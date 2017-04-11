@@ -103,10 +103,9 @@ module.exports =
                                        ( vn.state.state )
                       }
       >Save</button>
-      &nbsp;
-      <a class="button"
+      <button class="button"
          href={ `/${ M.entityName }/` }
          oncreate={ m.route.link }
-      >Cancel</a>
+      >Cancel</button>
     </div>
   }

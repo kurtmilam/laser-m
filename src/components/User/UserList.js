@@ -34,7 +34,7 @@ module.exports =
   // , onremove: M.rowsA.end()
   , view: vn =>
       <div
-        class={ `${ M.entityName }-list` }>
+        class={ `${ M.entityName }-list list` }>
         <btn label="polythene works!" raised={ true }/>
         <label class="label">
           Filter
@@ -43,19 +43,16 @@ module.exports =
           />
         </label>
         <div
-          class={ `${ M.entityName }-list-header list-header` }>
+          class={ `${ M.entityName }-list-header navbar` }>
           <button class="button"
             onclick={ _ => setSortBy( [ 'data', 'id' ] ) }
           >Order By Id</button>
-          &nbsp;&nbsp;
           <button class="button"
             onclick={ _ => setSortBy( [ 'data', 'lastName' ] ) }
           >Order By Last Name</button>
-          &nbsp;&nbsp;
           <button class="button"
             onclick={ _ => setSortBy( [ 'data', 'firstName' ] ) }
           >Order By First Name</button>
-          &nbsp;&nbsp;
           <button class="button"
             onclick={ _ => M.loadTableFromApi() }
           >Refresh</button>
