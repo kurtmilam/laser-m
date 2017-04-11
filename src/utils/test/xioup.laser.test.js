@@ -41,8 +41,10 @@ describe( 'empty$()'
                           )
              )
             it( 'returns a function'
-              , () => wish( X.isFunction( laser.empty$( [] )
-                                                      ( $( 'string' ) ) ) )
+              , () => wish( X.isFn( laser.empty$( [] )
+                                                ( $( 'string' ) )
+                                  )
+                          )
              )
             after( 'End $', () => $.end() )
           }
@@ -77,7 +79,7 @@ describe( 'over$()'
               , () => wish( equals( laser.over$( [ 'a', 'b' ] )( inc )( $ )(), o2 ) )
               )
             it( 'returns a function'
-              , () => wish( X.isFunction( laser.over$( [ 'a', 'b' ] )( inc )( $ ) ) )
+              , () => wish( X.isFn( laser.over$( [ 'a', 'b' ] )( inc )( $ ) ) )
               )
             after( 'End $', () => $.end() )
           }
@@ -104,7 +106,7 @@ describe( 'set$()'
               , () => wish( equals( laser.set$( [ 'a', 'b' ] )( 3 )( $ )(), o2 ) )
               )
             it( 'returns a function'
-              , () => wish( X.isFunction( laser.set$( [ 'a', 'b' ] )( 1 )( $ ) ) )
+              , () => wish( X.isFn( laser.set$( [ 'a', 'b' ] )( 1 )( $ ) ) )
               )
             after( 'End $', () => $.end() )
           }
@@ -137,7 +139,7 @@ describe( 'stateContainer()'
             const stateSlice$ = stateContainer( p2, o1 )
             const stateSlice1$ = stateContainer( p2, o1 )
             it( 'stateContainer() returns a function (fn)'
-              , () => wish( X.isFunction( stateContainer ) )
+              , () => wish( X.isFn( stateContainer ) )
              )
             it( 'fn( path, initialValue ) returns a flyd.stream'
               , () => wish( flyd.isStream( stateSlice$ ) )

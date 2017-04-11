@@ -53,7 +53,7 @@ module.exports =
         setInitial( state )
         // TODO: Add reusable compare function
         vn.state.formIsDirty =
-          R.converge( X.notEquals
+          R.converge( X.notEq
                     , [ laser.view( initialL )
                       , R.compose( L.get( dataL ) )
                                  ( R.call )

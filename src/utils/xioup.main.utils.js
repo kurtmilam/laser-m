@@ -14,7 +14,7 @@ const apiUrlRoot = 'http://rem-rest-api.herokuapp.com/api'
 
 // anchor href functions
 const showRowHref = a => b => `/${ R.toLower( a ) }/${ b.id }`
-const editRowHref = a => b => `/${ R.toLower( a ) }/${ b.id }/edit`
+const editRowHref = a => b => `${ showRowHref( a )( b ) }/edit`
 
 // mithril component functions
 const m2 = x => y => m( x, y )
@@ -31,16 +31,16 @@ const mapObj = L.modify( L.values )
 const freeze = Object.freeze
 
 // comparison and data type functions
-const notEquals = R.complement( R.equals )
-const isUndefined = a => typeof a === 'undefined'
-const isNotUndefined = R.complement( isUndefined )
-const isFunction = R.is( Function )
-const isNotFunction = R.complement( isFunction )
+const notEq = R.complement( R.equals )
+const isDef = a => typeof a !== 'undefined'
+const notDef = R.complement( isDef )
+const isFn = R.is( Function )
+const notFn = R.complement( isFn )
 
 // function functions
-// not sure why ! can't get the following to work with my ifElse
+// not sure I had trouble getting the following to work with my ifElse
 const applyUnary =
-  R.reduce( R.ifElse( isFunction )
+  R.reduce( R.ifElse( isFn )
                   ( R.call )
                   ( R.reduced )
           )
@@ -68,11 +68,11 @@ const X =
   , sortAscByProp
   , mapObj
   , freeze
-  , notEquals
-  , isUndefined
-  , isNotUndefined
-  , isFunction
-  , isNotFunction
+  , notEq
+  , isDef
+  , notDef
+  , isFn
+  , notFn
   , applyUnary
   , applyUnaryTo
   , joinOnDot

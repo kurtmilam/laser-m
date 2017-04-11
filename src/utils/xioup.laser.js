@@ -67,7 +67,7 @@ const lensedAtom = function ( lens, $, init ) {
   // I had a hard time trying to make the following point-free
   // Also having trouble making it work with my ifElse
   return a =>
-    R.ifElse_R( X.isUndefined
+    R.ifElse_R( X.notDef
             , _ => withAtom( viewOn )
             , withAtom( setOn$ )
             )( a )
@@ -83,7 +83,7 @@ function makeStateContainer( _$ ) {
           : flyd.stream( { data: {}, history: [], meta: {}, streams: {} } )
   return function ( lens, init ) {
     // return a lensedAtom on [ 'data' ] in the state stream if no arguments are supplied
-    if( X.isUndefined( lens ) ) {
+    if( X.notDef( lens ) ) {
       return lensedAtom( [ 'data' ], $, {} )
       // return $
     }
@@ -98,7 +98,7 @@ function makeStateContainer( _$ ) {
                              ( dataL )
 
     const makeUpdaterStream =
-      R.tap( flyd.on( R.when( X.isNotUndefined )
+      R.tap( flyd.on( R.when( X.isDef )
                             ( setData( lens ) )
                     )
            )
@@ -147,7 +147,7 @@ const bindS = attrName => evtName => lens => atom => (
 const bindSOn = attrName => evtName => atom => lens =>
   bindS( attrName )
        ( evtName )
-       ( R.when( X.isUndefined )
+       ( R.when( X.notDef )
              ( _ => [] )
              ( lens )
        )
