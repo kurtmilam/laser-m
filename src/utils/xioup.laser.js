@@ -81,45 +81,51 @@ function makeStateContainer( _$ ) {
   const $ = flyd.isStream( _$ )
           ?  _$
           : flyd.stream( { data: {}, history: [], meta: {}, streams: {} } )
+  const streamsL = R.compose( R.pair( 'streams' ) )
+                            ( X.joinOnDot )
+  const dataL = R.prepend( [ 'data' ] )
+
+  const getLensedStream$ = lens =>
+    R.compose( view )
+             ( streamsL )
+             ( lens )
+
+  const setData = $ =>
+    R.compose( setOn$( $ ) )
+             ( dataL )
+
+  const makeUpdaterStream = $ => lens =>
+    R.tap( flyd.on( R.when( X.isDef )
+                          ( setData( $ )( lens ) )
+                  )
+         )
+
+  const registerLensedStream = $ =>
+    R.compose( setOn$( $ ) )
+             ( streamsL )
+
+  const addToMain$ = $ => lens =>
+    R.compose( R.tap( registerLensedStream( $ )( lens ) ) )
+             ( R.compose( flyd.stream )
+                        ( R.tap( setData( $ )( lens ) ) )
+             )
+
+  const makeLensed$ = $ => lens =>
+    R.compose( makeUpdaterStream( $ )( lens ) )
+             ( addToMain$( $ )( lens ) )
+
   return function ( lens, init ) {
     // return a lensedAtom on [ 'data' ] in the state stream if no arguments are supplied
     if( X.notDef( lens ) ) {
       return lensedAtom( [ 'data' ], $, {} )
       // return $
     }
-    const streamsL = R.compose( R.pair( 'streams' ) )
-                              ( X.joinOnDot )
-    const getLensedStream$ = R.compose( view )
-                                      ( streamsL )
-                                      ( lens )
-
-    const dataL = R.prepend( [ 'data' ] )
-    const setData = R.compose( setOn$( $ ) )
-                             ( dataL )
-
-    const makeUpdaterStream =
-      R.tap( flyd.on( R.when( X.isDef )
-                            ( setData( lens ) )
-                    )
-           )
-
-    const registerLensedStream = R.compose( setOn$( $ ) )
-                                          ( streamsL )
-
-    const addToMain$ =
-      R.compose( R.tap( registerLensedStream( lens ) ) )
-               ( R.compose( flyd.stream )
-                          ( R.tap( setData( lens ) ) )
-               )
-
-    const makeLensed$ = R.compose( makeUpdaterStream )
-                                 ( addToMain$ )
 
     const lensedStream$ =
       R.compose( flyd.isStream )
-               ( getLensedStream$ )( $ )
-                 ? getLensedStream$( $ )
-                 : makeLensed$( init )
+               ( getLensedStream$( lens ) )( $ )
+                 ? getLensedStream$( lens )( $ )
+                 : makeLensed$( $ )( lens )( init )
 
     return lensedStream$
   }
