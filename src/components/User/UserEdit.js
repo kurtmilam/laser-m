@@ -9,6 +9,7 @@ import * as R from 'xioup.ramda'
 import * as L from 'partial.lenses'
 import * as X from '../../utils/xioup.main.utils'
 import * as laser from '../../utils/xioup.laser'
+import * as O from '../../utils/xioup.optics'
 
 // import model
 import M from 'User/UserModel'
@@ -18,9 +19,9 @@ module.exports =
       { // console.log( vn )
         const id = Number( vn.attrs.id )
         const state = M.state
-        const rowL = M.getRowL( id )
+        const rowL = O.getRowL( M.rowsL )( id )
         const dataL = X.appendTo( rowL )( 'data' )
-        // const atom = X.lensedAtom( M.getRowL( id ), M.state )
+        // const atom = X.lensedAtom( O.getRowL( M.rowsL )( id ), M.state )
         const firstNameL = X.appendTo( dataL )( 'firstName' )
         const lastNameL = X.appendTo( dataL )( 'lastName' )
         const nicknameL = X.appendTo( dataL )( 'nickname' )

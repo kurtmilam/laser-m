@@ -48,6 +48,8 @@ const applyUnaryTo = R.flip( applyUnary )
 
 // string functions
 const joinOnDot = R.join( '.' )
+const joinL = a => L.rewrite( R.join( a ) )
+const firstToUpper = L.modify( [ joinL( '' ), 0 ], R.toUpper )
 
 // debug stuff
 const log = R.tap( console.log )
@@ -76,6 +78,8 @@ const X =
   , applyUnary
   , applyUnaryTo
   , joinOnDot
+  , joinL
+  , firstToUpper
   , log
   , composeLog
   , logCall

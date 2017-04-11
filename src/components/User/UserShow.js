@@ -7,6 +7,7 @@
 import m from '../../utils/m-mock'
 import * as X from '../../utils/xioup.main.utils'
 import * as laser from '../../utils/xioup.laser'
+import * as O from '../../utils/xioup.optics'
 
 // import model
 import M from 'User/UserModel'
@@ -16,7 +17,7 @@ const UserShow =
       { // console.log( vn )
         const id = Number( vn.attrs.id )
         const state = M.state
-        const rowL = M.getRowL( id )
+        const rowL = O.getRowL( M.rowsL )( id )
         const dataL = X.appendTo( rowL, 'data' )
         vn.state = { id
                    , state
