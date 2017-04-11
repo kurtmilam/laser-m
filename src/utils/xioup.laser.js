@@ -19,64 +19,42 @@ const saveHistory = R.identity // logWithMsg( 'history' )
 // dispatcher for L.modify and L.get
 const _dispatch = action => updateStream => lens => a => $ =>
   R.compose( R.compose( updateStream )
-                  ( X.freeze )
-         )
-         ( R.compose( L[ action ]( lens, a ) )
-                  ( saveHistory )
-         )
-         ( $() )
+                      ( X.freeze )
+           )
+           ( R.compose( L[ action ]( lens, a ) )
+                      ( saveHistory )
+           )
+           ( $() )
 
 const _setAndReturn$ = $ =>
   R.compose( R.always( $ ) )
          ( $ )
 
 // over starts here
-const _dispatchModify = _dispatch( 'modify' )
-
-const over = lens => a => $ =>
-  _dispatchModify( R.tap( $ ) )
-                 ( lens )
-                 ( a )
-                 ( $ )
-const overOn = $ => lens => a =>
-  over( lens )
-      ( a )
-      ( $ )
-
 const over$ = lens => a => $ =>
-  _dispatchModify( _setAndReturn$( $ ) )
-                 ( lens )
-                 ( a )
-                 ( $ )
+  _dispatch( 'modify' )
+           ( _setAndReturn$( $ ) )
+           ( lens )
+           ( a )
+           ( $ )
 const overOn$ = $ => lens => a =>
   over$( lens )
        ( a )
        ( $ )
 
 // set starts here
-const _dispatchSet = _dispatch( 'set' )
-
-const set = lens => a => $ =>
-  _dispatchSet( R.tap( $ ) )
-              ( lens )
-              ( a )
-              ( $ )
-const setOn = $ => lens => a =>
-  set( lens )
-     ( a )
-     ( $ )
-
 const set$ = lens => a => $ =>
-  _dispatchSet( _setAndReturn$( $ ) )
-              ( lens )
-              ( a )
-              ( $ )
+  _dispatch( 'set' )
+           ( _setAndReturn$( $ ) )
+           ( lens )
+           ( a )
+           ( $ )
 const setOn$ = $ => lens => a =>
   set$( lens )
       ( a )
       ( $ )
 
-const emptyStream = lens => over( lens )( R.empty )
+const empty$ = lens => over$( lens )( R.empty )
 
 const lensedAtom = function ( lens, $, init ) {
   const withAtom = X.applyUnaryTo( [ $, lens ] )
@@ -116,16 +94,17 @@ function makeStateContainer( _$ ) {
                                       ( lens )
 
     const dataL = R.prepend( [ 'data' ] )
-    const setData = R.compose( setOn( $ ) )
+    const setData = R.compose( setOn$( $ ) )
                              ( dataL )
 
     const makeUpdaterStream =
       R.tap( flyd.on( R.when( X.isNotUndefined )
-                          ( setData( lens ) )
+                            ( setData( lens ) )
                     )
            )
 
-    const registerLensedStream = R.compose( setOn( $ ) )( streamsL )
+    const registerLensedStream = R.compose( setOn$( $ ) )
+                                          ( streamsL )
 
     const addToMain$ =
       R.compose( R.tap( registerLensedStream( lens ) ) )
@@ -177,21 +156,19 @@ const bindSOn = attrName => evtName => atom => lens =>
 const laser =
   { view // tested
   , viewOn // tested
-  , over // tested
-  , over$
-  , overOn // tested
-  , overOn$
-  , set // tested
-  , set$
-  , setOn // tested
-  , setOn$
+  , over$ // tested
+  , overOn$ // tested
+  , set$ // tested
+  , setOn$ // tested
+  , empty$ // tested
   , setToAttr
   , setToValueAttr
   , bindS
   , bindSOn
-  , emptyStream // tested
   , makeStateContainer // tested
   , lensedAtom // partially tested
   }
 
 module.exports = laser
+
+window.laser = laser

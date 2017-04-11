@@ -13,17 +13,36 @@ import * as X from '../xioup.main.utils'
 import * as laser from '../xioup.laser'
 
 // stateContainer Operations
-describe( 'emptyStream()'
+describe( 'empty$()'
         , () => {
             const $ = flyd.stream( { a: 1 } )
             it( 'empties objects'
-              , () => wish( equals( laser.emptyStream( [] )( $ ), {} ) )
+              , () => wish( equals( laser.empty$( [] )
+                                                ( $ )
+                                                ()
+                                  , {}
+                                  )
+                          )
              )
             it( 'empties arrays'
-              , () => wish( equals( laser.emptyStream( [] )( $( [ 1, 2 ] ) ) ) )
+              , () => wish( equals( laser.empty$( [] )
+                                                ( $( [ 1, 2 ] ) )
+                                                ()
+                                  , []
+                                  )
+                          )
              )
             it( 'empties strings'
-              , () => wish( equals( laser.emptyStream( [] )( $( 'string' ) ), '' ) )
+              , () => wish( equals( laser.empty$( [] )
+                                                ( $( 'string' ) )
+                                                ()
+                                  , ''
+                                  )
+                          )
+             )
+            it( 'returns a function'
+              , () => wish( X.isFunction( laser.empty$( [] )
+                                                      ( $( 'string' ) ) ) )
              )
             after( 'End $', () => $.end() )
           }
@@ -49,49 +68,55 @@ describe( 'viewOn()'
           }
        )
 
-describe( 'over()'
+describe( 'over$()'
         , () => {
             const o1 = { a: { b: 2 } }
             const o2 = { a: { b: 3 } }
             const $ = flyd.stream( o1 )
             it( 'sets $[ lens ] to fn( $[ lens ] )'
-              , () => wish( equals( laser.over( [ 'a', 'b' ] )( inc )( $ ), o2 ) )
+              , () => wish( equals( laser.over$( [ 'a', 'b' ] )( inc )( $ )(), o2 ) )
+              )
+            it( 'returns a function'
+              , () => wish( X.isFunction( laser.over$( [ 'a', 'b' ] )( inc )( $ ) ) )
               )
             after( 'End $', () => $.end() )
           }
        )
 
-describe( 'overOn()'
+describe( 'overOn$()'
         , () => {
             const o1 = { a: { b: 2 } }
             const o2 = { a: { b: 3 } }
             const $ = flyd.stream( o1 )
             it( 'sets $[ lens ] to fn( $[ lens ] )'
-              , () => wish( equals( laser.overOn( $ )( [ 'a', 'b' ] )( inc ), o2 ) )
+              , () => wish( equals( laser.overOn$( $ )( [ 'a', 'b' ] )( inc )(), o2 ) )
               )
             after( 'End $', () => $.end() )
           }
        )
 
-describe( 'set()'
+describe( 'set$()'
         , () => {
             const o1 = { a: { b: 2 } }
             const o2 = { a: { b: 3 } }
             const $ = flyd.stream( o1 )
             it( 'sets $[ lens ] to value'
-              , () => wish( equals( laser.set( [ 'a', 'b' ] )( 3 )( $ ), o2 ) )
+              , () => wish( equals( laser.set$( [ 'a', 'b' ] )( 3 )( $ )(), o2 ) )
+              )
+            it( 'returns a function'
+              , () => wish( X.isFunction( laser.set$( [ 'a', 'b' ] )( 1 )( $ ) ) )
               )
             after( 'End $', () => $.end() )
           }
        )
 
-describe( 'setOn()'
+describe( 'setOn$()'
         , () => {
             const o1 = { a: { b: 2 } }
             const o2 = { a: { b: 3 } }
             const $ = flyd.stream( o1 )
             it( 'sets $[ lens ] to value'
-              , () => wish( equals( laser.setOn( $ )( [ 'a', 'b' ] )( 3 ), o2 ) )
+              , () => wish( equals( laser.setOn$( $ )( [ 'a', 'b' ] )( 3 )(), o2 ) )
              )
             after( 'End $', () => $.end() )
           }
