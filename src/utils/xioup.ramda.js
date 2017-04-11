@@ -58,7 +58,9 @@ import pair from 'ramda/src/pair.js'
 import empty from 'ramda/src/empty.js'
 import converge from 'ramda/src/converge.js'
 import composeP from 'ramda/src/composeP.js'
+import pipe from 'ramda/src/pipe.js'
 import whereEq from 'ramda/src/whereEq.js'
+import unnest from 'ramda/src/unnest.js'
 
 
 import ifElse_R from 'ramda/src/ifElse.js'
@@ -97,7 +99,9 @@ const R__ =
   , empty
   , converge
   , composeP
+  , pipe
   , whereEq
+  , unnest
   }
 
 module.exports = R__

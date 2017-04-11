@@ -22,7 +22,7 @@ const removeListRow =
 
 module.exports = vn =>
     <div
-      class={ `${ M.entityName }-list-item` }
+      class={ `${ M.entityName }-list-item list-item` }
       key={ vn.id }>
       <span>
         { M.listRowLabel( vn ) }

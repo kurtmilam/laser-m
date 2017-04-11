@@ -74,16 +74,22 @@ const getRowL = R.compose( rowByIdL )
 // const getById = id =>
 //   laser.lensedAtom( rowByIdL( id ), state )
 
+const joinL = a => L.rewrite( R.join( a ) )
+const firstToUpper = L.modify( [ joinL( '' ), 0 ], R.toUpper )
+
 const saveRow = D.saveRowToApi_( apiRowUrl )
 
 const validateAndSaveRow = dataL =>
   R.compose( saveRow( dataL ) )
-           ( R.compose( laser.over$( [ dataL, 'firstName' ] )
-                               ( R.trim )
-                      )
-                      ( laser.over$( [ dataL, 'lastName' ] )
-                               ( R.trim )
-                      )
+           ( R.pipe( laser.over$( [ dataL, 'firstName' ] )
+                                ( R.pipe( R.trim, firstToUpper ) )
+                   , laser.over$( [ dataL, 'lastName' ] )
+                                ( R.pipe( R.trim, firstToUpper ) )
+                   , laser.over$( [ dataL, 'nickname', L.optional ] )
+                                ( R.pipe( R.trim, firstToUpper ) )
+                   , laser.over$( [ dataL, 'age', L.optional ] )
+                                ( Number )
+                   )
            )
 
 module.exports =

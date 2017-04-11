@@ -23,6 +23,8 @@ module.exports =
         // const atom = X.lensedAtom( M.getRowL( id ), M.state )
         const firstNameL = X.appendTo( dataL )( 'firstName' )
         const lastNameL = X.appendTo( dataL )( 'lastName' )
+        const nicknameL = X.appendTo( dataL )( 'nickname' )
+        const ageL = X.appendTo( dataL )( 'age' )
         const uiL = X.appendTo( rowL )( 'ui' )
         const formL = X.appendTo( uiL )( 'form' )
         const initialL = X.appendTo( formL )( 'initial' )
@@ -43,6 +45,10 @@ module.exports =
                    , bindFirstName2:  _ => bindValueChange( firstNameL )
                    , lastNameL
                    , bindLastName2:   _ => bindValueChange( lastNameL )
+                   , nicknameL
+                   , bindNickname2:   _ => bindValueChange( nicknameL )
+                   , ageL
+                   , bindAge2:        _ => bindValueChange( ageL )
                    }
         // TODO: Add reusable copy function
         const setInitial =
@@ -64,13 +70,12 @@ module.exports =
           laser.set$( initialL )
                 ( laser.view( dataL )( s ) )
                 ( s )
-        // console.log( 'Last Name Lens', lastNameL )
-        console.log( R.toLower('SSS') )
+        console.log( 'Last Name Lens', lastNameL )
         window.vn = vn
         // window.onbeforeunload = e => 'are you sure?'
       }
   , view: vn =>
-    <div>
+    <div class="form">
       <label class="label">
         First Name
         <input class="input" placeholder="First Name" type="text"
@@ -79,7 +84,17 @@ module.exports =
       <label class="label">
         Last Name
         <input class="input" type="text" placeholder="Last Name"
-               { ...vn.state.bindValueChange( vn.state.lastNameL ) }/>
+               { ...vn.state.bindLastName2() }/>
+      </label>
+      <label class="label">
+        Nickname
+        <input class="input" type="text" placeholder="Nickname"
+               { ...vn.state.bindNickname2() }/>
+      </label>
+      <label class="label">
+        Age
+        <input class="input" type="text" placeholder="Age"
+               { ...vn.state.bindAge2() }/>
       </label>
       <button class="button"
               onclick={ _ => R.composeP( vn.state.cleanFormOnSave

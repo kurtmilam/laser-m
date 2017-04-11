@@ -36,17 +36,14 @@ module.exports =
       <div
         class={ `${ M.entityName }-list` }>
         <btn label="polythene works!" raised={ true }/>
+        <label class="label">
+          Filter
+          <input class="input" type="text" placeholder="Not Working Yet"
+            oninput={ laser.setToValueAttr( [ M.rowsUIL, 'filter', 'by' ] )( M.state ) }
+          />
+        </label>
         <div
-          class={ `${ M.entityName }-list-header` }>
-          <label class="label">
-            Filter
-            <input class="input" type="text" placeholder="Not Working Yet"
-              oninput={ laser.setToValueAttr( [ M.rowsUIL, 'filter', 'by' ] )( M.state ) }
-            />
-          </label>
-        </div>
-        <div
-          class={ `${ M.entityName }-list-header` }>
+          class={ `${ M.entityName }-list-header list-header` }>
           <button class="button"
             onclick={ _ => setSortBy( [ 'data', 'id' ] ) }
           >Order By Id</button>
